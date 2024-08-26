@@ -101,4 +101,196 @@ defmodule Excision.Excisions do
   def change_decision_site(%DecisionSite{} = decision_site, attrs \\ %{}) do
     DecisionSite.changeset(decision_site, attrs)
   end
+
+  alias Excision.Excisions.Decision
+
+  @doc """
+  Returns the list of decisions.
+
+  ## Examples
+
+      iex> list_decisions()
+      [%Decision{}, ...]
+
+  """
+  def list_decisions do
+    Repo.all(Decision)
+  end
+
+  @doc """
+  Gets a single decision.
+
+  Raises `Ecto.NoResultsError` if the Decision does not exist.
+
+  ## Examples
+
+      iex> get_decision!(123)
+      %Decision{}
+
+      iex> get_decision!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_decision!(id), do: Repo.get!(Decision, id)
+
+  @doc """
+  Creates a decision.
+
+  ## Examples
+
+      iex> create_decision(%{field: value})
+      {:ok, %Decision{}}
+
+      iex> create_decision(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_decision(attrs \\ %{}) do
+    %Decision{}
+    |> Decision.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a decision.
+
+  ## Examples
+
+      iex> update_decision(decision, %{field: new_value})
+      {:ok, %Decision{}}
+
+      iex> update_decision(decision, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_decision(%Decision{} = decision, attrs) do
+    decision
+    |> Decision.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a decision.
+
+  ## Examples
+
+      iex> delete_decision(decision)
+      {:ok, %Decision{}}
+
+      iex> delete_decision(decision)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_decision(%Decision{} = decision) do
+    Repo.delete(decision)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking decision changes.
+
+  ## Examples
+
+      iex> change_decision(decision)
+      %Ecto.Changeset{data: %Decision{}}
+
+  """
+  def change_decision(%Decision{} = decision, attrs \\ %{}) do
+    Decision.changeset(decision, attrs)
+  end
+
+  alias Excision.Excisions.Classifier
+
+  @doc """
+  Returns the list of classifiers.
+
+  ## Examples
+
+      iex> list_classifiers()
+      [%Classifier{}, ...]
+
+  """
+  def list_classifiers do
+    Repo.all(Classifier)
+  end
+
+  @doc """
+  Gets a single classifier.
+
+  Raises `Ecto.NoResultsError` if the Classifier does not exist.
+
+  ## Examples
+
+      iex> get_classifier!(123)
+      %Classifier{}
+
+      iex> get_classifier!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_classifier!(id), do: Repo.get!(Classifier, id)
+
+  @doc """
+  Creates a classifier.
+
+  ## Examples
+
+      iex> create_classifier(%{field: value})
+      {:ok, %Classifier{}}
+
+      iex> create_classifier(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_classifier(attrs \\ %{}) do
+    %Classifier{}
+    |> Classifier.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a classifier.
+
+  ## Examples
+
+      iex> update_classifier(classifier, %{field: new_value})
+      {:ok, %Classifier{}}
+
+      iex> update_classifier(classifier, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_classifier(%Classifier{} = classifier, attrs) do
+    classifier
+    |> Classifier.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a classifier.
+
+  ## Examples
+
+      iex> delete_classifier(classifier)
+      {:ok, %Classifier{}}
+
+      iex> delete_classifier(classifier)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_classifier(%Classifier{} = classifier) do
+    Repo.delete(classifier)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking classifier changes.
+
+  ## Examples
+
+      iex> change_classifier(classifier)
+      %Ecto.Changeset{data: %Classifier{}}
+
+  """
+  def change_classifier(%Classifier{} = classifier, attrs \\ %{}) do
+    Classifier.changeset(classifier, attrs)
+  end
 end

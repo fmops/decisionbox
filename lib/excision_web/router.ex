@@ -28,6 +28,8 @@ defmodule ExcisionWeb.Router do
 
     scope "/", ExcisionWeb do
       resources "/decision_sites", DecisionSiteController, except: [:new, :edit]
+      resources "/decision_sites/:decision_site_id/classifiers", ClassifierController, except: [:new, :edit]
+      resources "/decision_sites/:decision_site_id/decisions", DecisionController, except: [:new, :edit]
     end
   end
 

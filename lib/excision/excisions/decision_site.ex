@@ -4,6 +4,8 @@ defmodule Excision.Excisions.DecisionSite do
 
   schema "decision_sites" do
     field :name, :string
+    has_many :classifiers, Excision.Excisions.Classifier
+    has_many :decisions, Excision.Excisions.Decision
 
     timestamps(type: :utc_datetime)
   end

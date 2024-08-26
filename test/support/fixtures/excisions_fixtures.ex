@@ -11,10 +11,42 @@ defmodule Excision.ExcisionsFixtures do
     {:ok, decision_site} =
       attrs
       |> Enum.into(%{
-        name: "some name"
+        name: "some name",
       })
       |> Excision.Excisions.create_decision_site()
 
     decision_site
+  end
+
+  @doc """
+  Generate a decision.
+  """
+  def decision_fixture(attrs \\ %{}) do
+    {:ok, decision} =
+      attrs
+      |> Enum.into(%{
+        input: "some input",
+        label: nil,
+        prediction: true,
+        decision_site_id: Map.get(attrs, :decision_site_id, decision_site_fixture().id)
+      })
+      |> Excision.Excisions.create_decision()
+
+    decision
+  end
+
+  @doc """
+  Generate a classifier.
+  """
+  def classifier_fixture(attrs \\ %{}) do
+    {:ok, classifier} =
+      attrs
+      |> Enum.into(%{
+        name: "some name",
+        decision_site_id: Map.get(attrs, :decision_site_id, decision_site_fixture().id)
+      })
+      |> Excision.Excisions.create_classifier()
+
+    classifier
   end
 end
