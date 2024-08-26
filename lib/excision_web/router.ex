@@ -15,10 +15,13 @@ defmodule ExcisionWeb.Router do
     plug OpenApiSpex.Plug.PutApiSpec, module: ExcisionWeb.ApiSpec
   end
 
-  scope "/", ExcisionWeb do
+  scope "/" do
     pipe_through :browser
+    get "/swaggerui", OpenApiSpex.Plug.SwaggerUI, path: "/api/openapi"
 
-    get "/", PageController, :home
+    scope "/", ExcisionWeb do
+      get "/", PageController, :home
+    end
   end
 
   # Other scopes may use custom stacks.
