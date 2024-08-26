@@ -12,6 +12,7 @@ defmodule ExcisionWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug OpenApiSpex.Plug.PutApiSpec, module: ExcisionWeb.ApiSpec
   end
 
   scope "/", ExcisionWeb do
@@ -21,9 +22,14 @@ defmodule ExcisionWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", ExcisionWeb do
-  #   pipe_through :api
-  # end
+  scope "/api" do
+    pipe_through :api
+    get "/openapi", OpenApiSpex.Plug.RenderSpec, []
+
+    scope "/", ExcisionWeb do
+      resources "/decision_sites", DecisionSiteController, except: [:new, :edit]
+    end
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:excision, :dev_routes) do
