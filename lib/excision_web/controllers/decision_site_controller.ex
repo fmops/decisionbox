@@ -65,4 +65,22 @@ defmodule ExcisionWeb.DecisionSiteController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  operation :invoke,
+    summary: "Invoke decision site",
+    description: "Invoke a decision site"
+
+  def invoke(conn, %{"id" => id}) do
+    decision_site = Excisions.get_decision_site!(id, preloads: [:active_classifier])
+
+    if decision_site.active_classifier.name == "baseline" do
+      IO.inspect(conn.body_params)
+      IO.inspect(conn.headers)
+      IO.inspect("TODO: pass through to openai")
+    else
+      IO.inspect("TODO: invoke non-baseline classifier")
+    end
+
+    send_resp(conn, :no_content, "")
+  end
 end

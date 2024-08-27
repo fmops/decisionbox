@@ -56,6 +56,7 @@ defmodule ExcisionWeb.Router do
 
     scope "/", ExcisionWeb do
       resources "/decision_sites", DecisionSiteController, except: [:new, :edit]
+      post "/decision_sites/:id/invoke", DecisionSiteController, :invoke
 
       resources "/decision_sites/:decision_site_id/classifiers", ClassifierController,
         except: [:new, :edit]

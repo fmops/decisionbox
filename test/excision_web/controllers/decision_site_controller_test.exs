@@ -80,6 +80,17 @@ defmodule ExcisionWeb.DecisionSiteControllerTest do
     end
   end
 
+  describe "invoke decision_site" do
+    setup [:create_decision_site]
+
+    test "invokes chosen decision_site", %{conn: conn, decision_site: decision_site} do
+      conn = post(conn, ~p"/api/decision_sites/#{decision_site}/invoke")
+
+      assert response(conn, 200)
+    end
+  end
+  
+
   defp create_decision_site(_) do
     decision_site = decision_site_fixture()
     %{decision_site: decision_site}
