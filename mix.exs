@@ -61,7 +61,8 @@ defmodule Excision.MixProject do
       {:bandit, "~> 1.5"},
       {:open_api_spex, "~> 3.20"},
       {:reverse_proxy_plug, "~> 3.0"},
-      {:req, "~> 0.5"}
+      {:req, "~> 0.5"},
+      {:bypass, "~> 2.1"},
     ]
   end
 

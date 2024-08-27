@@ -1,5 +1,5 @@
 defmodule ExcisionWeb.DecisionSiteControllerTest do
-  use ExcisionWeb.ConnCase
+  use ExcisionWeb.ConnCase, async: true
 
   import Excision.ExcisionsFixtures
 
@@ -82,8 +82,16 @@ defmodule ExcisionWeb.DecisionSiteControllerTest do
 
   describe "invoke decision_site" do
     setup [:create_decision_site]
+    setup do
+      bypass = Bypass.open(port: 4001)
+      {:ok, bypass: bypass}
+    end
 
-    test "invokes chosen decision_site", %{conn: conn, decision_site: decision_site} do
+    test "invokes chosen decision_site", %{conn: conn, decision_site: decision_site, bypass: bypass} do
+      Bypass.expect_once(bypass, "POST", "/v1/chat/completions", fn conn -> 
+        Plug.Conn.resp(conn, 200, "{\"choices\": [{\"text\": \"this is not used\"}]}")
+      end)
+
       conn = 
         conn
         |> assign(:raw_body, Jason.encode!(

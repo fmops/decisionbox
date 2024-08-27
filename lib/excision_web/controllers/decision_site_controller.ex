@@ -103,7 +103,7 @@ defmodule ExcisionWeb.DecisionSiteController do
       opts = ReverseProxyPlug.init([
         client: ReverseProxyPlug.HTTPClient.Adapters.Req,
         client_options: [pool_timeout: 5000],
-        upstream: "https://api.openai.com/v1/chat/completions",
+        upstream: Application.get_env(:excision, :openai_chat_completions_url),
         preserve_host_header: false # don't send the host header to the upstream
       ])
 

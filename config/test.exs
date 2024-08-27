@@ -32,3 +32,6 @@ config :phoenix, :plug_init_mode, :runtime
 # Enable helpful, but potentially expensive runtime checks
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true
+
+config :excision,
+  openai_chat_completions_url: "http://localhost:4001/v1/chat/completions"
