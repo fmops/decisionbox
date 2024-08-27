@@ -34,9 +34,11 @@ defmodule ExcisionWeb.DecisionControllerTest do
     setup [:create_decision_site]
 
     test "renders decision when data is valid", %{conn: conn, decision_site: decision_site} do
-      conn = post(conn, ~p"/api/decision_sites/#{decision_site}/decisions",
-        decision: @create_attrs |> Enum.into(%{decision_site_id: decision_site.id})
-      )
+      conn =
+        post(conn, ~p"/api/decision_sites/#{decision_site}/decisions",
+          decision: @create_attrs |> Enum.into(%{decision_site_id: decision_site.id})
+        )
+
       assert %{"id" => id} = json_response(conn, 201)["data"]
 
       conn = get(conn, ~p"/api/decision_sites/#{decision_site}/decisions/#{id}")
@@ -50,7 +52,9 @@ defmodule ExcisionWeb.DecisionControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, decision_site: decision_site} do
-      conn = post(conn, ~p"/api/decision_sites/#{decision_site}/decisions", decision: @invalid_attrs)
+      conn =
+        post(conn, ~p"/api/decision_sites/#{decision_site}/decisions", decision: @invalid_attrs)
+
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
@@ -58,8 +62,15 @@ defmodule ExcisionWeb.DecisionControllerTest do
   describe "update decision" do
     setup [:create_decision_site, :create_decision]
 
-    test "renders decision when data is valid", %{conn: conn, decision: %Decision{id: id} = decision} do
-      conn = put(conn, ~p"/api/decision_sites/#{decision.decision_site_id}/decisions/#{decision}", decision: @update_attrs)
+    test "renders decision when data is valid", %{
+      conn: conn,
+      decision: %Decision{id: id} = decision
+    } do
+      conn =
+        put(conn, ~p"/api/decision_sites/#{decision.decision_site_id}/decisions/#{decision}",
+          decision: @update_attrs
+        )
+
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
       conn = get(conn, ~p"/api/decision_sites/#{decision.decision_site_id}/decisions/#{id}")
@@ -73,7 +84,11 @@ defmodule ExcisionWeb.DecisionControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, decision: decision} do
-      conn = put(conn, ~p"/api/decision_sites/#{decision.decision_site_id}/decisions/#{decision}", decision: @invalid_attrs)
+      conn =
+        put(conn, ~p"/api/decision_sites/#{decision.decision_site_id}/decisions/#{decision}",
+          decision: @invalid_attrs
+        )
+
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
@@ -82,7 +97,9 @@ defmodule ExcisionWeb.DecisionControllerTest do
     setup [:create_decision_site, :create_decision]
 
     test "deletes chosen decision", %{conn: conn, decision: decision} do
-      conn = delete(conn, ~p"/api/decision_sites/#{decision.decision_site_id}/decisions/#{decision}")
+      conn =
+        delete(conn, ~p"/api/decision_sites/#{decision.decision_site_id}/decisions/#{decision}")
+
       assert response(conn, 204)
 
       assert_error_sent 404, fn ->
@@ -97,9 +114,11 @@ defmodule ExcisionWeb.DecisionControllerTest do
   end
 
   defp create_decision(%{decision_site: decision_site}) do
-    decision = decision_fixture(%{
-      decision_site_id: decision_site.id
-    })
+    decision =
+      decision_fixture(%{
+        decision_site_id: decision_site.id
+      })
+
     %{decision: decision}
   end
 end

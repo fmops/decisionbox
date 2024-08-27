@@ -46,7 +46,10 @@ defmodule ExcisionWeb.DecisionSiteControllerTest do
   describe "update decision_site" do
     setup [:create_decision_site]
 
-    test "renders decision_site when data is valid", %{conn: conn, decision_site: %DecisionSite{id: id} = decision_site} do
+    test "renders decision_site when data is valid", %{
+      conn: conn,
+      decision_site: %DecisionSite{id: id} = decision_site
+    } do
       conn = put(conn, ~p"/api/decision_sites/#{decision_site}", decision_site: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 

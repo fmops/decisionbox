@@ -1,0 +1,48 @@
+<.header>
+  Listing Decisions
+  <:actions>
+    <.link patch={~p"/decisions/new"}>
+      <.button>New Decision</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="decisions"
+  rows={@streams.decisions}
+  row_click={fn {_id, decision} -> JS.navigate(~p"/decisions/#{decision}") end}
+>
+  <:col :let={{_id, decision}} label="Input"><%= decision.input %></:col>
+  <:col :let={{_id, decision}} label="Prediction"><%= decision.prediction %></:col>
+  <:col :let={{_id, decision}} label="Label"><%= decision.label %></:col>
+  <:action :let={{_id, decision}}>
+    <div class="sr-only">
+      <.link navigate={~p"/decisions/#{decision}"}>Show</.link>
+    </div>
+    <.link patch={~p"/decisions/#{decision}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, decision}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: decision.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="decision-modal"
+  show
+  on_cancel={JS.patch(~p"/decisions")}
+>
+  <.live_component
+    module={ExcisionWeb.DecisionLive.FormComponent}
+    id={@decision.id || :new}
+    title={@page_title}
+    action={@live_action}
+    decision={@decision}
+    patch={~p"/decisions"}
+  />
+</.modal>

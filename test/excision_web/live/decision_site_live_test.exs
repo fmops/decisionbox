@@ -49,7 +49,9 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
     test "updates decision_site in listing", %{conn: conn, decision_site: decision_site} do
       {:ok, index_live, _html} = live(conn, ~p"/decision_sites")
 
-      assert index_live |> element("#decision_sites-#{decision_site.id} a", "Edit") |> render_click() =~
+      assert index_live
+             |> element("#decision_sites-#{decision_site.id} a", "Edit")
+             |> render_click() =~
                "Edit Decision site"
 
       assert_patch(index_live, ~p"/decision_sites/#{decision_site}/edit")
@@ -72,7 +74,10 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
     test "deletes decision_site in listing", %{conn: conn, decision_site: decision_site} do
       {:ok, index_live, _html} = live(conn, ~p"/decision_sites")
 
-      assert index_live |> element("#decision_sites-#{decision_site.id} a", "Delete") |> render_click()
+      assert index_live
+             |> element("#decision_sites-#{decision_site.id} a", "Delete")
+             |> render_click()
+
       refute has_element?(index_live, "#decision_sites-#{decision_site.id}")
     end
   end

@@ -11,7 +11,7 @@ defmodule Excision.ExcisionsFixtures do
     {:ok, decision_site} =
       attrs
       |> Enum.into(%{
-        name: "some name",
+        name: "some name"
       })
       |> Excision.Excisions.create_decision_site()
 

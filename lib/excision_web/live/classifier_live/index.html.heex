@@ -1,0 +1,55 @@
+<.header>
+  Listing Classifiers
+  <:actions>
+    <.link patch={~p"/decision_sites/#{@decision_site}/classifiers/new"}>
+      <.button>New Classifier</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="classifiers"
+  rows={@streams.classifiers}
+  row_click={
+    fn {_id, classifier} ->
+      JS.navigate(~p"/decision_sites/#{@decision_site}/classifiers/#{classifier}")
+    end
+  }
+>
+  <:col :let={{_id, classifier}} label="Name"><%= classifier.name %></:col>
+  <:action :let={{_id, classifier}}>
+    <div class="sr-only">
+      <.link navigate={~p"/decision_sites/#{@decision_site}/classifiers/#{classifier}"}>
+        Show
+      </.link>
+    </div>
+    <.link patch={~p"/decision_sites/#{@decision_site}/classifiers/#{classifier}/edit"}>
+      Edit
+    </.link>
+  </:action>
+  <:action :let={{id, classifier}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: classifier.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="classifier-modal"
+  show
+  on_cancel={JS.patch(~p"/decision_sites/#{@decision_site}/classifiers")}
+>
+  <.live_component
+    module={ExcisionWeb.ClassifierLive.FormComponent}
+    id={@classifier.id || :new}
+    title={@page_title}
+    action={@live_action}
+    classifier={@classifier}
+    decision_site_id={@decision_site.id}
+    patch={~p"/decision_sites/#{@decision_site}/classifiers"}
+  />
+</.modal>

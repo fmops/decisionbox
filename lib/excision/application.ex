@@ -11,8 +11,7 @@ defmodule Excision.Application do
       ExcisionWeb.Telemetry,
       Excision.Repo,
       {Ecto.Migrator,
-        repos: Application.fetch_env!(:excision, :ecto_repos),
-        skip: skip_migrations?()},
+       repos: Application.fetch_env!(:excision, :ecto_repos), skip: skip_migrations?()},
       {DNSCluster, query: Application.get_env(:excision, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Excision.PubSub},
       # Start the Finch HTTP client for sending emails

@@ -29,6 +29,15 @@ defmodule ExcisionWeb.Router do
 
         live "/decision_sites/:id", DecisionSiteLive.Show, :show
         live "/decision_sites/:id/show/edit", DecisionSiteLive.Show, :edit
+
+        scope "/decision_sites/:decision_site_id" do
+          live "/classifiers", ClassifierLive.Index, :index
+          live "/classifiers/new", ClassifierLive.Index, :new
+          live "/classifiers/:id/edit", ClassifierLive.Index, :edit
+
+          live "/classifiers/:id", ClassifierLive.Show, :show
+          live "/classifiers/:id/show/edit", ClassifierLive.Show, :edit
+        end
       end
     end
   end
@@ -40,8 +49,12 @@ defmodule ExcisionWeb.Router do
 
     scope "/", ExcisionWeb do
       resources "/decision_sites", DecisionSiteController, except: [:new, :edit]
-      resources "/decision_sites/:decision_site_id/classifiers", ClassifierController, except: [:new, :edit]
-      resources "/decision_sites/:decision_site_id/decisions", DecisionController, except: [:new, :edit]
+
+      resources "/decision_sites/:decision_site_id/classifiers", ClassifierController,
+        except: [:new, :edit]
+
+      resources "/decision_sites/:decision_site_id/decisions", DecisionController,
+        except: [:new, :edit]
     end
   end
 

@@ -35,13 +35,18 @@ defmodule Excision.ExcisionsTest do
       decision_site = decision_site_fixture()
       update_attrs = %{name: "some updated name"}
 
-      assert {:ok, %DecisionSite{} = decision_site} = Excisions.update_decision_site(decision_site, update_attrs)
+      assert {:ok, %DecisionSite{} = decision_site} =
+               Excisions.update_decision_site(decision_site, update_attrs)
+
       assert decision_site.name == "some updated name"
     end
 
     test "update_decision_site/2 with invalid data returns error changeset" do
       decision_site = decision_site_fixture()
-      assert {:error, %Ecto.Changeset{}} = Excisions.update_decision_site(decision_site, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Excisions.update_decision_site(decision_site, @invalid_attrs)
+
       assert decision_site == Excisions.get_decision_site!(decision_site.id)
     end
 
@@ -76,7 +81,13 @@ defmodule Excision.ExcisionsTest do
 
     test "create_decision/1 with valid data creates a decision" do
       decision_site = decision_site_fixture()
-      valid_attrs = %{input: "some input", label: true, prediction: true, decision_site_id: decision_site.id}
+
+      valid_attrs = %{
+        input: "some input",
+        label: true,
+        prediction: true,
+        decision_site_id: decision_site.id
+      }
 
       assert {:ok, %Decision{} = decision} = Excisions.create_decision(valid_attrs)
       assert decision.input == "some input"
@@ -149,7 +160,9 @@ defmodule Excision.ExcisionsTest do
       classifier = classifier_fixture()
       update_attrs = %{name: "some updated name"}
 
-      assert {:ok, %Classifier{} = classifier} = Excisions.update_classifier(classifier, update_attrs)
+      assert {:ok, %Classifier{} = classifier} =
+               Excisions.update_classifier(classifier, update_attrs)
+
       assert classifier.name == "some updated name"
     end
 

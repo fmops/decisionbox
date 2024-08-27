@@ -12,6 +12,7 @@ defmodule ExcisionWeb.DecisionController do
   operation :index,
     summary: "List decisions",
     description: "List all decisions"
+
   def index(conn, _params) do
     decisions = Excisions.list_decisions()
     render(conn, :index, decisions: decisions)
@@ -20,11 +21,15 @@ defmodule ExcisionWeb.DecisionController do
   operation :create,
     summary: "Create decision",
     description: "Create a new decision"
+
   def create(conn, %{"decision" => decision_params}) do
     with {:ok, %Decision{} = decision} <- Excisions.create_decision(decision_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/decision_sites/#{decision.decision_site_id}/decisions/#{decision}")
+      |> put_resp_header(
+        "location",
+        ~p"/api/decision_sites/#{decision.decision_site_id}/decisions/#{decision}"
+      )
       |> render(:show, decision: decision)
     end
   end
@@ -32,6 +37,7 @@ defmodule ExcisionWeb.DecisionController do
   operation :show,
     summary: "Show decision",
     description: "Show a decision"
+
   def show(conn, %{"id" => id}) do
     decision = Excisions.get_decision!(id)
     render(conn, :show, decision: decision)
@@ -40,6 +46,7 @@ defmodule ExcisionWeb.DecisionController do
   operation :update,
     summary: "Update decision",
     description: "Update a decision"
+
   def update(conn, %{"id" => id, "decision" => decision_params}) do
     decision = Excisions.get_decision!(id)
 
@@ -51,6 +58,7 @@ defmodule ExcisionWeb.DecisionController do
   operation :delete,
     summary: "Delete decision",
     description: "Delete a decision"
+
   def delete(conn, %{"id" => id}) do
     decision = Excisions.get_decision!(id)
 
