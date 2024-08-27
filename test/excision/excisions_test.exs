@@ -168,6 +168,7 @@ defmodule Excision.ExcisionsTest do
 
       assert {:ok, %Classifier{} = classifier} = Excisions.create_classifier(valid_attrs)
       assert classifier.name == "some name"
+      assert classifier.status == :waiting
     end
 
     test "create_classifier/1 with invalid data returns error changeset" do

@@ -43,6 +43,7 @@ defmodule Excision.ExcisionsFixtures do
       attrs
       |> Enum.into(%{
         name: "some name",
+        status: "waiting",
         decision_site_id: Map.get(attrs, :decision_site_id, decision_site_fixture().id)
       })
       |> Excision.Excisions.create_classifier()
