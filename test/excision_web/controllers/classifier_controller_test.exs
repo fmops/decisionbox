@@ -22,7 +22,13 @@ defmodule ExcisionWeb.ClassifierControllerTest do
 
     test "lists all classifiers", %{conn: conn, decision_site: decision_site} do
       conn = get(conn, ~p"/api/decision_sites/#{decision_site}/classifiers")
-      assert json_response(conn, 200)["data"] == []
+
+      assert json_response(conn, 200)["data"] == [
+               %{
+                 "id" => 1,
+                 "name" => "baseline"
+               }
+             ]
     end
   end
 

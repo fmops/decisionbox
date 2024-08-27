@@ -17,4 +17,8 @@ defmodule Excision.Excisions.Classifier do
     |> validate_required([:name, :decision_site_id])
     |> foreign_key_constraint(:decision_site)
   end
+
+  def default_baseline_classifier do
+    %__MODULE__{name: "baseline"}
+  end
 end

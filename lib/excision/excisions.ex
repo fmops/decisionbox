@@ -17,8 +17,12 @@ defmodule Excision.Excisions do
       [%DecisionSite{}, ...]
 
   """
-  def list_decision_sites do
-    Repo.all(DecisionSite)
+  def list_decision_sites(opts \\ []) do
+    preloads = Keyword.get(opts, :preloads, [])
+
+    DecisionSite
+    |> Repo.all()
+    |> Repo.preload(preloads)
   end
 
   @doc """
@@ -35,7 +39,13 @@ defmodule Excision.Excisions do
       ** (Ecto.NoResultsError)
 
   """
-  def get_decision_site!(id), do: Repo.get!(DecisionSite, id)
+  def get_decision_site!(id, opts \\ []) do
+    preloads = Keyword.get(opts, :preloads, [])
+
+    DecisionSite
+    |> Repo.get!(id)
+    |> Repo.preload(preloads)
+  end
 
   @doc """
   Creates a decision_site.
@@ -52,6 +62,12 @@ defmodule Excision.Excisions do
   def create_decision_site(attrs \\ %{}) do
     %DecisionSite{}
     |> DecisionSite.changeset(attrs)
+    |> Ecto.Changeset.put_change(
+      :classifiers,
+      [
+        Excision.Excisions.Classifier.default_baseline_classifier()
+      ]
+    )
     |> Repo.insert()
   end
 
@@ -100,6 +116,10 @@ defmodule Excision.Excisions do
   """
   def change_decision_site(%DecisionSite{} = decision_site, attrs \\ %{}) do
     DecisionSite.changeset(decision_site, attrs)
+  end
+
+  def preload_decision_site_classifiers(%DecisionSite{} = decision_site) do
+    Repo.preload(decision_site, :classifiers)
   end
 
   alias Excision.Excisions.Decision

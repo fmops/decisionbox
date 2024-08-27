@@ -12,12 +12,14 @@ defmodule Excision.ExcisionsTest do
 
     test "list_decision_sites/0 returns all decision_sites" do
       decision_site = decision_site_fixture()
-      assert Excisions.list_decision_sites() == [decision_site]
+      assert Excisions.list_decision_sites(preloads: [:classifiers]) == [decision_site]
     end
 
     test "get_decision_site!/1 returns the decision_site with given id" do
       decision_site = decision_site_fixture()
-      assert Excisions.get_decision_site!(decision_site.id) == decision_site
+
+      assert Excisions.get_decision_site!(decision_site.id, preloads: [:classifiers]) ==
+               decision_site
     end
 
     test "create_decision_site/1 with valid data creates a decision_site" do
@@ -25,6 +27,21 @@ defmodule Excision.ExcisionsTest do
 
       assert {:ok, %DecisionSite{} = decision_site} = Excisions.create_decision_site(valid_attrs)
       assert decision_site.name == "some name"
+    end
+
+    test "create_decision_site/1 creates a baseline classifier" do
+      valid_attrs = %{name: "some name"}
+
+      assert {:ok, %DecisionSite{} = decision_site} = Excisions.create_decision_site(valid_attrs)
+
+      decision_site =
+        decision_site
+        |> Excisions.preload_decision_site_classifiers()
+
+      assert Enum.count(decision_site.classifiers) == 1
+
+      assert [%Excision.Excisions.Classifier{name: "baseline"}] =
+               Enum.take(decision_site.classifiers, 1)
     end
 
     test "create_decision_site/1 with invalid data returns error changeset" do
@@ -47,7 +64,8 @@ defmodule Excision.ExcisionsTest do
       assert {:error, %Ecto.Changeset{}} =
                Excisions.update_decision_site(decision_site, @invalid_attrs)
 
-      assert decision_site == Excisions.get_decision_site!(decision_site.id)
+      assert decision_site ==
+               Excisions.get_decision_site!(decision_site.id, preloads: [:classifiers])
     end
 
     test "delete_decision_site/1 deletes the decision_site" do
@@ -136,7 +154,7 @@ defmodule Excision.ExcisionsTest do
 
     test "list_classifiers/0 returns all classifiers" do
       classifier = classifier_fixture()
-      assert Excisions.list_classifiers() == [classifier]
+      assert Enum.find(Excisions.list_classifiers(), false, fn c -> c == classifier end)
     end
 
     test "get_classifier!/1 returns the classifier with given id" do
