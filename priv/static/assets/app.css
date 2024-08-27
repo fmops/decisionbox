@@ -1657,6 +1657,10 @@ select {
   color: rgb(24 24 27 / var(--tw-text-opacity));
 }
 
+.hover\:underline:hover {
+  text-decoration-line: underline;
+}
+
 .hover\:opacity-40:hover {
   opacity: 0.4;
 }
