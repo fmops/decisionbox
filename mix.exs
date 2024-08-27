@@ -62,7 +62,8 @@ defmodule Excision.MixProject do
       {:open_api_spex, "~> 3.20"},
       {:reverse_proxy_plug, "~> 3.0"},
       {:req, "~> 0.5"},
-      {:bypass, "~> 2.1"}
+      {:bypass, "~> 2.1"},
+      {:oban, "~> 2.18"}
     ]
   end
 

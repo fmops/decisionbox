@@ -14,6 +14,7 @@ defmodule Excision.Application do
        repos: Application.fetch_env!(:excision, :ecto_repos), skip: skip_migrations?()},
       {DNSCluster, query: Application.get_env(:excision, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Excision.PubSub},
+      {Oban, Application.fetch_env!(:excision, Oban)},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Excision.Finch},
       # Start a worker by calling: Excision.Worker.start_link(arg)

@@ -280,8 +280,17 @@ defmodule Excision.Excisions do
   """
   def create_classifier(attrs \\ %{}) do
     %Classifier{}
-    |> Classifier.changeset(attrs)
-    |> Repo.insert()
+      |> Classifier.changeset(attrs)
+      |> Repo.insert()
+    |> case do
+      {:ok, classifier} ->
+        %{ classifier_id: classifier.id }
+        |> Excision.Workers.TrainClassifier.new()
+        |> Oban.insert()
+
+        {:ok, classifier}
+      x -> x
+    end
   end
 
   @doc """

@@ -35,3 +35,5 @@ config :phoenix_live_view,
 
 config :excision,
   openai_chat_completions_url: "http://localhost:4001/v1/chat/completions"
+
+config :excision, Oban, testing: :inline

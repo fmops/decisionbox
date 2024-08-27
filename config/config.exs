@@ -61,8 +61,14 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+
+
 config :excision,
   openai_chat_completions_url: "https://api.openai.com/v1/chat/completions"
+config :excision, Oban,
+  engine: Oban.Engines.Lite,
+  queues: [default: 10],
+  repo: Excision.Repo
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
