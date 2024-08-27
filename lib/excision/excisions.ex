@@ -61,7 +61,8 @@ defmodule Excision.Excisions do
   """
   def create_decision_site(attrs \\ %{}) do
     # create the default classifier
-    {:ok, classifier} = Excision.Excisions.Classifier.default_baseline_classifier()
+    {:ok, classifier} =
+      Excision.Excisions.Classifier.default_baseline_classifier()
       |> Excision.Excisions.Classifier.changeset(%{})
       |> Repo.insert()
 
@@ -69,7 +70,7 @@ defmodule Excision.Excisions do
     |> DecisionSite.changeset(attrs)
     |> Ecto.Changeset.apply_changes()
     |> DecisionSite.changeset(%{active_classifier_id: classifier.id})
-    |> Ecto.Changeset.put_assoc(:classifiers, [ classifier ])
+    |> Ecto.Changeset.put_assoc(:classifiers, [classifier])
     |> Repo.insert()
   end
 
@@ -137,6 +138,20 @@ defmodule Excision.Excisions do
   """
   def list_decisions do
     Repo.all(Decision)
+  end
+
+  @doc """
+  Returns the list of decisions for a single site
+
+  ## Examples
+
+      iex> list_decisions_for_site(decision_site)
+      [%Decision{}, ...]
+
+  """
+  def list_decisions_for_site(%DecisionSite{} = decision_site) do
+    from(d in Decision, where: d.decision_site_id == ^decision_site.id)
+    |> Repo.all()
   end
 
   @doc """

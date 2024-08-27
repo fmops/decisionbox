@@ -18,4 +18,3 @@ defmodule ExcisionWeb.CacheBodyReader do
 
   def read_body(conn, opts), do: Conn.read_body(conn, opts)
 end
-

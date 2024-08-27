@@ -17,7 +17,12 @@
 <.list>
   <:item title="Name"><%= @decision_site.name %></:item>
   <:item title="Active Classifier">
-    <.link patch={~p"/decision_sites/#{@decision_site}/classifiers/#{@decision_site.active_classifier}"} class="hover:underline">
+    <.link
+      patch={
+        ~p"/decision_sites/#{@decision_site}/classifiers/#{@decision_site.active_classifier}"
+      }
+      class="hover:underline"
+    >
       <%= @decision_site.active_classifier.name %>
     </.link>
   </:item>

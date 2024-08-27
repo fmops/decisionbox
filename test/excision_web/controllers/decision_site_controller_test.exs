@@ -82,35 +82,40 @@ defmodule ExcisionWeb.DecisionSiteControllerTest do
 
   describe "invoke decision_site" do
     setup [:create_decision_site]
+
     setup do
       bypass = Bypass.open(port: 4001)
       {:ok, bypass: bypass}
     end
 
-    test "invokes chosen decision_site", %{conn: conn, decision_site: decision_site, bypass: bypass} do
-      Bypass.expect_once(bypass, "POST", "/v1/chat/completions", fn conn -> 
-        Plug.Conn.resp(conn, 200, "{\"choices\": [{\"text\": \"this is not used\"}]}")
+    test "creates a decision with the prediction from upstream", %{conn: conn, decision_site: decision_site, bypass: bypass} do
+      Bypass.expect_once(bypass, "POST", "/v1/chat/completions", fn conn ->
+        Plug.Conn.resp(conn, 200, "{\"choices\": [{\"message\": {\"content\": \"{\\\"value\\\":false}\"}}]}")
       end)
 
-      conn = 
+      messages = [%{role: "user", content: "some message"}]
+      conn =
         conn
-        |> assign(:raw_body, Jason.encode!(
-          %{
-            messages: [],
+        |> assign(
+          :raw_body,
+          Jason.encode!(%{
+            messages: messages,
             model: ""
-          }
-        ))
+          })
+        )
         |> Plug.Conn.put_req_header("authorization", "Bearer foo")
         |> post(~p"/api/decision_sites/#{decision_site}/invoke")
 
       assert response(conn, 200)
-    end
 
-    test "creates a decision with the predicted decision" do
-      
+      decisions = Excision.Excisions.list_decisions_for_site(decision_site)
+      assert Enum.count(decisions) == 1
+
+      decision = Enum.at(decisions, 0)
+      assert %Excision.Excisions.Decision{prediction: false} = decision
+      assert Jason.decode!(decision.input) == Jason.decode!(Jason.encode!(messages))
     end
   end
-
 
   defp create_decision_site(_) do
     decision_site = decision_site_fixture()

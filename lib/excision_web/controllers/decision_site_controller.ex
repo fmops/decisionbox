@@ -72,15 +72,18 @@ defmodule ExcisionWeb.DecisionSiteController do
 
   def invoke(conn, %{"id" => id}) do
     decision_site = Excisions.get_decision_site!(id, preloads: [:active_classifier])
+
     if decision_site.active_classifier.name == "baseline" do
       # modify the body to add the response_format
 
       {raw_body, conn} = ReverseProxyPlug.read_body(conn)
-      new_body = 
-          raw_body
-          |> Jason.decode!()
-          |> Map.put(
-          "response_format",  %{
+
+      req_body =
+        raw_body
+        |> Jason.decode!()
+        |> Map.put(
+          "response_format",
+          %{
             type: "json_schema",
             json_schema: %{
               name: "Decision",
@@ -90,30 +93,54 @@ defmodule ExcisionWeb.DecisionSiteController do
                   value: %{
                     type: "boolean"
                   }
-                },
+                }
               }
             }
-          })
-          |> Jason.encode!()
+          }
+        )
+      new_body = req_body |> Jason.encode!()
 
-      conn = conn
-      |> assign(:raw_body, new_body)
+      conn =
+        conn
+        |> assign(:raw_body, new_body)
         |> put_req_header("content-length", byte_size(new_body) |> Integer.to_string())
 
-      opts = ReverseProxyPlug.init([
-        client: ReverseProxyPlug.HTTPClient.Adapters.Req,
-        client_options: [pool_timeout: 5000],
-        upstream: Application.get_env(:excision, :openai_chat_completions_url),
-        preserve_host_header: false # don't send the host header to the upstream
-      ])
+      opts =
+        ReverseProxyPlug.init(
+          client: ReverseProxyPlug.HTTPClient.Adapters.Req,
+          client_options: [pool_timeout: 5000],
+          upstream: Application.get_env(:excision, :openai_chat_completions_url),
+          response_mode: :buffer,
+          # don't send the host header to the upstream
+          preserve_host_header: false
+        )
 
-      conn
-      |> Map.put(:path_info, []) # strip path, by default this is appended when proxying
-      |> ReverseProxyPlug.call(opts)
+      resp = conn
+        # strip path, by default this is appended when proxying
+        |> Map.put(:path_info, [])
+        |> ReverseProxyPlug.call(opts)
+
+
+      # parse response and record decision
+      resp_body = resp.resp_body
+        |> then(case Plug.Conn.get_resp_header(resp, "content-encoding") do
+          ["gzip"] -> &:zlib.gunzip/1
+          _ -> fn x -> x end
+        end)
+        |> Jason.decode!()
+
+      Excision.Excisions.create_decision(%{
+        decision_site_id: decision_site.id,
+        classifier_id: decision_site.active_classifier.id,
+        input: Jason.encode!(req_body["messages"]),
+        prediction: resp_body["choices"] |> Enum.at(0) |> then(& &1["message"]["content"]) |> Jason.decode!() |> then(& &1["value"]),
+      })
+
+
+      resp
     else
       IO.inspect("TODO: invoke non-baseline classifier")
       send_resp(conn, :not_implemented, "")
     end
-
   end
 end
