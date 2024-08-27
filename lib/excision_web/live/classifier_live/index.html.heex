@@ -1,5 +1,5 @@
 <.header>
-  Listing Classifiers
+  Listing Classifiers for Decision Site <%= @decision_site.name %>
   <:actions>
     <.link patch={~p"/decision_sites/#{@decision_site}/classifiers/new"}>
       <.button>New Classifier</.button>
@@ -36,6 +36,10 @@
     </.link>
   </:action>
 </.table>
+
+<.back navigate={~p"/decision_sites/#{@decision_site}"}>
+  Back to decision site
+</.back>
 
 <.modal
   :if={@live_action in [:new, :edit]}

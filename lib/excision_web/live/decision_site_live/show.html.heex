@@ -5,6 +5,12 @@
     <.link patch={~p"/decision_sites/#{@decision_site}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Edit decision_site</.button>
     </.link>
+    <.link patch={~p"/decision_sites/#{@decision_site}/classifiers"} phx-click={JS.push_focus()}>
+      <.button>Classifiers</.button>
+    </.link>
+    <.link patch={~p"/decision_sites/#{@decision_site}/decisions"} phx-click={JS.push_focus()}>
+      <.button>Decisions</.button>
+    </.link>
   </:actions>
 </.header>
 

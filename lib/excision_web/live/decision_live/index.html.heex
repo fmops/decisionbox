@@ -1,5 +1,5 @@
 <.header>
-  Listing Decisions
+  Listing Decisions for Decision Site <%= @decision_site.name %>
   <:actions>
     <.link patch={~p"/decisions/new"}>
       <.button>New Decision</.button>
@@ -30,6 +30,10 @@
     </.link>
   </:action>
 </.table>
+
+<.back navigate={~p"/decision_sites/#{@decision_site}"}>
+  Back to decision site
+</.back>
 
 <.modal
   :if={@live_action in [:new, :edit]}

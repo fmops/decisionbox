@@ -10,8 +10,13 @@ defmodule ExcisionWeb.DecisionLive.Index do
   end
 
   @impl true
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  def handle_params(%{"decision_site_id" => decision_site_id} = params, _url, socket) do
+    decision_site = Excisions.get_decision_site!(decision_site_id)
+
+    {:noreply,
+     socket
+     |> assign(:decision_site, decision_site)
+     |> apply_action(socket.assigns.live_action, params)}
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
