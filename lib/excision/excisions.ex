@@ -60,14 +60,16 @@ defmodule Excision.Excisions do
 
   """
   def create_decision_site(attrs \\ %{}) do
+    # create the default classifier
+    {:ok, classifier} = Excision.Excisions.Classifier.default_baseline_classifier()
+      |> Excision.Excisions.Classifier.changeset(%{})
+      |> Repo.insert()
+
     %DecisionSite{}
     |> DecisionSite.changeset(attrs)
-    |> Ecto.Changeset.put_change(
-      :classifiers,
-      [
-        Excision.Excisions.Classifier.default_baseline_classifier()
-      ]
-    )
+    |> Ecto.Changeset.apply_changes()
+    |> DecisionSite.changeset(%{active_classifier_id: classifier.id})
+    |> Ecto.Changeset.put_assoc(:classifiers, [ classifier ])
     |> Repo.insert()
   end
 

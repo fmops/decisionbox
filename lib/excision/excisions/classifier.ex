@@ -14,7 +14,7 @@ defmodule Excision.Excisions.Classifier do
   def changeset(classifier, attrs) do
     classifier
     |> cast(attrs, [:name, :decision_site_id])
-    |> validate_required([:name, :decision_site_id])
+    |> validate_required([:name])
     |> foreign_key_constraint(:decision_site)
   end
 
