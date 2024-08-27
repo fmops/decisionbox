@@ -74,10 +74,10 @@ defmodule ExcisionWeb.DecisionSiteController do
     decision_site = Excisions.get_decision_site!(id, preloads: [:active_classifier])
     if decision_site.active_classifier.name == "baseline" do
       # modify the body to add the response_format
+
       {raw_body, conn} = ReverseProxyPlug.read_body(conn)
       new_body = 
           raw_body
-          |> Enum.at(0)
           |> Jason.decode!()
           |> Map.put(
           "response_format",  %{

@@ -86,16 +86,23 @@ defmodule ExcisionWeb.DecisionSiteControllerTest do
     test "invokes chosen decision_site", %{conn: conn, decision_site: decision_site} do
       conn = 
         conn
+        |> assign(:raw_body, Jason.encode!(
+          %{
+            messages: [],
+            model: ""
+          }
+        ))
         |> Plug.Conn.put_req_header("authorization", "Bearer foo")
-        |> post(~p"/api/decision_sites/#{decision_site}/invoke", %{
-          messages: [],
-          model: ""
-        })
+        |> post(~p"/api/decision_sites/#{decision_site}/invoke")
 
       assert response(conn, 200)
     end
+
+    test "creates a decision with the predicted decision" do
+      
+    end
   end
-  
+
 
   defp create_decision_site(_) do
     decision_site = decision_site_fixture()
