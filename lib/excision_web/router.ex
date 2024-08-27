@@ -21,6 +21,15 @@ defmodule ExcisionWeb.Router do
 
     scope "/", ExcisionWeb do
       get "/", PageController, :home
+
+      live_session :excision do
+        live "/decision_sites", DecisionSiteLive.Index, :index
+        live "/decision_sites/new", DecisionSiteLive.Index, :new
+        live "/decision_sites/:id/edit", DecisionSiteLive.Index, :edit
+
+        live "/decision_sites/:id", DecisionSiteLive.Show, :show
+        live "/decision_sites/:id/show/edit", DecisionSiteLive.Show, :edit
+      end
     end
   end
 
