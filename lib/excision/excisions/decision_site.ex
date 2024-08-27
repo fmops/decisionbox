@@ -5,8 +5,8 @@ defmodule Excision.Excisions.DecisionSite do
   schema "decision_sites" do
     field :name, :string
     belongs_to :active_classifier, Excision.Excisions.Classifier
-    has_many :classifiers, Excision.Excisions.Classifier, on_delete: :delete_all
-    has_many :decisions, Excision.Excisions.Decision, on_delete: :delete_all
+    has_many :classifiers, Excision.Excisions.Classifier
+    has_many :decisions, Excision.Excisions.Decision
 
     timestamps(type: :utc_datetime)
   end

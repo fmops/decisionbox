@@ -21,6 +21,6 @@ defmodule Excision.Excisions.Classifier do
   end
 
   def default_baseline_classifier do
-    %__MODULE__{name: "baseline"}
+    %__MODULE__{name: "baseline", status: :trained}
   end
 end

@@ -4,6 +4,7 @@ defmodule Excision.Repo.Migrations.CreateDecisionSites do
   def change do
     create table(:decision_sites) do
       add :name, :string
+      add :active_classifier_id, references(:classifiers, on_delete: :delete_all)
 
       timestamps(type: :utc_datetime)
     end
