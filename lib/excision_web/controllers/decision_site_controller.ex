@@ -98,6 +98,7 @@ defmodule ExcisionWeb.DecisionSiteController do
             }
           }
         )
+
       new_body = req_body |> Jason.encode!()
 
       conn =
@@ -115,27 +116,34 @@ defmodule ExcisionWeb.DecisionSiteController do
           preserve_host_header: false
         )
 
-      resp = conn
+      resp =
+        conn
         # strip path, by default this is appended when proxying
         |> Map.put(:path_info, [])
         |> ReverseProxyPlug.call(opts)
 
-
       # parse response and record decision
-      resp_body = resp.resp_body
-        |> then(case Plug.Conn.get_resp_header(resp, "content-encoding") do
-          ["gzip"] -> &:zlib.gunzip/1
-          _ -> fn x -> x end
-        end)
+      resp_body =
+        resp.resp_body
+        |> then(
+          case Plug.Conn.get_resp_header(resp, "content-encoding") do
+            ["gzip"] -> &:zlib.gunzip/1
+            _ -> fn x -> x end
+          end
+        )
         |> Jason.decode!()
 
       Excision.Excisions.create_decision(%{
         decision_site_id: decision_site.id,
         classifier_id: decision_site.active_classifier.id,
         input: Jason.encode!(req_body["messages"]),
-        prediction: resp_body["choices"] |> Enum.at(0) |> then(& &1["message"]["content"]) |> Jason.decode!() |> then(& &1["value"]),
+        prediction:
+          resp_body["choices"]
+          |> Enum.at(0)
+          |> then(& &1["message"]["content"])
+          |> Jason.decode!()
+          |> then(& &1["value"])
       })
-
 
       resp
     else

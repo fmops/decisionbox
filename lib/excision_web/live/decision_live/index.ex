@@ -49,4 +49,18 @@ defmodule ExcisionWeb.DecisionLive.Index do
 
     {:noreply, stream_delete(socket, :decisions, decision)}
   end
+
+  @impl true
+  def handle_event("label", %{"id" => id, "value" => value}, socket) do
+    value =
+      case value do
+        "true" -> true
+        "false" -> false
+      end
+
+    decision = Excisions.get_decision!(id)
+    {:ok, decision} = Excisions.update_decision(decision, %{label: value})
+
+    {:noreply, stream_insert(socket, :decisions, decision) |> IO.inspect()}
+  end
 end

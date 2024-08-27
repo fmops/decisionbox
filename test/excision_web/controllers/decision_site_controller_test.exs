@@ -88,12 +88,21 @@ defmodule ExcisionWeb.DecisionSiteControllerTest do
       {:ok, bypass: bypass}
     end
 
-    test "creates a decision with the prediction from upstream", %{conn: conn, decision_site: decision_site, bypass: bypass} do
+    test "creates a decision with the prediction from upstream", %{
+      conn: conn,
+      decision_site: decision_site,
+      bypass: bypass
+    } do
       Bypass.expect_once(bypass, "POST", "/v1/chat/completions", fn conn ->
-        Plug.Conn.resp(conn, 200, "{\"choices\": [{\"message\": {\"content\": \"{\\\"value\\\":false}\"}}]}")
+        Plug.Conn.resp(
+          conn,
+          200,
+          "{\"choices\": [{\"message\": {\"content\": \"{\\\"value\\\":false}\"}}]}"
+        )
       end)
 
       messages = [%{role: "user", content: "some message"}]
+
       conn =
         conn
         |> assign(
