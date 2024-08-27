@@ -72,15 +72,48 @@ defmodule ExcisionWeb.DecisionSiteController do
 
   def invoke(conn, %{"id" => id}) do
     decision_site = Excisions.get_decision_site!(id, preloads: [:active_classifier])
-
     if decision_site.active_classifier.name == "baseline" do
-      IO.inspect(conn.body_params)
-      IO.inspect(conn.headers)
-      IO.inspect("TODO: pass through to openai")
+      # modify the body to add the response_format
+      {raw_body, conn} = ReverseProxyPlug.read_body(conn)
+      new_body = 
+          raw_body
+          |> Enum.at(0)
+          |> Jason.decode!()
+          |> Map.put(
+          "response_format",  %{
+            type: "json_schema",
+            json_schema: %{
+              name: "Decision",
+              schema: %{
+                type: "object",
+                properties: %{
+                  value: %{
+                    type: "boolean"
+                  }
+                },
+              }
+            }
+          })
+          |> Jason.encode!()
+
+      conn = conn
+      |> assign(:raw_body, new_body)
+        |> put_req_header("content-length", byte_size(new_body) |> Integer.to_string())
+
+      opts = ReverseProxyPlug.init([
+        client: ReverseProxyPlug.HTTPClient.Adapters.Req,
+        client_options: [pool_timeout: 5000],
+        upstream: "https://api.openai.com/v1/chat/completions",
+        preserve_host_header: false # don't send the host header to the upstream
+      ])
+
+      conn
+      |> Map.put(:path_info, []) # strip path, by default this is appended when proxying
+      |> ReverseProxyPlug.call(opts)
     else
       IO.inspect("TODO: invoke non-baseline classifier")
+      send_resp(conn, :not_implemented, "")
     end
 
-    send_resp(conn, :no_content, "")
   end
 end

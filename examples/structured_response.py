@@ -31,6 +31,7 @@ async def main():
             #     }
             # }
         }, headers={ 'Authorization': f"Bearer {os.environ.get('OPENAI_API_KEY')}" }) as resp:
-            print(await resp.json())
+            print(resp)
+            print(await resp.text())
 
 asyncio.run(main())

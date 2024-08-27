@@ -84,7 +84,13 @@ defmodule ExcisionWeb.DecisionSiteControllerTest do
     setup [:create_decision_site]
 
     test "invokes chosen decision_site", %{conn: conn, decision_site: decision_site} do
-      conn = post(conn, ~p"/api/decision_sites/#{decision_site}/invoke")
+      conn = 
+        conn
+        |> Plug.Conn.put_req_header("authorization", "Bearer foo")
+        |> post(~p"/api/decision_sites/#{decision_site}/invoke", %{
+          messages: [],
+          model: ""
+        })
 
       assert response(conn, 200)
     end

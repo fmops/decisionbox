@@ -59,7 +59,9 @@ defmodule Excision.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
-      {:open_api_spex, "~> 3.20"}
+      {:open_api_spex, "~> 3.20"},
+      {:reverse_proxy_plug, "~> 3.0"},
+      {:req, "~> 0.5"}
     ]
   end
 
