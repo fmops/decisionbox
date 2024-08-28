@@ -366,4 +366,15 @@ defmodule Excision.Excisions do
   def change_classifier(%Classifier{} = classifier, attrs \\ %{}) do
     Classifier.changeset(classifier, attrs)
   end
+
+  @doc """
+  Promotes a classifier to the active_classifier for its decision_site
+  """
+  def promote_classifier(classifier) do
+    classifier = Repo.preload(classifier, :decision_site)
+    update_decision_site(
+      classifier.decision_site,
+      %{active_classifier_id: classifier.id}
+    )
+  end
 end
