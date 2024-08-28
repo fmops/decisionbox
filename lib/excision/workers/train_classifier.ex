@@ -62,34 +62,6 @@ defmodule Excision.Workers.TrainClassifier do
       test_accuracy: test_accuracy
     })
 
-    # example of running inference
-    Axon.predict(
-      model,
-      trained_model_state,
-      Bumblebee.apply_tokenizer(tokenizer, "I need oranges")
-    )
-    |> IO.inspect()
-
-    # example of loading a checkpoint from disk
-    {:ok, spec} =
-      Bumblebee.load_spec({:hf, "distilbert/distilbert-base-uncased"},
-        architecture: :for_sequence_classification
-      )
-
-    model = Bumblebee.build_model(spec)
-    {:ok, checkpoints} = File.ls(checkpoint_path)
-    last_checkpoint = checkpoints |> Enum.max()
-
-    params =
-      [checkpoint_path, last_checkpoint]
-      |> Path.join()
-      |> File.read!()
-      |> Axon.Loop.deserialize_state()
-      |> then(& &1.step_state.model_state)
-
-    Axon.predict(model, params, Bumblebee.apply_tokenizer(tokenizer, "I need oranges"))
-    |> IO.inspect()
-
     :ok
   end
 
