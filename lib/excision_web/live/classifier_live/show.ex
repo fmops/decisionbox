@@ -10,10 +10,13 @@ defmodule ExcisionWeb.ClassifierLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    classifier = Excisions.get_classifier!(id, preloads: [:decision_site, :decisions])
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:classifier, Excisions.get_classifier!(id, preloads: [:decision_site]))}
+     |> assign(:classifier, classifier)
+     |> assign(:num_decisions, classifier.decisions |> Enum.count())
+    }
   end
 
   @impl true
@@ -28,7 +31,7 @@ defmodule ExcisionWeb.ClassifierLive.Show do
           |> assign(:classifier, classifier)
         }
 
-      {:error, %Ecto.Changeset{} = changeset} ->
+      {:error, %Ecto.Changeset{}} ->
         {:noreply, socket |> put_flash(:error, "Error promoting classifier")}
     end
   end

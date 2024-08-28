@@ -23,6 +23,7 @@
   <:item title="Name"><%= @classifier.name %></:item>
   <:item title="Status"><%= @classifier.status %></:item>
   <:item title="Active"><%= @classifier.decision_site.active_classifier_id == @classifier.id %></:item>
+  <:item title="# Decisions"><%= @num_decisions %></:item>
   <:item :if={@classifier.status == :trained} title="Accuracy (Train)"><%= @classifier.train_accuracy %></:item>
   <:item :if={@classifier.status == :trained} title="Accuracy (Test)"><%= @classifier.test_accuracy %></:item>
 </.list>

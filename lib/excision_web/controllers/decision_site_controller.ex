@@ -95,14 +95,22 @@ defmodule ExcisionWeb.DecisionSiteController do
         |> Axon.Loop.deserialize_state()
         |> then(& &1.step_state.model_state)
 
-      messages = Jason.encode!(conn.body_params["messages"])
-      outputs = Axon.predict(model, params, Bumblebee.apply_tokenizer(tokenizer, messages))
+      input = Jason.encode!(conn.body_params["messages"])
+      outputs = Axon.predict(model, params, Bumblebee.apply_tokenizer(tokenizer, input))
       probs = outputs.logits |> Nx.sigmoid()
       prediction_idx =  probs |> Nx.argmax(axis: 1) |> then(& &1[0])|> Nx.to_number() 
 
       label_map = %{true => 1, false => 0}
       idx_to_label = Map.new(label_map, fn {k,v} -> {v,k} end)
       prediction = idx_to_label[prediction_idx]
+
+      # record the decision
+      Excision.Excisions.create_decision(%{
+        decision_site_id: decision_site.id,
+        classifier_id: decision_site.active_classifier.id,
+        input: input,
+        prediction: prediction,
+      })
 
       send_resp(conn, :ok, Jason.encode!(%{
         choices: [
@@ -186,6 +194,7 @@ defmodule ExcisionWeb.DecisionSiteController do
         |> Jason.decode!()
         |> then(& &1["value"])
     })
+
     resp
   end
   
