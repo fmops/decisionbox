@@ -67,9 +67,8 @@ defmodule ExcisionWeb.DecisionLive.Index do
         "true" -> true
         "false" -> false
       end
-
     decision = Excisions.get_decision!(id, preloads: [:classifier])
-    {:ok, decision} = Excisions.update_decision(decision, %{label: value})
+    {:ok, decision} = Excisions.label_decision(decision, value)
 
     {:noreply, stream_insert(socket, :decisions, decision)}
   end

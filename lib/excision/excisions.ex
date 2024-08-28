@@ -244,6 +244,20 @@ defmodule Excision.Excisions do
     |> Repo.update()
   end
 
+  def label_decision(%Decision{} = decision, label) do
+    case update_decision(decision, %{label: label}) do
+      {:ok, updated_decision} ->
+        if is_nil(decision.label) do
+          Phoenix.PubSub.broadcast(Excision.PubSub, "decision_site:#{decision.decision_site_id}", {:label_created, nil})
+        end
+        {:ok, updated_decision}
+      x -> x
+    end
+    
+    
+  end
+  
+
   @doc """
   Deletes a decision.
 

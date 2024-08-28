@@ -44,6 +44,12 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
   def handle_info({:decision_created, _}, socket) do
     {:noreply, socket |> assign(:num_decisions, socket.assigns.num_decisions + 1)}
   end
+
+  @impl true
+  def handle_info({:label_created, _} = x, socket) do
+    IO.inspect(x)
+    {:noreply, socket |> assign(:num_labelled_decisions, socket.assigns.num_labelled_decisions + 1)}
+  end
   
 
   defp page_title(:show), do: "Show Decision site"
