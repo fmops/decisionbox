@@ -11,7 +11,7 @@ async def main():
             "messages": [
                 {
                     "role": "user",
-                    "content": "This is not a test: I need vitamin C. Should I eat pears?",
+                    "content": "I need vitamin C. Should I eat pears?",
                 }
             ],
             "model": "gpt-4o-mini",

@@ -19,7 +19,7 @@ alias Excision.Excisions.Classifier
   })
 
 {:ok, _} =
-  Excision.Repo.insert!(%Classifier{
+  Excision.Repo.insert(%Classifier{
     decision_site_id: decision_site.id,
     name: "example",
     status: :waiting

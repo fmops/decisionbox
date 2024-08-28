@@ -9,7 +9,9 @@ defmodule ExcisionWeb.ClassifierLive.Show do
     {:ok,
      socket
      |> assign(:metrics, [])
-     |> assign(:loss_plot, nil)}
+     |> assign(:loss_plot, nil)
+     |> assign(:accuracy_plot, nil)
+    }
   end
 
   @impl true
@@ -23,6 +25,7 @@ defmodule ExcisionWeb.ClassifierLive.Show do
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:classifier, classifier)
+      |> assign(:num_labels_for_site, Excisions.list_decisions_for_site(classifier.decision_site) |> Enum.filter(& not is_nil(&1.label)) |> Enum.count())
      |> assign(:num_decisions, classifier.decisions |> Enum.count())
      |> assign(
        :num_labelled_decisions,
