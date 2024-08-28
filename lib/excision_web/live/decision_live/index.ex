@@ -67,6 +67,7 @@ defmodule ExcisionWeb.DecisionLive.Index do
         "true" -> true
         "false" -> false
       end
+
     decision = Excisions.get_decision!(id, preloads: [:classifier])
     {:ok, decision} = Excisions.label_decision(decision, value)
 

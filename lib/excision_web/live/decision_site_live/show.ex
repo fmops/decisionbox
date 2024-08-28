@@ -15,10 +15,12 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
     decision_site =
       Excisions.get_decision_site!(id, preloads: [:active_classifier, :decisions, :classifiers])
 
-    accuracy_plot = decision_site.classifiers
-      |> Enum.map(fn %Excisions.Classifier{inserted_at: date, test_accuracy: test_accuracy} = classifier -> 
+    accuracy_plot =
+      decision_site.classifiers
+      |> Enum.map(fn %Excisions.Classifier{inserted_at: date, test_accuracy: test_accuracy} =
+                       classifier ->
         accuracy = Excisions.compute_accuracy(classifier)
-        [date, (if is_nil(accuracy), do: test_accuracy || 0.0, else: accuracy)]
+        [date, if(is_nil(accuracy), do: test_accuracy || 0.0, else: accuracy)]
       end)
       |> Contex.Dataset.new()
       |> IO.inspect()
@@ -37,8 +39,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
        decision_site.decisions |> Enum.filter(&(not is_nil(&1.label))) |> Enum.count()
      )
      |> assign(:num_classifiers, decision_site.classifiers |> Enum.count())
-     |> assign(:accuracy_plot, accuracy_plot)
-    }
+     |> assign(:accuracy_plot, accuracy_plot)}
   end
 
   @impl true
@@ -48,9 +49,9 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
 
   @impl true
   def handle_info({:label_created, _}, socket) do
-    {:noreply, socket |> assign(:num_labelled_decisions, socket.assigns.num_labelled_decisions + 1)}
+    {:noreply,
+     socket |> assign(:num_labelled_decisions, socket.assigns.num_labelled_decisions + 1)}
   end
-  
 
   defp page_title(:show), do: "Show Decision site"
   defp page_title(:edit), do: "Edit Decision site"

@@ -48,14 +48,16 @@ defmodule Excision.Workers.TrainClassifier do
     # preserve the complete loop struct for grabbing loss traces and metrics
     # https://elixirforum.com/t/how-do-i-get-a-history-of-the-loss-from-axon/56008/7
     pubsub_topic = "classifier:#{classifier.id}"
+
     loop =
       logits_model
       |> Axon.Loop.trainer(loss, optimizer, log: 1)
       |> Axon.Loop.metric(accuracy, "accuracy")
       |> Axon.Loop.handle_event(
-        :iteration_completed, 
-        fn loop -> log_metrics(loop, pubsub_topic) end, 
-        every: 1)
+        :iteration_completed,
+        fn loop -> log_metrics(loop, pubsub_topic) end,
+        every: 1
+      )
       |> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
       |> then(fn loop -> %{loop | output_transform: & &1} end)
       |> Axon.Loop.run(train_data, params, epochs: 3, strict?: false)
@@ -142,23 +144,25 @@ defmodule Excision.Workers.TrainClassifier do
   end
 
   defp log_metrics(
-    %Axon.Loop.State{
-      metrics: %{
-        "accuracy" => accuracy,
-        "loss" => loss
-      }
-    } = state,
-    topic
-  ) do
+         %Axon.Loop.State{
+           metrics: %{
+             "accuracy" => accuracy,
+             "loss" => loss
+           }
+         } = state,
+         topic
+       ) do
     Phoenix.PubSub.broadcast(
-      Excision.PubSub, 
+      Excision.PubSub,
       topic,
-      {:training_metrics_emitted, %{
-        timestamp: DateTime.utc_now(),
-        accuracy: accuracy |> Nx.to_number(),
-        loss: loss |> Nx.to_number()
-      }}
+      {:training_metrics_emitted,
+       %{
+         timestamp: DateTime.utc_now(),
+         accuracy: accuracy |> Nx.to_number(),
+         loss: loss |> Nx.to_number()
+       }}
     )
+
     {:continue, state}
   end
 
@@ -169,16 +173,19 @@ defmodule Excision.Workers.TrainClassifier do
     for i <- 1..10 do
       Process.sleep(1000)
       IO.inspect("Emitting: #{i}")
+
       Phoenix.PubSub.broadcast(
-        Excision.PubSub, 
-        "classifier:#{classifier.id}", 
-        {:training_metrics_emitted, %{
-          timestamp: DateTime.utc_now(),
-          accuracy: i,
-          loss: 0.1 * i
-        }}
+        Excision.PubSub,
+        "classifier:#{classifier.id}",
+        {:training_metrics_emitted,
+         %{
+           timestamp: DateTime.utc_now(),
+           accuracy: i,
+           loss: 0.1 * i
+         }}
       )
     end
+
     :ok
   end
 end

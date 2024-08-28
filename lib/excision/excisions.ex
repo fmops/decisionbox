@@ -219,9 +219,16 @@ defmodule Excision.Excisions do
     |> Repo.insert()
     |> case do
       {:ok, decision} ->
-        Phoenix.PubSub.broadcast(Excision.PubSub, "decision_site:#{decision.decision_site_id}", {:decision_created, nil})
+        Phoenix.PubSub.broadcast(
+          Excision.PubSub,
+          "decision_site:#{decision.decision_site_id}",
+          {:decision_created, nil}
+        )
+
         {:ok, decision}
-      x -> x
+
+      x ->
+        x
     end
   end
 
@@ -247,15 +254,19 @@ defmodule Excision.Excisions do
     case update_decision(decision, %{label: label}) do
       {:ok, updated_decision} ->
         if is_nil(decision.label) do
-          Phoenix.PubSub.broadcast(Excision.PubSub, "decision_site:#{decision.decision_site_id}", {:label_created, nil})
+          Phoenix.PubSub.broadcast(
+            Excision.PubSub,
+            "decision_site:#{decision.decision_site_id}",
+            {:label_created, nil}
+          )
         end
+
         {:ok, updated_decision}
-      x -> x
+
+      x ->
+        x
     end
-    
-    
   end
-  
 
   @doc """
   Deletes a decision.
@@ -367,9 +378,16 @@ defmodule Excision.Excisions do
     |> update_classifier(%{status: status})
     |> case do
       {:ok, classifier} ->
-        Phoenix.PubSub.broadcast(Excision.PubSub, "classifier:#{classifier.id}", {:status_updated, status})
+        Phoenix.PubSub.broadcast(
+          Excision.PubSub,
+          "classifier:#{classifier.id}",
+          {:status_updated, status}
+        )
+
         {:ok, classifier}
-      x -> x
+
+      x ->
+        x
     end
   end
 
@@ -437,13 +455,12 @@ defmodule Excision.Excisions do
     classifier = Repo.preload(classifier, :decisions)
 
     classifier.decisions
-      |> Enum.filter(&(not is_nil(&1.label)))
-      |> Enum.reduce({0, 0}, fn decision, {total, correct} ->
-        {total + 1, correct + if(decision.label == decision.prediction, do: 1, else: 0)}
-      end)
-      |> then(fn {total, correct} ->
-        if total == 0, do: nil, else: correct / total
-      end)
+    |> Enum.filter(&(not is_nil(&1.label)))
+    |> Enum.reduce({0, 0}, fn decision, {total, correct} ->
+      {total + 1, correct + if(decision.label == decision.prediction, do: 1, else: 0)}
+    end)
+    |> then(fn {total, correct} ->
+      if total == 0, do: nil, else: correct / total
+    end)
   end
-  
 end
