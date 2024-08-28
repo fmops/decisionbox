@@ -467,38 +467,50 @@ defmodule Excision.Excisions do
   def append_training_metrics(%Classifier{} = classifier, metrics) do
     classifier = get_classifier!(classifier.id)
 
-    classifier 
+    classifier
     |> Classifier.changeset(%{})
-    |> Ecto.Changeset.put_embed(:training_metrics, [metrics | classifier.training_metrics], with: &Excision.Excisions.Classifier.training_metric_changeset/2)
+    |> Ecto.Changeset.put_embed(:training_metrics, [metrics | classifier.training_metrics],
+      with: &Excision.Excisions.Classifier.training_metric_changeset/2
+    )
     |> Repo.update()
     |> case do
       {:ok, classifier} ->
-        :ok = Phoenix.PubSub.broadcast(
-          Excision.PubSub,
-          "classifier:#{classifier.id}",
-          {:training_metrics_emitted, metrics}
-        )
+        :ok =
+          Phoenix.PubSub.broadcast(
+            Excision.PubSub,
+            "classifier:#{classifier.id}",
+            {:training_metrics_emitted, metrics}
+          )
+
         {:ok, classifier}
-      x -> x
+
+      x ->
+        x
     end
   end
 
   def clear_training_metrics(%Classifier{} = classifier) do
     classifier = get_classifier!(classifier.id)
 
-    classifier 
+    classifier
     |> Classifier.changeset(%{})
-    |> Ecto.Changeset.put_embed(:training_metrics, [], with: &Excision.Excisions.Classifier.training_metric_changeset/2)
+    |> Ecto.Changeset.put_embed(:training_metrics, [],
+      with: &Excision.Excisions.Classifier.training_metric_changeset/2
+    )
     |> Repo.update()
     |> case do
       {:ok, classifier} ->
-        :ok = Phoenix.PubSub.broadcast(
-          Excision.PubSub,
-          "classifier:#{classifier.id}",
-          {:training_metrics_cleared, nil}
-        )
+        :ok =
+          Phoenix.PubSub.broadcast(
+            Excision.PubSub,
+            "classifier:#{classifier.id}",
+            {:training_metrics_cleared, nil}
+          )
+
         {:ok, classifier}
-      x -> x
+
+      x ->
+        x
     end
   end
 end

@@ -79,15 +79,14 @@ defmodule ExcisionWeb.ClassifierLive.Show do
 
     {:noreply,
      socket
-     |> assign(:metrics, new_metrics)
-   }
+     |> assign(:metrics, new_metrics)}
   end
+
   @impl true
   def handle_info({:training_metrics_cleared, _}, socket) do
     {:noreply,
      socket
-     |> assign(:metrics, [])
-    }
+     |> assign(:metrics, [])}
   end
 
   defp make_loss_plot(metrics) do

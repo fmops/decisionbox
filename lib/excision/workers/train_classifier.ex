@@ -11,7 +11,6 @@ defmodule Excision.Workers.TrainClassifier do
   def perform(%Oban.Job{args: %{"classifier_id" => classifier_id}, attempt: attempt}) do
     classifier = Excisions.get_classifier!(classifier_id, preloads: [:decision_site])
 
-
     if attempt > 1 do
       case Excisions.update_classifier_status(classifier, :failed) do
         {:ok, _} -> :ok
@@ -20,7 +19,7 @@ defmodule Excision.Workers.TrainClassifier do
     else
       {:ok, _} = Excisions.clear_training_metrics(classifier)
       train(classifier)
-      #emit_fake_metrics(classifier)
+      # emit_fake_metrics(classifier)
     end
   end
 
