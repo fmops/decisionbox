@@ -5,16 +5,12 @@ defmodule ExcisionWeb.ClassifierLive.Index do
   alias Excision.Excisions.Classifier
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, stream(socket, :classifiers, Excisions.list_classifiers())}
-  end
-
-  @impl true
   def handle_params(%{"decision_site_id" => decision_site_id} = params, _url, socket) do
     decision_site = Excisions.get_decision_site!(decision_site_id)
 
     {:noreply,
      socket
+     |> stream(:classifiers, Excisions.list_classifiers_for_decision_site(decision_site))
      |> assign(:decision_site, decision_site)
      |> apply_action(socket.assigns.live_action, params)}
   end

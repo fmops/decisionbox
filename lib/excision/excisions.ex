@@ -266,6 +266,11 @@ defmodule Excision.Excisions do
     Repo.all(Classifier)
   end
 
+  def list_classifiers_for_decision_site(%DecisionSite{} = decision_site) do
+    from(c in Classifier, where: c.decision_site_id == ^decision_site.id)
+    |> Repo.all()
+  end
+
   @doc """
   Gets a single classifier.
 

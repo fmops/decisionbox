@@ -26,6 +26,9 @@
       <%= @decision_site.active_classifier.name %>
     </.link>
   </:item>
+  <:item title="# Decisions"><%= @num_decisions %></:item>
+  <:item title="# Labels"><%= @num_labelled_decisions %></:item>
+  <:item title="# Classifiers"><%= @num_classifiers %></:item>
 </.list>
 
 <.back navigate={~p"/decision_sites"}>Back to decision_sites</.back>

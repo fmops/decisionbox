@@ -5,16 +5,12 @@ defmodule ExcisionWeb.DecisionLive.Index do
   alias Excision.Excisions.Decision
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, stream(socket, :decisions, Excisions.list_decisions())}
-  end
-
-  @impl true
   def handle_params(%{"decision_site_id" => decision_site_id} = params, _url, socket) do
     decision_site = Excisions.get_decision_site!(decision_site_id)
 
     {:noreply,
      socket
+     |> stream(:decisions, Excisions.list_decisions_for_site(decision_site))
      |> assign(:decision_site, decision_site)
      |> apply_action(socket.assigns.live_action, params)}
   end
