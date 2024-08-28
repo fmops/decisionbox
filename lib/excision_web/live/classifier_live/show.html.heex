@@ -22,15 +22,30 @@
 <.list>
   <:item title="Name"><%= @classifier.name %></:item>
   <:item title="Status"><%= @classifier.status %></:item>
+
   <:item :if={@classifier.status == :trained} title="Active">
     <%= @classifier.decision_site.active_classifier_id == @classifier.id %>
   </:item>
   <:item :if={@classifier.status == :trained} title="# Decisions"><%= @num_decisions %></:item>
-  <:item :if={@classifier.status == :trained} title="Accuracy (Train)">
+  <:item :if={@classifier.status == :trained} title="# Labels">
+    <%= @num_labelled_decisions %>
+  </:item>
+
+  <:item
+    :if={not is_default_classifier?(@classifier) && @classifier.status == :trained}
+    title="Accuracy (Train)"
+  >
     <%= @classifier.train_accuracy %>
   </:item>
-  <:item :if={@classifier.status == :trained} title="Accuracy (Test)">
+  <:item
+    :if={not is_default_classifier?(@classifier) && @classifier.status == :trained}
+    title="Accuracy (Test)"
+  >
     <%= @classifier.test_accuracy %>
+  </:item>
+
+  <:item :if={is_default_classifier?(@classifier)} title="Accuracy">
+    <%= @accuracy %>
   </:item>
 </.list>
 <!-- TODO: realtime accuracy and loss trace -->

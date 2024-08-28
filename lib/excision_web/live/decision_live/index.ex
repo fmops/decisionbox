@@ -10,7 +10,10 @@ defmodule ExcisionWeb.DecisionLive.Index do
 
     {:noreply,
      socket
-     |> stream(:decisions, Excisions.list_decisions_for_site(decision_site, preloads: [:classifier]))
+     |> stream(
+       :decisions,
+       Excisions.list_decisions_for_site(decision_site, preloads: [:classifier])
+     )
      |> assign(:decision_site, decision_site)
      |> apply_action(socket.assigns.live_action, params)}
   end
@@ -54,9 +57,9 @@ defmodule ExcisionWeb.DecisionLive.Index do
         "false" -> false
       end
 
-    decision = Excisions.get_decision!(id)
+    decision = Excisions.get_decision!(id, preloads: [:classifier])
     {:ok, decision} = Excisions.update_decision(decision, %{label: value})
 
-    {:noreply, stream_insert(socket, :decisions, decision) |> IO.inspect()}
+    {:noreply, stream_insert(socket, :decisions, decision)}
   end
 end

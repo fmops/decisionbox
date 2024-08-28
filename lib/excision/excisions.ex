@@ -187,7 +187,13 @@ defmodule Excision.Excisions do
       ** (Ecto.NoResultsError)
 
   """
-  def get_decision!(id), do: Repo.get!(Decision, id)
+  def get_decision!(id, opts \\ []) do
+    preloads = Keyword.get(opts, :preloads, [])
+
+    Decision
+    |> Repo.get!(id)
+    |> Repo.preload(preloads)
+  end
 
   @doc """
   Creates a decision.
@@ -380,5 +386,9 @@ defmodule Excision.Excisions do
       classifier.decision_site,
       %{active_classifier_id: classifier.id}
     )
+  end
+
+  def is_default_classifier?(classifier) do
+    classifier.name == "baseline"
   end
 end

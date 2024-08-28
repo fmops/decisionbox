@@ -73,7 +73,7 @@ defmodule ExcisionWeb.DecisionSiteController do
   def invoke(conn, %{"id" => id}) do
     decision_site = Excisions.get_decision_site!(id, preloads: [:active_classifier])
 
-    if decision_site.active_classifier.name == "baseline" do
+    if Excisions.is_default_classifier?(decision_site.active_classifier) do
       proxy_openai_structured_response(conn, decision_site)
     else
       classifier = decision_site.active_classifier
