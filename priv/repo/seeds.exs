@@ -28,7 +28,7 @@ for i <- 1..100 do
     decision_site_id: decision_site.id,
     # this is a test + random string
     input: "This is a test: " <> (:crypto.strong_rand_bytes(10) |> Base.encode16() |> String.downcase()),
-    label: i < 80
+    label: (if i <= 80, do: true, else: nil)
   })
 end
 
@@ -36,6 +36,6 @@ for i <- 1..100 do
   {:ok, _} = Excisions.create_decision(%{
     decision_site_id: decision_site.id,
     input: "This is no longer a test: " <> (:crypto.strong_rand_bytes(10) |> Base.encode16() |> String.downcase()),
-    label: i < 80
+    label: (if i <= 80, do: false, else: nil)
   })
 end
