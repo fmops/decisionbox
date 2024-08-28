@@ -4,7 +4,14 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
   alias Excision.Excisions
 
   @impl true
+  def mount(_params, _session, socket) do
+    {:ok, socket}
+  end
+
+  @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    Phoenix.PubSub.subscribe(Excision.PubSub, "decision_site:#{id}")
+
     decision_site =
       Excisions.get_decision_site!(id, preloads: [:active_classifier, :decisions, :classifiers])
 
@@ -32,6 +39,12 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
      |> assign(:accuracy_plot, accuracy_plot)
     }
   end
+
+  @impl true
+  def handle_info({:decision_created, _}, socket) do
+    {:noreply, socket |> assign(:num_decisions, socket.assigns.num_decisions + 1)}
+  end
+  
 
   defp page_title(:show), do: "Show Decision site"
   defp page_title(:edit), do: "Edit Decision site"

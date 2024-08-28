@@ -217,6 +217,13 @@ defmodule Excision.Excisions do
     %Decision{}
     |> Decision.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, decision} ->
+        Phoenix.PubSub.broadcast(Excision.PubSub, "decision_site:#{decision.decision_site_id}", {:decision_created, nil})
+        {:ok, decision}
+      x -> x
+    end
+    
   end
 
   @doc """
