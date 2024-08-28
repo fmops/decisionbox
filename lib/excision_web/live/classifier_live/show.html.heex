@@ -16,10 +16,12 @@
           <.button>Train</.button>
         </.link>
       <% else %>
-          <button class={[
-            "cursor-not-allowed rounded-lg bg-zinc-200 py-2 px-3",
-            "text-sm font-semibold leading-6 text-black",
-          ]}>Label Decisions Before Training</button>
+        <button class={[
+          "cursor-not-allowed rounded-lg bg-zinc-200 py-2 px-3",
+          "text-sm font-semibold leading-6 text-black"
+        ]}>
+          Label Decisions Before Training
+        </button>
       <% end %>
     <% end %>
     <.link
@@ -69,8 +71,10 @@
   </:item>
 </.list>
 
-<%= @loss_plot %>
-<%= @accuracy_plot %>
+<%= unless Enum.empty?(@metrics) do %>
+  <%= make_loss_plot(@metrics) %>
+  <%= make_accuracy_plot(@metrics) %>
+<% end %>
 
 <.back navigate={~p"/decision_sites/#{@classifier.decision_site_id}/classifiers"}>
   Back to classifiers

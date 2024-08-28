@@ -2,14 +2,15 @@ defmodule Excision.Workers.TrainClassifier do
   require Logger
 
   use Oban.Worker,
-    queue: :default,
-    unique: [period: 30]
+    queue: :default
 
   alias Excision.Excisions
+  alias Excision.Excisions.Classifier.TrainingMetric
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"classifier_id" => classifier_id}, attempt: attempt}) do
     classifier = Excisions.get_classifier!(classifier_id, preloads: [:decision_site])
+
 
     if attempt > 1 do
       case Excisions.update_classifier_status(classifier, :failed) do
@@ -17,7 +18,9 @@ defmodule Excision.Workers.TrainClassifier do
         x -> x
       end
     else
-      train(classifier)
+      # train(classifier)
+      {:ok, classifier} = Excisions.clear_training_metrics(classifier)
+      emit_fake_metrics(classifier)
     end
   end
 
@@ -49,15 +52,13 @@ defmodule Excision.Workers.TrainClassifier do
 
     # preserve the complete loop struct for grabbing loss traces and metrics
     # https://elixirforum.com/t/how-do-i-get-a-history-of-the-loss-from-axon/56008/7
-    pubsub_topic = "classifier:#{classifier.id}"
-
     loop =
       logits_model
       |> Axon.Loop.trainer(loss, optimizer, log: 1)
       |> Axon.Loop.metric(accuracy, "accuracy")
       |> Axon.Loop.handle_event(
         :iteration_completed,
-        fn loop -> log_metrics(loop, pubsub_topic) end,
+        fn loop -> log_metrics(loop, classifier) end,
         every: 1
       )
       |> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
@@ -152,18 +153,15 @@ defmodule Excision.Workers.TrainClassifier do
              "loss" => loss
            }
          } = state,
-         topic
+         classifier
        ) do
-    Phoenix.PubSub.broadcast(
-      Excision.PubSub,
-      topic,
-      {:training_metrics_emitted,
-       %{
-         timestamp: DateTime.utc_now(),
-         accuracy: accuracy |> Nx.to_number(),
-         loss: loss |> Nx.to_number()
-       }}
-    )
+    training_metrics = %TrainingMetric{
+      timestamp: DateTime.utc_now(),
+      accuracy: accuracy |> Nx.to_number(),
+      loss: loss |> Nx.to_number()
+    }
+
+    Excisions.append_training_metrics(classifier, training_metrics)
 
     {:continue, state}
   end
@@ -176,16 +174,13 @@ defmodule Excision.Workers.TrainClassifier do
       Process.sleep(1000)
       Logger.debug("Emitting: #{i}")
 
-      Phoenix.PubSub.broadcast(
-        Excision.PubSub,
-        "classifier:#{classifier.id}",
-        {:training_metrics_emitted,
-         %{
-           timestamp: DateTime.utc_now(),
-           accuracy: i,
-           loss: 0.1 * i
-         }}
-      )
+      training_metrics = %TrainingMetric{
+        timestamp: DateTime.utc_now(),
+        accuracy: i,
+        loss: 0.1 * i
+      }
+
+      Excisions.append_training_metrics(classifier, training_metrics)
     end
 
     :ok

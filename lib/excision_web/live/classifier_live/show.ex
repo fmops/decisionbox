@@ -8,10 +8,7 @@ defmodule ExcisionWeb.ClassifierLive.Show do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:metrics, [])
-     |> assign(:loss_plot, nil)
-     |> assign(:accuracy_plot, nil)
-    }
+     |> assign(:metrics, [])}
   end
 
   @impl true
@@ -25,13 +22,19 @@ defmodule ExcisionWeb.ClassifierLive.Show do
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:classifier, classifier)
-      |> assign(:num_labels_for_site, Excisions.list_decisions_for_site(classifier.decision_site) |> Enum.filter(& not is_nil(&1.label)) |> Enum.count())
+     |> assign(
+       :num_labels_for_site,
+       Excisions.list_decisions_for_site(classifier.decision_site)
+       |> Enum.filter(&(not is_nil(&1.label)))
+       |> Enum.count()
+     )
      |> assign(:num_decisions, classifier.decisions |> Enum.count())
      |> assign(
        :num_labelled_decisions,
        classifier.decisions |> Enum.filter(&(not is_nil(&1.label))) |> Enum.count()
      )
-     |> assign(:accuracy, accuracy)}
+     |> assign(:accuracy, accuracy)
+     |> assign(:metrics, classifier.training_metrics)}
   end
 
   @impl true
@@ -77,8 +80,14 @@ defmodule ExcisionWeb.ClassifierLive.Show do
     {:noreply,
      socket
      |> assign(:metrics, new_metrics)
-     |> assign(:loss_plot, make_loss_plot(new_metrics))
-     |> assign(:accuracy_plot, make_accuracy_plot(new_metrics))}
+   }
+  end
+  @impl true
+  def handle_info({:training_metrics_cleared, _}, socket) do
+    {:noreply,
+     socket
+     |> assign(:metrics, [])
+    }
   end
 
   defp make_loss_plot(metrics) do

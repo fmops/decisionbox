@@ -9,6 +9,12 @@ defmodule Excision.Excisions.Classifier do
     field :train_accuracy, :float
     field :test_accuracy, :float
 
+    embeds_many :training_metrics, TrainingMetric, on_replace: :delete do
+      field :timestamp, :utc_datetime
+      field :loss, :float
+      field :accuracy, :float
+    end
+
     belongs_to :decision_site, Excision.Excisions.DecisionSite
     has_many :decisions, Excision.Excisions.Decision
 
@@ -28,6 +34,12 @@ defmodule Excision.Excisions.Classifier do
     ])
     |> validate_required([:name])
     |> foreign_key_constraint(:decision_site)
+  end
+
+  def training_metric_changeset(training_metric, attrs \\ %{}) do
+    training_metric
+    |> cast(attrs, [:timestamp, :loss, :accuracy])
+    |> validate_required([:timestamp, :loss, :accuracy])
   end
 
   def default_baseline_classifier do
