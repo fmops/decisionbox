@@ -62,12 +62,21 @@ defmodule ExcisionWeb.ClassifierLive.Show do
   end
 
   @impl true
+  def handle_info({:status_updated, status}, socket) do
+    {:noreply, 
+      socket 
+      |> assign(:classifier, socket.assigns.classifier |> Map.put(:status, status))
+    }
+  end
+
+  @impl true
   def handle_info({:training_metrics_emitted, metrics}, socket) do
     new_metrics = [metrics | socket.assigns.metrics]
     {:noreply, 
       socket 
       |> assign(:metrics, new_metrics)
       |> assign(:loss_plot, make_loss_plot(new_metrics))
+      |> assign(:accuracy_plot, make_accuracy_plot(new_metrics))
     }
   end
 
@@ -80,6 +89,18 @@ defmodule ExcisionWeb.ClassifierLive.Show do
       |> Contex.Plot.new(Contex.PointPlot, 600, 400)
       |> Contex.Plot.titles("Training loss trace", "")
       |> Contex.Plot.axis_labels("Timestamp", "Loss")
+      |> Contex.Plot.to_svg()
+  end
+
+  defp make_accuracy_plot(metrics) do
+    metrics
+      |> Enum.map(fn %{timestamp: date, accuracy: accuracy} -> 
+        [date, accuracy]
+      end)
+      |> Contex.Dataset.new()
+      |> Contex.Plot.new(Contex.PointPlot, 600, 400)
+      |> Contex.Plot.titles("Training accuracy trace", "")
+      |> Contex.Plot.axis_labels("Timestamp", "Accuracy")
       |> Contex.Plot.to_svg()
   end
   

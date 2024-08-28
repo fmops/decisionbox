@@ -223,7 +223,6 @@ defmodule Excision.Excisions do
         {:ok, decision}
       x -> x
     end
-    
   end
 
   @doc """
@@ -361,6 +360,17 @@ defmodule Excision.Excisions do
     classifier
     |> Classifier.changeset(attrs)
     |> Repo.update()
+  end
+
+  def update_classifier_status(%Classifier{} = classifier, status) do
+    classifier
+    |> update_classifier(%{status: status})
+    |> case do
+      {:ok, classifier} ->
+        Phoenix.PubSub.broadcast(Excision.PubSub, "classifier:#{classifier.id}", {:status_updated, status})
+        {:ok, classifier}
+      x -> x
+    end
   end
 
   @doc """

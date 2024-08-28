@@ -9,37 +9,18 @@ defmodule Excision.Workers.TrainClassifier do
   def perform(%Oban.Job{args: %{"classifier_id" => classifier_id}, attempt: attempt}) do
     classifier = Excisions.get_classifier!(classifier_id, preloads: [:decision_site])
 
-    IO.inspect("HI MOM")
-
     if attempt > 1 do
-      case Excisions.update_classifier(classifier, %{status: :failed}) do
+      case Excisions.update_classifier_status(classifier, :failed) do
         {:ok, _} -> :ok
         x -> x
       end
     else
-      train2(classifier)
+      train(classifier)
     end
-  end
-
-  def train2(classifier) do
-    for i <- 1..10 do
-      Process.sleep(1000)
-      IO.inspect("Emitting: #{i}")
-      Phoenix.PubSub.broadcast(
-        Excision.PubSub, 
-        "classifier:#{classifier.id}", 
-        {:training_metrics_emitted, %{
-          timestamp: DateTime.utc_now(),
-          accuracy: i,
-          loss: 0.1 * i
-        }}
-      )
-    end
-    :ok
   end
 
   def train(classifier) do
-    Excisions.update_classifier(classifier, %{status: :training})
+    Excisions.update_classifier_status(classifier, :training)
 
     {:ok, {%{model: model, params: params}, tokenizer}} =
       load_model_and_tokenizer("distilbert/distilbert-base-uncased")
@@ -66,10 +47,15 @@ defmodule Excision.Workers.TrainClassifier do
 
     # preserve the complete loop struct for grabbing loss traces and metrics
     # https://elixirforum.com/t/how-do-i-get-a-history-of-the-loss-from-axon/56008/7
+    pubsub_topic = "classifier:#{classifier.id}"
     loop =
       logits_model
       |> Axon.Loop.trainer(loss, optimizer, log: 1)
       |> Axon.Loop.metric(accuracy, "accuracy")
+      |> Axon.Loop.handle_event(
+        :iteration_completed, 
+        fn loop -> log_metrics(loop, pubsub_topic) end, 
+        every: 1)
       |> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
       |> then(fn loop -> %{loop | output_transform: & &1} end)
       |> Axon.Loop.run(train_data, params, epochs: 3, strict?: false)
@@ -153,5 +139,46 @@ defmodule Excision.Workers.TrainClassifier do
       tokenized = Bumblebee.apply_tokenizer(tokenizer, text)
       {tokenized, Nx.stack(labels)}
     end)
+  end
+
+  defp log_metrics(
+    %Axon.Loop.State{
+      metrics: %{
+        "accuracy" => accuracy,
+        "loss" => loss
+      }
+    } = state,
+    topic
+  ) do
+    Phoenix.PubSub.broadcast(
+      Excision.PubSub, 
+      topic,
+      {:training_metrics_emitted, %{
+        timestamp: DateTime.utc_now(),
+        accuracy: accuracy |> Nx.to_number(),
+        loss: loss |> Nx.to_number()
+      }}
+    )
+    {:continue, state}
+  end
+
+  @doc """
+  Fake training loop to emit metrics. Useful for testing the UI.
+  """
+  defp emit_fake_metrics(classifier) do
+    for i <- 1..10 do
+      Process.sleep(1000)
+      IO.inspect("Emitting: #{i}")
+      Phoenix.PubSub.broadcast(
+        Excision.PubSub, 
+        "classifier:#{classifier.id}", 
+        {:training_metrics_emitted, %{
+          timestamp: DateTime.utc_now(),
+          accuracy: i,
+          loss: 0.1 * i
+        }}
+      )
+    end
+    :ok
   end
 end
