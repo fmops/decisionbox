@@ -6,7 +6,7 @@ defmodule Excision.Excisions do
   import Ecto.Query, warn: false
   alias Excision.Repo
 
-  alias Excision.Excisions.DecisionSite
+  alias Excision.Excisions.{Decision, DecisionSite, Classifier}
 
   @doc """
   Returns the list of decision_sites.
@@ -125,8 +125,6 @@ defmodule Excision.Excisions do
     Repo.preload(decision_site, :classifiers)
   end
 
-  alias Excision.Excisions.Decision
-
   @doc """
   Returns the list of decisions.
 
@@ -170,6 +168,14 @@ defmodule Excision.Excisions do
     from(d in Decision)
     |> where([d], d.decision_site_id == ^decision_site.id)
     |> where([d], not is_nil(d.label))
+    |> Repo.all()
+  end
+
+  def list_decisions_for_classifier(%Classifier{} = classifier, opts \\ []) do
+    preloads = Keyword.get(opts, :preloads, [])
+
+    from(d in Decision, where: d.classifier_id == ^classifier.id)
+    |> preload(^preloads)
     |> Repo.all()
   end
 
@@ -259,8 +265,6 @@ defmodule Excision.Excisions do
   def change_decision(%Decision{} = decision, attrs \\ %{}) do
     Decision.changeset(decision, attrs)
   end
-
-  alias Excision.Excisions.Classifier
 
   @doc """
   Returns the list of classifiers.

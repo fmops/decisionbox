@@ -7,14 +7,25 @@ defmodule ExcisionWeb.DecisionLive.Index do
   @impl true
   def handle_params(%{"decision_site_id" => decision_site_id} = params, _url, socket) do
     decision_site = Excisions.get_decision_site!(decision_site_id)
+    classifier_id = Map.get(params, "classifier_id")
+
+    classifier =
+      if classifier_id do
+        Excisions.get_classifier!(classifier_id)
+      end
+
+    decisions =
+      if classifier_id do
+        Excisions.list_decisions_for_classifier(classifier, preloads: [:classifier])
+      else
+        Excisions.list_decisions_for_site(decision_site, preloads: [:classifier])
+      end
 
     {:noreply,
      socket
-     |> stream(
-       :decisions,
-       Excisions.list_decisions_for_site(decision_site, preloads: [:classifier])
-     )
+     |> stream(:decisions, decisions)
      |> assign(:decision_site, decision_site)
+     |> assign(:classifier, classifier)
      |> apply_action(socket.assigns.live_action, params)}
   end
 

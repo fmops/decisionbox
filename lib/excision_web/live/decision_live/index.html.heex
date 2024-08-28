@@ -1,5 +1,9 @@
 <.header>
-  Listing Decisions for Decision Site <%= @decision_site.name %>
+  <%= if @classifier do %>
+    Listing Decisions for Classifier <%= @classifier.name %>
+  <% else %>
+    Listing Decisions for Decision Site <%= @decision_site.name %>
+  <% end %>
 </.header>
 
 <.table id="decisions" rows={@streams.decisions}>
@@ -49,6 +53,12 @@
   </:action>
 </.table>
 
-<.back navigate={~p"/decision_sites/#{@decision_site}"}>
-  Back to decision site
-</.back>
+<%= if @classifier do %>
+  <.back navigate={~p"/decision_sites/#{@decision_site}/classifiers/#{@classifier}"}>
+    Back to classifier
+  </.back>
+<% else %>
+  <.back navigate={~p"/decision_sites/#{@decision_site}"}>
+    Back to decision site
+  </.back>
+<% end %>

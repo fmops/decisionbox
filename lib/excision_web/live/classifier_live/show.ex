@@ -9,16 +9,14 @@ defmodule ExcisionWeb.ClassifierLive.Show do
     classifier = Excisions.get_classifier!(id, preloads: [:decision_site, :decisions])
 
     accuracy =
-      if is_default_classifier?(classifier) do
-        classifier.decisions
-        |> Enum.filter(&(not is_nil(&1.label)))
-        |> Enum.reduce({0, 0}, fn decision, {total, correct} ->
-          {total + 1, correct + if(decision.label == decision.prediction, do: 1, else: 0)}
-        end)
-        |> then(fn {total, correct} -> correct / total end)
-      else
-        nil
-      end
+      classifier.decisions
+      |> Enum.filter(&(not is_nil(&1.label)))
+      |> Enum.reduce({0, 0}, fn decision, {total, correct} ->
+        {total + 1, correct + if(decision.label == decision.prediction, do: 1, else: 0)}
+      end)
+      |> then(fn {total, correct} ->
+        if total == 0, do: "n/a", else: correct / total
+      end)
 
     {:noreply,
      socket
@@ -29,7 +27,7 @@ defmodule ExcisionWeb.ClassifierLive.Show do
        :num_labelled_decisions,
        classifier.decisions |> Enum.filter(&(not is_nil(&1.label))) |> Enum.count()
      )
-     |> assign(:accuracy, inspect(accuracy))}
+     |> assign(:accuracy, accuracy)}
   end
 
   @impl true

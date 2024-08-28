@@ -13,6 +13,14 @@
     <.link :if={@classifier.status == :waiting} phx-click="train">
       <.button>Train</.button>
     </.link>
+    <.link
+      :if={@classifier.status == :trained}
+      patch={
+        ~p"/decision_sites/#{@classifier.decision_site_id}/classifiers/#{@classifier}/decisions"
+      }
+    >
+      <.button>Decisions</.button>
+    </.link>
     <.link :if={@classifier.status == :trained} phx-click="promote">
       <.button>Promote</.button>
     </.link>
@@ -44,7 +52,7 @@
     <%= @classifier.test_accuracy %>
   </:item>
 
-  <:item :if={is_default_classifier?(@classifier)} title="Accuracy">
+  <:item title="Accuracy (Runtime)">
     <%= @accuracy %>
   </:item>
 </.list>

@@ -31,6 +31,8 @@ defmodule ExcisionWeb.Router do
         live "/decision_sites/:id/show/edit", DecisionSiteLive.Show, :edit
 
         scope "/decision_sites/:decision_site_id" do
+          live "/decisions", DecisionLive.Index, :index
+
           live "/classifiers", ClassifierLive.Index, :index
           live "/classifiers/new", ClassifierLive.Index, :new
           live "/classifiers/:id/edit", ClassifierLive.Index, :edit
@@ -38,7 +40,7 @@ defmodule ExcisionWeb.Router do
           live "/classifiers/:id", ClassifierLive.Show, :show
           live "/classifiers/:id/show/edit", ClassifierLive.Show, :edit
 
-          live "/decisions", DecisionLive.Index, :index
+          live "/classifiers/:classifier_id/decisions", DecisionLive.Index, :index
         end
       end
     end
