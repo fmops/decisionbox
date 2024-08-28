@@ -20,11 +20,10 @@ defmodule ExcisionWeb.ClassifierLive.Show do
   end
 
   @impl true
-  def handle_event("promote", %{"classifier_id" => classifier_id}, socket) do
-    classifier = Excisions.get_classifier!(classifier_id)
+  def handle_event("promote", _params, %{assigns: %{classifier: classifier}} = socket) do
     case Excisions.promote_classifier(classifier) |> IO.inspect() do
       {:ok, _} ->
-        classifier = Excisions.get_classifier!(classifier_id, preloads: [:decision_site])
+        classifier = Excisions.get_classifier!(classifier.id, preloads: [:decision_site])
         {:noreply, 
           socket 
           |> put_flash(:info, "Classifier promoted successfully")
@@ -33,6 +32,20 @@ defmodule ExcisionWeb.ClassifierLive.Show do
 
       {:error, %Ecto.Changeset{}} ->
         {:noreply, socket |> put_flash(:error, "Error promoting classifier")}
+    end
+  end
+
+  @impl true
+  def handle_event("train", _params, %{assigns: %{classifier: classifier}} = socket) do
+    case Excisions.train_classifier(classifier) do
+      {:ok, _} ->
+        {:noreply, 
+          socket 
+          |> put_flash(:info, "Training job submitted successfully")
+        }
+
+      {:error, %Ecto.Changeset{}} ->
+        {:noreply, socket |> put_flash(:error, "Error submitting training job")}
     end
   end
 

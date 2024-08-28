@@ -11,8 +11,14 @@
       <.button>Edit classifier</.button>
     </.link>
     <.link
+      :if={@classifier.status == :waiting}
+      phx-click={"train"}
+    >
+      <.button>Train</.button>
+    </.link>
+    <.link
+      :if={@classifier.status == :trained}
       phx-click={"promote"}
-      phx-value-classifier_id={@classifier.id}
     >
       <.button>Promote</.button>
     </.link>
@@ -22,13 +28,13 @@
 <.list>
   <:item title="Name"><%= @classifier.name %></:item>
   <:item title="Status"><%= @classifier.status %></:item>
-  <:item title="Active"><%= @classifier.decision_site.active_classifier_id == @classifier.id %></:item>
-  <:item title="# Decisions"><%= @num_decisions %></:item>
+  <:item :if={@classifier.status == :trained} title="Active"><%= @classifier.decision_site.active_classifier_id == @classifier.id %></:item>
+  <:item :if={@classifier.status == :trained} title="# Decisions"><%= @num_decisions %></:item>
   <:item :if={@classifier.status == :trained} title="Accuracy (Train)"><%= @classifier.train_accuracy %></:item>
   <:item :if={@classifier.status == :trained} title="Accuracy (Test)"><%= @classifier.test_accuracy %></:item>
 </.list>
 
-TODO: realtime accuracy and loss trace
+<!-- TODO: realtime accuracy and loss trace -->
 
 <.back navigate={~p"/decision_sites/#{@classifier.decision_site_id}/classifiers"}>
   Back to classifiers
