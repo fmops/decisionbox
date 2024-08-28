@@ -8,6 +8,19 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
     decision_site =
       Excisions.get_decision_site!(id, preloads: [:active_classifier, :decisions, :classifiers])
 
+    data = decision_site.classifiers
+    |> Enum.map(fn %Excisions.Classifier{inserted_at: date, test_accuracy: test_accuracy} = classifier -> 
+      accuracy = Excisions.compute_accuracy(classifier)
+      [date, (if is_nil(accuracy), do: test_accuracy, else: accuracy)]
+    end)
+      |> IO.inspect()
+
+    output =
+      data
+      |> Contex.Dataset.new()
+      |> Contex.Plot.new(Contex.PointPlot, 600, 400)
+      |> Contex.Plot.to_svg()
+
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
@@ -17,7 +30,9 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
        :num_labelled_decisions,
        decision_site.decisions |> Enum.filter(&(not is_nil(&1.label))) |> Enum.count()
      )
-     |> assign(:num_classifiers, decision_site.classifiers |> Enum.count())}
+     |> assign(:num_classifiers, decision_site.classifiers |> Enum.count())
+     |> assign(:output, output)
+    }
   end
 
   defp page_title(:show), do: "Show Decision site"

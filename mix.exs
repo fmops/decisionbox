@@ -68,7 +68,8 @@ defmodule Excision.MixProject do
       {:nx, "~> 0.7"},
       {:exla, "~> 0.7"},
       {:axon, "~> 0.6"},
-      {:explorer, "~> 0.9"}
+      {:explorer, "~> 0.9"},
+      {:contex, "~> 0.5"}
     ]
   end
 

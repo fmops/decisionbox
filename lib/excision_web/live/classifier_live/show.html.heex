@@ -29,6 +29,7 @@
 
 <.list>
   <:item title="Name"><%= @classifier.name %></:item>
+  <:item title="Created"><%= @classifier.inserted_at %></:item>
   <:item title="Status"><%= @classifier.status %></:item>
 
   <:item :if={@classifier.status == :trained} title="Active">

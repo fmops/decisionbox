@@ -401,4 +401,18 @@ defmodule Excision.Excisions do
   def is_default_classifier?(classifier) do
     classifier.name == "baseline"
   end
+
+  def compute_accuracy(%Classifier{} = classifier) do
+    classifier = Repo.preload(classifier, :decisions)
+
+    classifier.decisions
+      |> Enum.filter(&(not is_nil(&1.label)))
+      |> Enum.reduce({0, 0}, fn decision, {total, correct} ->
+        {total + 1, correct + if(decision.label == decision.prediction, do: 1, else: 0)}
+      end)
+      |> then(fn {total, correct} ->
+        if total == 0, do: nil, else: correct / total
+      end)
+  end
+  
 end
