@@ -1270,7 +1270,7 @@ select {
 }
 
 .bg-brand\/5 {
-  background-color: rgb(253 79 0 / 0.05);
+  background-color: rgb(21 96 189 / 0.05);
 }
 
 .bg-emerald-50 {
@@ -1480,7 +1480,7 @@ select {
 
 .text-brand {
   --tw-text-opacity: 1;
-  color: rgb(253 79 0 / var(--tw-text-opacity));
+  color: rgb(21 96 189 / var(--tw-text-opacity));
 }
 
 .text-emerald-800 {

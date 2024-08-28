@@ -11,12 +11,12 @@ defmodule ExcisionWeb.ClassifierLive.Show do
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
     classifier = Excisions.get_classifier!(id, preloads: [:decision_site, :decisions])
+
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:classifier, classifier)
-     |> assign(:num_decisions, classifier.decisions |> Enum.count())
-    }
+     |> assign(:num_decisions, classifier.decisions |> Enum.count())}
   end
 
   @impl true
@@ -24,11 +24,11 @@ defmodule ExcisionWeb.ClassifierLive.Show do
     case Excisions.promote_classifier(classifier) |> IO.inspect() do
       {:ok, _} ->
         classifier = Excisions.get_classifier!(classifier.id, preloads: [:decision_site])
-        {:noreply, 
-          socket 
-          |> put_flash(:info, "Classifier promoted successfully")
-          |> assign(:classifier, classifier)
-        }
+
+        {:noreply,
+         socket
+         |> put_flash(:info, "Classifier promoted successfully")
+         |> assign(:classifier, classifier)}
 
       {:error, %Ecto.Changeset{}} ->
         {:noreply, socket |> put_flash(:error, "Error promoting classifier")}
@@ -39,10 +39,9 @@ defmodule ExcisionWeb.ClassifierLive.Show do
   def handle_event("train", _params, %{assigns: %{classifier: classifier}} = socket) do
     case Excisions.train_classifier(classifier) do
       {:ok, _} ->
-        {:noreply, 
-          socket 
-          |> put_flash(:info, "Training job submitted successfully")
-        }
+        {:noreply,
+         socket
+         |> put_flash(:info, "Training job submitted successfully")}
 
       {:error, %Ecto.Changeset{}} ->
         {:noreply, socket |> put_flash(:error, "Error submitting training job")}

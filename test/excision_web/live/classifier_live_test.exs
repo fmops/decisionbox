@@ -49,7 +49,10 @@ defmodule ExcisionWeb.ClassifierLiveTest do
       assert html =~ "Classifier created successfully"
       assert html =~ "some name"
 
-      classifier = Excision.Excisions.list_classifiers() |> Enum.sort(& &1.inserted_at > &2.inserted_at) |> hd()
+      classifier =
+        Excision.Excisions.list_classifiers()
+        |> Enum.sort(&(&1.inserted_at > &2.inserted_at))
+        |> hd()
 
       # Oban runs in-line in tests so we should be training already
       assert classifier.status == :training

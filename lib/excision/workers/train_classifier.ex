@@ -11,11 +11,14 @@ defmodule Excision.Workers.TrainClassifier do
     classifier = Excisions.get_classifier!(classifier_id, preloads: [:decision_site])
     Excisions.update_classifier(classifier, %{status: :training})
 
-    {:ok, {%{model: model, params: params}, tokenizer}} = load_model_and_tokenizer("distilbert/distilbert-base-uncased")
+    {:ok, {%{model: model, params: params}, tokenizer}} =
+      load_model_and_tokenizer("distilbert/distilbert-base-uncased")
+
     {train_data, test_data} = load_data(classifier.decision_site, tokenizer)
 
     # run the fine-time
     logits_model = Axon.nx(model, & &1.logits)
+
     loss =
       &Axon.Losses.categorical_cross_entropy(&1, &2,
         reduction: :mean,
@@ -33,33 +36,38 @@ defmodule Excision.Workers.TrainClassifier do
 
     # preserve the complete loop struct for grabbing loss traces and metrics
     # https://elixirforum.com/t/how-do-i-get-a-history-of-the-loss-from-axon/56008/7
-    loop = (
+    loop =
       logits_model
-        |> Axon.Loop.trainer(loss, optimizer, log: 1)
-        |> Axon.Loop.metric(accuracy, "accuracy")
-        |> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
-        |> then(fn loop -> %{loop | output_transform: & &1} end)
-        |> Axon.Loop.run(train_data, params, epochs: 3, strict?: false)
-    )
+      |> Axon.Loop.trainer(loss, optimizer, log: 1)
+      |> Axon.Loop.metric(accuracy, "accuracy")
+      |> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
+      |> then(fn loop -> %{loop | output_transform: & &1} end)
+      |> Axon.Loop.run(train_data, params, epochs: 3, strict?: false)
+
     trained_model_state = loop.step_state.model_state
     train_accuracy = loop.metrics[0]["accuracy"] |> Nx.to_number()
 
-    test_results = logits_model
+    test_results =
+      logits_model
       |> Axon.Loop.evaluator()
       |> Axon.Loop.metric(accuracy, "accuracy")
       |> Axon.Loop.run(test_data, trained_model_state)
+
     test_accuracy = test_results[0]["accuracy"] |> Nx.to_number()
 
     Excisions.update_classifier(classifier, %{
       status: :trained,
       checkpoint_path: checkpoint_path,
       train_accuracy: train_accuracy,
-      test_accuracy: test_accuracy,
+      test_accuracy: test_accuracy
     })
 
-
     # example of running inference
-    Axon.predict(model, trained_model_state, Bumblebee.apply_tokenizer(tokenizer, "I need oranges"))
+    Axon.predict(
+      model,
+      trained_model_state,
+      Bumblebee.apply_tokenizer(tokenizer, "I need oranges")
+    )
     |> IO.inspect()
 
     # example of loading a checkpoint from disk
@@ -67,18 +75,24 @@ defmodule Excision.Workers.TrainClassifier do
       Bumblebee.load_spec({:hf, "distilbert/distilbert-base-uncased"},
         architecture: :for_sequence_classification
       )
+
     model = Bumblebee.build_model(spec)
     {:ok, checkpoints} = File.ls(checkpoint_path)
     last_checkpoint = checkpoints |> Enum.max()
-    params = [checkpoint_path, last_checkpoint] 
-      |> Path.join() 
-      |> File.read!() 
+
+    params =
+      [checkpoint_path, last_checkpoint]
+      |> Path.join()
+      |> File.read!()
       |> Axon.Loop.deserialize_state()
       |> then(& &1.step_state.model_state)
-    Axon.predict(model, params, Bumblebee.apply_tokenizer(tokenizer, "I need oranges")) |> IO.inspect()
+
+    Axon.predict(model, params, Bumblebee.apply_tokenizer(tokenizer, "I need oranges"))
+    |> IO.inspect()
+
     :ok
   end
-  
+
   defp load_model_and_tokenizer(model_name) do
     {:ok, spec} =
       Bumblebee.load_spec({:hf, model_name},
@@ -93,7 +107,7 @@ defmodule Excision.Workers.TrainClassifier do
 
     sequence_length = 64
     tokenizer = Bumblebee.configure(tokenizer, length: sequence_length)
-    
+
     {:ok, {model, tokenizer}}
   end
 
@@ -101,38 +115,41 @@ defmodule Excision.Workers.TrainClassifier do
     batch_size = 64
     label_map = %{true => 1, false => 0}
 
-    df = Excisions.list_labelled_decisions_for_site(decision_site)
+    df =
+      Excisions.list_labelled_decisions_for_site(decision_site)
       |> Enum.map(fn %Excisions.Decision{
-        input: input,
-        label: label,
-      } -> %{ label: Map.get(label_map, label), text: to_string(input)} end)
+                       input: input,
+                       label: label
+                     } ->
+        %{label: Map.get(label_map, label), text: to_string(input)}
+      end)
       |> Explorer.DataFrame.new()
 
     {num_examples, _} = Explorer.DataFrame.shape(df)
     num_train = (num_examples * 0.8) |> round() |> Kernel.max(1)
 
-    train_data = 
-      df 
-        |> Explorer.DataFrame.slice(0..(num_train - 1))
-        |> make_example_stream(batch_size, tokenizer)
-    test_data = 
-      df 
-        |> Explorer.DataFrame.slice(num_train..num_examples)
-        |> make_example_stream(batch_size, tokenizer)
+    train_data =
+      df
+      |> Explorer.DataFrame.slice(0..(num_train - 1))
+      |> make_example_stream(batch_size, tokenizer)
+
+    test_data =
+      df
+      |> Explorer.DataFrame.slice(num_train..num_examples)
+      |> make_example_stream(batch_size, tokenizer)
 
     {train_data, test_data}
   end
 
   defp make_example_stream(df, batch_size, tokenizer) do
     df["text"]
-      |> Explorer.Series.to_enum()
-      |> Stream.zip(Explorer.Series.to_enum(df["label"]))
-      |> Stream.chunk_every(batch_size)
-      |> Stream.map(fn batch -> 
-        {text, labels} = Enum.unzip(batch)
-        tokenized = Bumblebee.apply_tokenizer(tokenizer, text)
-        {tokenized, Nx.stack(labels)}
-      end)
+    |> Explorer.Series.to_enum()
+    |> Stream.zip(Explorer.Series.to_enum(df["label"]))
+    |> Stream.chunk_every(batch_size)
+    |> Stream.map(fn batch ->
+      {text, labels} = Enum.unzip(batch)
+      tokenized = Bumblebee.apply_tokenizer(tokenizer, text)
+      {tokenized, Nx.stack(labels)}
+    end)
   end
 end
-

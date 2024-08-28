@@ -289,8 +289,8 @@ defmodule Excision.Excisions do
     preloads = Keyword.get(opts, :preloads, [])
 
     Classifier
-      |> Repo.get!(id)
-      |> Repo.preload(preloads)
+    |> Repo.get!(id)
+    |> Repo.preload(preloads)
   end
 
   @doc """
@@ -307,8 +307,8 @@ defmodule Excision.Excisions do
   """
   def create_classifier(attrs \\ %{}) do
     %Classifier{}
-      |> Classifier.changeset(attrs)
-      |> Repo.insert()
+    |> Classifier.changeset(attrs)
+    |> Repo.insert()
   end
 
   @doc """
@@ -362,9 +362,9 @@ defmodule Excision.Excisions do
   Submits an Oban job to train the classifier
   """
   def train_classifier(classifier) do
-    %{ classifier_id: classifier.id }
-      |> Excision.Workers.TrainClassifier.new()
-      |> Oban.insert()
+    %{classifier_id: classifier.id}
+    |> Excision.Workers.TrainClassifier.new()
+    |> Oban.insert()
   end
 
   @doc """
@@ -372,6 +372,7 @@ defmodule Excision.Excisions do
   """
   def promote_classifier(classifier) do
     classifier = Repo.preload(classifier, :decision_site)
+
     update_decision_site(
       classifier.decision_site,
       %{active_classifier_id: classifier.id}

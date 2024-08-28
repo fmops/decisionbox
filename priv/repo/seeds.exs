@@ -13,29 +13,37 @@
 alias Excision.Excisions
 alias Excision.Excisions.Classifier
 
-{:ok, decision_site} = Excisions.create_decision_site(%{
-  name: "example"
-})
+{:ok, decision_site} =
+  Excisions.create_decision_site(%{
+    name: "example"
+  })
 
-classifier = Excision.Repo.insert!(%Classifier{
-  decision_site_id: decision_site.id,
-  name: "example",
-  status: :waiting,
-})
+classifier =
+  Excision.Repo.insert!(%Classifier{
+    decision_site_id: decision_site.id,
+    name: "example",
+    status: :waiting
+  })
 
 for i <- 1..100 do
-  {:ok, _} = Excisions.create_decision(%{
-    decision_site_id: decision_site.id,
-    # this is a test + random string
-    input: "This is a test: " <> (:crypto.strong_rand_bytes(10) |> Base.encode16() |> String.downcase()),
-    label: (if i <= 80, do: true, else: nil)
-  })
+  {:ok, _} =
+    Excisions.create_decision(%{
+      decision_site_id: decision_site.id,
+      # this is a test + random string
+      input:
+        "This is a test: " <>
+          (:crypto.strong_rand_bytes(10) |> Base.encode16() |> String.downcase()),
+      label: if(i <= 80, do: true, else: nil)
+    })
 end
 
 for i <- 1..100 do
-  {:ok, _} = Excisions.create_decision(%{
-    decision_site_id: decision_site.id,
-    input: "This is no longer a test: " <> (:crypto.strong_rand_bytes(10) |> Base.encode16() |> String.downcase()),
-    label: (if i <= 80, do: false, else: nil)
-  })
+  {:ok, _} =
+    Excisions.create_decision(%{
+      decision_site_id: decision_site.id,
+      input:
+        "This is no longer a test: " <>
+          (:crypto.strong_rand_bytes(10) |> Base.encode16() |> String.downcase()),
+      label: if(i <= 80, do: false, else: nil)
+    })
 end
