@@ -1,12 +1,10 @@
 defmodule Excision.Workers.TrainClassifier do
-  use Oban.Worker, queue: :default
+  use Oban.Worker,
+    queue: :default,
+    max_attempts: 1,
+    unique: [period: 30]
 
   alias Excision.Excisions
-
-  def test(id) do
-    perform(%Oban.Job{args: %{"classifier_id" => id}})
-  end
-  
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"classifier_id" => classifier_id}}) do
@@ -14,7 +12,7 @@ defmodule Excision.Workers.TrainClassifier do
     Excisions.update_classifier(classifier, %{status: :training})
 
     {:ok, {%{model: model, params: params}, tokenizer}} = load_model_and_tokenizer("distilbert/distilbert-base-uncased")
-    train_data = load_data(classifier.decision_site, tokenizer)
+    {train_data, test_data} = load_data(classifier.decision_site, tokenizer)
 
     # run the fine-time
     logits_model = Axon.nx(model, & &1.logits)
@@ -41,25 +39,27 @@ defmodule Excision.Workers.TrainClassifier do
         |> Axon.Loop.metric(accuracy, "accuracy")
         |> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
         |> then(fn loop -> %{loop | output_transform: & &1} end)
-        |> Axon.Loop.run(train_data, params, epochs: 3, compiler: EXLA, strict?: false)
+        |> Axon.Loop.run(train_data, params, epochs: 1, compiler: EXLA, strict?: false)
     )
     trained_model_state = loop.step_state.model_state
+    train_accuracy = loop.metrics[0]["accuracy"] |> Nx.to_number()
+
     test_results = logits_model
       |> Axon.Loop.evaluator()
       |> Axon.Loop.metric(accuracy, "accuracy")
-      |> Axon.Loop.run(train_data, trained_model_state, epochs: 1, compiler: EXLA)
+      |> Axon.Loop.run(test_data, trained_model_state, epochs: 1, compiler: EXLA)
+    test_accuracy = test_results[0]["accuracy"] |> Nx.to_number()
 
     Excisions.update_classifier(classifier, %{
       status: :trained,
       checkpoint_path: checkpoint_path,
-      train_accuracy: test_results[0]["accuracy"] |> Nx.to_number(),
+      train_accuracy: train_accuracy,
+      test_accuracy: test_accuracy,
     })
-
-    :ok
 
 
     # example of running inference
-    Axon.predict(model, params, Bumblebee.apply_tokenizer(tokenizer, "I need oranges"))
+    Axon.predict(model, trained_model_state, Bumblebee.apply_tokenizer(tokenizer, "I need oranges"))
     |> IO.inspect()
 
     # example of loading a checkpoint from disk
@@ -68,7 +68,9 @@ defmodule Excision.Workers.TrainClassifier do
         architecture: :for_sequence_classification
       )
     model = Bumblebee.build_model(spec)
-    params = [checkpoint_path, "checkpoint_2_2.ckpt"] 
+    {:ok, checkpoints} = File.ls(checkpoint_path)
+    last_checkpoint = checkpoints |> Enum.max()
+    params = [checkpoint_path, last_checkpoint] 
       |> Path.join() 
       |> File.read!() 
       |> Axon.Loop.deserialize_state()
@@ -106,8 +108,23 @@ defmodule Excision.Workers.TrainClassifier do
       } -> %{ label: Map.get(label_map, label), text: to_string(input)} end)
       |> Explorer.DataFrame.new()
 
-    # TODO: train test split and validate on test set
-    train_data = df["text"]
+    {num_examples, _} = Explorer.DataFrame.shape(df)
+    num_train = (num_examples * 0.8) |> round() |> Kernel.max(1)
+
+    train_data = 
+      df 
+        |> Explorer.DataFrame.slice(0..(num_train - 1))
+        |> make_example_stream(batch_size, tokenizer)
+    test_data = 
+      df 
+        |> Explorer.DataFrame.slice(num_train..num_examples)
+        |> make_example_stream(batch_size, tokenizer)
+
+    {train_data, test_data}
+  end
+
+  defp make_example_stream(df, batch_size, tokenizer) do
+    df["text"]
       |> Explorer.Series.to_enum()
       |> Stream.zip(Explorer.Series.to_enum(df["label"]))
       |> Stream.chunk_every(batch_size)
@@ -116,7 +133,6 @@ defmodule Excision.Workers.TrainClassifier do
         tokenized = Bumblebee.apply_tokenizer(tokenizer, text)
         {tokenized, Nx.stack(labels)}
       end)
-    train_data
   end
 end
 
