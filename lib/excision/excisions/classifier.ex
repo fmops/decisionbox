@@ -5,6 +5,9 @@ defmodule Excision.Excisions.Classifier do
   schema "classifiers" do
     field :name, :string
     field :status, Ecto.Enum, values: [:waiting, :training, :trained], default: :waiting
+    field :checkpoint_path, :string
+    field :train_accuracy, :float
+    field :test_accuracy, :float
 
     belongs_to :decision_site, Excision.Excisions.DecisionSite
     has_many :decisions, Excision.Excisions.Decision
@@ -15,7 +18,7 @@ defmodule Excision.Excisions.Classifier do
   @doc false
   def changeset(classifier, attrs) do
     classifier
-    |> cast(attrs, [:name, :decision_site_id, :status])
+    |> cast(attrs, [:name, :decision_site_id, :status, :checkpoint_path, :train_accuracy, :test_accuracy])
     |> validate_required([:name])
     |> foreign_key_constraint(:decision_site)
   end

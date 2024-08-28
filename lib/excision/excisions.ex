@@ -155,6 +155,22 @@ defmodule Excision.Excisions do
   end
 
   @doc """
+  Returns the list of labelled decisions for a single site
+
+  ## Examples
+
+      iex> list_labelled_decisions_for_site(decision_site)
+      [%Decision{}, ...]
+
+  """
+  def list_labelled_decisions_for_site(%DecisionSite{} = decision_site) do
+    from(d in Decision)
+    |> where([d], d.decision_site_id == ^decision_site.id)
+    |> where([d], not is_nil(d.label))
+    |> Repo.all()
+  end
+
+  @doc """
   Gets a single decision.
 
   Raises `Ecto.NoResultsError` if the Decision does not exist.
@@ -264,7 +280,13 @@ defmodule Excision.Excisions do
       ** (Ecto.NoResultsError)
 
   """
-  def get_classifier!(id), do: Repo.get!(Classifier, id)
+  def get_classifier!(id, opts \\ []) do
+    preloads = Keyword.get(opts, :preloads, [])
+
+    Classifier
+      |> Repo.get!(id)
+      |> Repo.preload(preloads)
+  end
 
   @doc """
   Creates a classifier.

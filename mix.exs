@@ -63,7 +63,12 @@ defmodule Excision.MixProject do
       {:reverse_proxy_plug, "~> 3.0"},
       {:req, "~> 0.5"},
       {:bypass, "~> 2.1"},
-      {:oban, "~> 2.18"}
+      {:oban, "~> 2.18"},
+      {:bumblebee, "~> 0.5"},
+      {:nx, "~> 0.7"},
+      {:exla, "~> 0.7"},
+      {:axon, "~> 0.6"},
+      {:explorer, "~> 0.9"}
     ]
   end
 
