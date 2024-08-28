@@ -73,11 +73,54 @@ defmodule ExcisionWeb.DecisionSiteController do
   def invoke(conn, %{"id" => id}) do
     decision_site = Excisions.get_decision_site!(id, preloads: [:active_classifier])
 
-    if decision_site.active_classifier.name == "baseline" do
+    resp = if decision_site.active_classifier.name == "baseline" do
+      proxy_openai_structured_response(conn, decision_site)
+    else
+      classifier = decision_site.active_classifier
+
+      # TODO: this is really slow, need GenServer (Agent?) to keep model in memory
+      model_name = "distilbert/distilbert-base-uncased"
+      {:ok, spec} =
+        Bumblebee.load_spec({:hf, model_name},
+          architecture: :for_sequence_classification
+        )
+      model = Bumblebee.build_model(spec)
+      {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, model_name})
+      checkpoint_path = classifier.checkpoint_path
+      {:ok, checkpoints} = File.ls(checkpoint_path)
+      last_checkpoint = checkpoints |> Enum.max()
+      params = [checkpoint_path, last_checkpoint] 
+        |> Path.join() 
+        |> File.read!() 
+        |> Axon.Loop.deserialize_state()
+        |> then(& &1.step_state.model_state)
+
+      messages = Jason.encode!(conn.body_params["messages"])
+      outputs = Axon.predict(model, params, Bumblebee.apply_tokenizer(tokenizer, messages))
+      probs = outputs.logits |> Nx.sigmoid()
+      prediction_idx =  probs |> Nx.argmax(axis: 1) |> then(& &1[0])|> Nx.to_number() 
+
+      label_map = %{true => 1, false => 0}
+      idx_to_label = Map.new(label_map, fn {k,v} -> {v,k} end)
+      prediction = idx_to_label[prediction_idx]
+
+      send_resp(conn, :ok, Jason.encode!(%{
+        choices: [
+          %{
+            message: %{
+              role: "assistant",
+              content: Jason.encode!(%{value: prediction}),
+            }
+          }
+        ]
+      }))
+    end
+
+  end
+
+  defp proxy_openai_structured_response(conn, decision_site) do
       # modify the body to add the response_format
-
       {raw_body, conn} = ReverseProxyPlug.read_body(conn)
-
       req_body =
         raw_body
         |> Jason.decode!()
@@ -98,9 +141,7 @@ defmodule ExcisionWeb.DecisionSiteController do
             }
           }
         )
-
       new_body = req_body |> Jason.encode!()
-
       conn =
         conn
         |> assign(:raw_body, new_body)
@@ -133,22 +174,19 @@ defmodule ExcisionWeb.DecisionSiteController do
         )
         |> Jason.decode!()
 
-      Excision.Excisions.create_decision(%{
-        decision_site_id: decision_site.id,
-        classifier_id: decision_site.active_classifier.id,
-        input: Jason.encode!(req_body["messages"]),
-        prediction:
-          resp_body["choices"]
-          |> Enum.at(0)
-          |> then(& &1["message"]["content"])
-          |> Jason.decode!()
-          |> then(& &1["value"])
-      })
-
-      resp
-    else
-      IO.inspect("TODO: invoke non-baseline classifier")
-      send_resp(conn, :not_implemented, "")
-    end
+    # record the decision
+    Excision.Excisions.create_decision(%{
+      decision_site_id: decision_site.id,
+      classifier_id: decision_site.active_classifier.id,
+      input: Jason.encode!(req_body["messages"]),
+      prediction:
+        resp_body["choices"]
+        |> Enum.at(0)
+        |> then(& &1["message"]["content"])
+        |> Jason.decode!()
+        |> then(& &1["value"])
+    })
+    resp
   end
+  
 end
