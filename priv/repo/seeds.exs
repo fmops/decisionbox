@@ -18,7 +18,7 @@ alias Excision.Excisions.Classifier
     name: "example"
   })
 
-classifier =
+{:ok, _} =
   Excision.Repo.insert!(%Classifier{
     decision_site_id: decision_site.id,
     name: "example",

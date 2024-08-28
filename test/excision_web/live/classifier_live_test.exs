@@ -54,8 +54,7 @@ defmodule ExcisionWeb.ClassifierLiveTest do
         |> Enum.sort(&(&1.inserted_at > &2.inserted_at))
         |> hd()
 
-      # Oban runs in-line in tests so we should be training already
-      assert classifier.status == :training
+      assert classifier.status == :waiting
     end
 
     test "updates classifier in listing", %{conn: conn, classifier: classifier} do
