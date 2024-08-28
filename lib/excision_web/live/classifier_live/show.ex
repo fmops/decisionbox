@@ -5,7 +5,17 @@ defmodule ExcisionWeb.ClassifierLive.Show do
   import Excision.Excisions, only: [is_default_classifier?: 1]
 
   @impl true
+  def mount(_params, _session, socket) do
+    {:ok, socket 
+      |> assign(:metrics, []) 
+      |> assign(:loss_plot, nil) 
+    }
+  end
+
+  @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    Phoenix.PubSub.subscribe(Excision.PubSub, "classifier:#{id}")
+
     classifier = Excisions.get_classifier!(id, preloads: [:decision_site, :decisions])
     accuracy = Excisions.compute_accuracy(classifier)
 
@@ -18,7 +28,8 @@ defmodule ExcisionWeb.ClassifierLive.Show do
        :num_labelled_decisions,
        classifier.decisions |> Enum.filter(&(not is_nil(&1.label))) |> Enum.count()
      )
-     |> assign(:accuracy, accuracy)}
+     |> assign(:accuracy, accuracy)
+    }
   end
 
   @impl true
@@ -49,6 +60,29 @@ defmodule ExcisionWeb.ClassifierLive.Show do
         {:noreply, socket |> put_flash(:error, "Error submitting training job")}
     end
   end
+
+  @impl true
+  def handle_info({:training_metrics_emitted, metrics}, socket) do
+    new_metrics = [metrics | socket.assigns.metrics]
+    {:noreply, 
+      socket 
+      |> assign(:metrics, new_metrics)
+      |> assign(:loss_plot, make_loss_plot(new_metrics))
+    }
+  end
+
+  defp make_loss_plot(metrics) do
+    metrics
+      |> Enum.map(fn %{timestamp: date, loss: loss} -> 
+        [date, loss]
+      end)
+      |> Contex.Dataset.new()
+      |> Contex.Plot.new(Contex.PointPlot, 600, 400)
+      |> Contex.Plot.titles("Training loss trace", "")
+      |> Contex.Plot.axis_labels("Timestamp", "Loss")
+      |> Contex.Plot.to_svg()
+  end
+  
 
   defp page_title(:show), do: "Show Classifier"
   defp page_title(:edit), do: "Edit Classifier"

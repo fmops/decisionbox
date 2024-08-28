@@ -1,14 +1,44 @@
 defmodule Excision.Workers.TrainClassifier do
   use Oban.Worker,
     queue: :default,
-    max_attempts: 1,
     unique: [period: 30]
 
   alias Excision.Excisions
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"classifier_id" => classifier_id}}) do
+  def perform(%Oban.Job{args: %{"classifier_id" => classifier_id}, attempt: attempt}) do
     classifier = Excisions.get_classifier!(classifier_id, preloads: [:decision_site])
+
+    IO.inspect("HI MOM")
+
+    if attempt > 1 do
+      case Excisions.update_classifier(classifier, %{status: :failed}) do
+        {:ok, _} -> :ok
+        x -> x
+      end
+    else
+      train2(classifier)
+    end
+  end
+
+  def train2(classifier) do
+    for i <- 1..10 do
+      Process.sleep(1000)
+      IO.inspect("Emitting: #{i}")
+      Phoenix.PubSub.broadcast(
+        Excision.PubSub, 
+        "classifier:#{classifier.id}", 
+        {:training_metrics_emitted, %{
+          timestamp: DateTime.utc_now(),
+          accuracy: i,
+          loss: 0.1 * i
+        }}
+      )
+    end
+    :ok
+  end
+
+  def train(classifier) do
     Excisions.update_classifier(classifier, %{status: :training})
 
     {:ok, {%{model: model, params: params}, tokenizer}} =
