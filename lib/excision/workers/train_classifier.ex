@@ -39,7 +39,7 @@ defmodule Excision.Workers.TrainClassifier do
         |> Axon.Loop.metric(accuracy, "accuracy")
         |> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
         |> then(fn loop -> %{loop | output_transform: & &1} end)
-        |> Axon.Loop.run(train_data, params, epochs: 1, compiler: EXLA, strict?: false)
+        |> Axon.Loop.run(train_data, params, epochs: 3, strict?: false)
     )
     trained_model_state = loop.step_state.model_state
     train_accuracy = loop.metrics[0]["accuracy"] |> Nx.to_number()
@@ -47,7 +47,7 @@ defmodule Excision.Workers.TrainClassifier do
     test_results = logits_model
       |> Axon.Loop.evaluator()
       |> Axon.Loop.metric(accuracy, "accuracy")
-      |> Axon.Loop.run(test_data, trained_model_state, epochs: 1, compiler: EXLA)
+      |> Axon.Loop.run(test_data, trained_model_state)
     test_accuracy = test_results[0]["accuracy"] |> Nx.to_number()
 
     Excisions.update_classifier(classifier, %{
