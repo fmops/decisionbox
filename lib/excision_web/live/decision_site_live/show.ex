@@ -8,17 +8,15 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
     decision_site =
       Excisions.get_decision_site!(id, preloads: [:active_classifier, :decisions, :classifiers])
 
-    data = decision_site.classifiers
+    accuracy_plot = decision_site.classifiers
     |> Enum.map(fn %Excisions.Classifier{inserted_at: date, test_accuracy: test_accuracy} = classifier -> 
       accuracy = Excisions.compute_accuracy(classifier)
       [date, (if is_nil(accuracy), do: test_accuracy, else: accuracy)]
     end)
-      |> IO.inspect()
-
-    output =
-      data
       |> Contex.Dataset.new()
       |> Contex.Plot.new(Contex.PointPlot, 600, 400)
+      |> Contex.Plot.titles("Classifier performance", "Accuracy of trained classifiers over time")
+      |> Contex.Plot.axis_labels("Date", "Accuracy")
       |> Contex.Plot.to_svg()
 
     {:noreply,
@@ -31,7 +29,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
        decision_site.decisions |> Enum.filter(&(not is_nil(&1.label))) |> Enum.count()
      )
      |> assign(:num_classifiers, decision_site.classifiers |> Enum.count())
-     |> assign(:output, output)
+     |> assign(:accuracy_plot, accuracy_plot)
     }
   end
 
