@@ -149,8 +149,11 @@ defmodule Excision.Excisions do
       [%Decision{}, ...]
 
   """
-  def list_decisions_for_site(%DecisionSite{} = decision_site) do
+  def list_decisions_for_site(%DecisionSite{} = decision_site, opts \\ []) do
+    preloads = Keyword.get(opts, :preloads, [])
+
     from(d in Decision, where: d.decision_site_id == ^decision_site.id)
+    |> preload(^preloads)
     |> Repo.all()
   end
 

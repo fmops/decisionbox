@@ -4,7 +4,19 @@
 
 <.table id="decisions" rows={@streams.decisions}>
   <:col :let={{_id, decision}} label="Input"><%= decision.input %></:col>
-  <:col :let={{_id, decision}} label="Prediction"><%= decision.prediction %></:col>
+  <:col :let={{_id, decision}} label="Decision"><%= decision.prediction %></:col>
+  <:col :let={{_id, decision}} label="Classifier">
+    <%= if decision.classifier do %>
+      <.link 
+        patch={~p"/decision_sites/#{@decision_site}/classifiers/#{decision.classifier.id}"}
+        class="hover:underline"
+      >
+        <%= decision.classifier.name %>
+      </.link>
+    <% else %>
+      n/a
+    <% end %>
+  </:col>
   <:col :let={{_id, decision}} label="Label">
     <.link
       class={[

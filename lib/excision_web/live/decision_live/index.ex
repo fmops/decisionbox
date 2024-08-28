@@ -10,7 +10,7 @@ defmodule ExcisionWeb.DecisionLive.Index do
 
     {:noreply,
      socket
-     |> stream(:decisions, Excisions.list_decisions_for_site(decision_site))
+     |> stream(:decisions, Excisions.list_decisions_for_site(decision_site, preloads: [:classifier]))
      |> assign(:decision_site, decision_site)
      |> apply_action(socket.assigns.live_action, params)}
   end
