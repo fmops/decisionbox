@@ -6,8 +6,8 @@ defmodule Excision.Repo.Migrations.CreateDecisions do
       add :input, :string
       add :prediction, :boolean, default: false, null: false
       add :label, :boolean, null: true
-      add :decision_site_id, references(:decision_sites, on_delete: :nothing)
-      add :classifier_id, references(:classifiers, on_delete: :nothing)
+      add :decision_site_id, references(:decision_sites, on_delete: :delete_all)
+      add :classifier_id, references(:classifiers, on_delete: :delete_all)
 
       timestamps(type: :utc_datetime)
     end
