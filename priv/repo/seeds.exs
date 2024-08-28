@@ -18,24 +18,24 @@ alias Excision.Excisions.Classifier
 })
 
 classifier = Excision.Repo.insert!(%Classifier{
-  decision_site_id: 4,
+  decision_site_id: decision_site.id,
   name: "example",
   status: :waiting,
 })
 
-for _ <- 1..100 do
+for i <- 1..100 do
   {:ok, _} = Excisions.create_decision(%{
     decision_site_id: decision_site.id,
     # this is a test + random string
     input: "This is a test: " <> (:crypto.strong_rand_bytes(10) |> Base.encode16() |> String.downcase()),
-    label: true
+    label: i < 80
   })
 end
 
-for _ <- 1..100 do
+for i <- 1..100 do
   {:ok, _} = Excisions.create_decision(%{
     decision_site_id: decision_site.id,
     input: "This is no longer a test: " <> (:crypto.strong_rand_bytes(10) |> Base.encode16() |> String.downcase()),
-    label: false
+    label: i < 80
   })
 end
