@@ -18,9 +18,9 @@ defmodule Excision.Workers.TrainClassifier do
         x -> x
       end
     else
-      # train(classifier)
-      {:ok, classifier} = Excisions.clear_training_metrics(classifier)
-      emit_fake_metrics(classifier)
+      {:ok, _} = Excisions.clear_training_metrics(classifier)
+      train(classifier)
+      #emit_fake_metrics(classifier)
     end
   end
 

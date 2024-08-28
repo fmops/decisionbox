@@ -489,7 +489,6 @@ defmodule Excision.Excisions do
     classifier 
     |> Classifier.changeset(%{})
     |> Ecto.Changeset.put_embed(:training_metrics, [], with: &Excision.Excisions.Classifier.training_metric_changeset/2)
-    |> IO.inspect()
     |> Repo.update()
     |> case do
       {:ok, classifier} ->
