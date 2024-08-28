@@ -355,9 +355,13 @@ defmodule Excision.Excisions do
 
   """
   def delete_classifier(%Classifier{} = classifier) do
-    File.rm_rf(classifier.checkpoint_path)
+    result = Repo.delete(classifier)
 
-    Repo.delete(classifier)
+    if elem(result, 0) == :ok && classifier.checkpoint_path do
+      File.rm_rf(classifier.checkpoint_path)
+    end
+
+    result
   end
 
   @doc """
