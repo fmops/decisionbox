@@ -9,3 +9,33 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+alias Excision.Excisions
+alias Excision.Excisions.Classifier
+
+{:ok, decision_site} = Excisions.create_decision_site(%{
+  name: "example"
+})
+
+classifier = Excision.Repo.insert!(%Classifier{
+  decision_site_id: 4,
+  name: "example",
+  status: :waiting,
+})
+
+for _ <- 1..100 do
+  {:ok, _} = Excisions.create_decision(%{
+    decision_site_id: decision_site.id,
+    # this is a test + random string
+    input: "This is a test: " <> (:crypto.strong_rand_bytes(10) |> Base.encode16() |> String.downcase()),
+    label: true
+  })
+end
+
+for _ <- 1..100 do
+  {:ok, _} = Excisions.create_decision(%{
+    decision_site_id: decision_site.id,
+    input: "This is no longer a test: " <> (:crypto.strong_rand_bytes(10) |> Base.encode16() |> String.downcase()),
+    label: false
+  })
+end
