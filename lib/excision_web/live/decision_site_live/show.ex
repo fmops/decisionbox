@@ -23,7 +23,6 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
         [date, if(is_nil(accuracy), do: test_accuracy || 0.0, else: accuracy)]
       end)
       |> Contex.Dataset.new()
-      |> IO.inspect()
       |> Contex.Plot.new(Contex.PointPlot, 600, 400)
       |> Contex.Plot.titles("Classifier performance", "Accuracy of trained classifiers over time")
       |> Contex.Plot.axis_labels("Date", "Accuracy")

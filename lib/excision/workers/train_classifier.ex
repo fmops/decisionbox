@@ -1,4 +1,6 @@
 defmodule Excision.Workers.TrainClassifier do
+  require Logger
+
   use Oban.Worker,
     queue: :default,
     unique: [period: 30]
@@ -169,10 +171,10 @@ defmodule Excision.Workers.TrainClassifier do
   @doc """
   Fake training loop to emit metrics. Useful for testing the UI.
   """
-  defp emit_fake_metrics(classifier) do
+  def emit_fake_metrics(classifier) do
     for i <- 1..10 do
       Process.sleep(1000)
-      IO.inspect("Emitting: #{i}")
+      Logger.debug("Emitting: #{i}")
 
       Phoenix.PubSub.broadcast(
         Excision.PubSub,

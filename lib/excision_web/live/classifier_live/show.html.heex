@@ -63,7 +63,9 @@
   </:item>
 
   <:item :if={@classifier.status == :trained} title="Accuracy (Runtime)">
-    <%= @accuracy %>
+    <%= if is_nil(@accuracy) do %>
+      No decisions yet - promote this classifier to start using it.
+    <% end %>
   </:item>
 </.list>
 
