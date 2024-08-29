@@ -20,6 +20,15 @@ defmodule ExcisionWeb.ClassifierLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
+        <fieldset :if={@action == :new}>
+          <legend class="text-md font-semibold text-zinc-800">Training Parameters</legend>
+          <.inputs_for :let={fp} field={@form[:training_parameters]}>
+            <.input field={fp[:epochs]} type="number" label="# Epochs" />
+            <.input field={fp[:learning_rate]} type="number" label="Learning Rate" />
+            <.input field={fp[:batch_size]} type="number" label="Batch Size" />
+            <.input field={fp[:sequence_length]} type="number" label="Sequence Length" />
+          </.inputs_for>
+        </fieldset>
         <:actions>
           <.button phx-disable-with="Saving...">Save Classifier</.button>
         </:actions>
@@ -29,13 +38,25 @@ defmodule ExcisionWeb.ClassifierLive.FormComponent do
   end
 
   @impl true
-  def update(%{classifier: classifier} = assigns, socket) do
+  def update(%{classifier: classifier, action: action} = assigns, socket) do
+    form = if action == :new do
+        to_form(Excisions.change_classifier(classifier,%{
+          training_parameters: %{
+            epochs: 3,
+            learning_rate: 5.0e-3,
+            batch_size: 64,
+            sequence_length: 64,
+          }
+        }
+        ))
+    else
+      to_form(Excisions.change_classifier(classifier))
+    end
+
     {:ok,
      socket
-     |> assign(assigns)
-     |> assign_new(:form, fn ->
-       to_form(Excisions.change_classifier(classifier))
-     end)}
+      |> assign(assigns)
+      |> assign_new(:form, fn -> form end)}
   end
 
   @impl true

@@ -457,12 +457,12 @@ defmodule Excision.Excisions do
 
   def build_label_map(decision_site) do
     decision_site = Repo.preload(decision_site, [:choices])
+
     decision_site.choices
-      |> Enum.map(& &1.name) 
-      |> Enum.with_index()
-      |> Enum.into(%{})
+    |> Enum.map(& &1.name)
+    |> Enum.with_index()
+    |> Enum.into(%{})
   end
-  
 
   def compute_accuracy(%Classifier{} = classifier) do
     classifier = Repo.preload(classifier, :decisions)

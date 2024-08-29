@@ -24,7 +24,8 @@ defmodule ExcisionWeb.ClassifierLive.Index do
   defp apply_action(socket, :new, _params) do
     socket
     |> assign(:page_title, "New Classifier")
-    |> assign(:classifier, %Classifier{})
+    |> assign(:classifier, %Classifier{
+    })
   end
 
   defp apply_action(socket, :index, _params) do

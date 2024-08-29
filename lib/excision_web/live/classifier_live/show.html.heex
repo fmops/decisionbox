@@ -42,6 +42,10 @@
   <:item title="Name"><%= @classifier.name %></:item>
   <:item title="Created"><%= @classifier.inserted_at %></:item>
   <:item title="Status"><%= @classifier.status %></:item>
+  <:item title="Training Parameters"><%= Jason.encode!(
+    @classifier.training_parameters,
+    pretty: true
+  )%></:item>
 
   <:item :if={@classifier.status == :trained} title="Active">
     <%= @classifier.decision_site.active_classifier_id == @classifier.id %>

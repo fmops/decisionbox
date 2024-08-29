@@ -9,6 +9,14 @@ defmodule Excision.Excisions.Classifier do
     field :train_accuracy, :float
     field :test_accuracy, :float
 
+    embeds_one :training_parameters, TrainingParameters, primary_key: false do
+      @derive Jason.Encoder
+      field :learning_rate, :float
+      field :batch_size, :integer
+      field :sequence_length, :integer
+      field :epochs, :integer
+    end
+
     embeds_many :training_metrics, TrainingMetric, on_replace: :delete do
       field :timestamp, :utc_datetime
       field :loss, :float
@@ -30,19 +38,30 @@ defmodule Excision.Excisions.Classifier do
       :status,
       :checkpoint_path,
       :train_accuracy,
-      :test_accuracy
+      :test_accuracy,
     ])
+    |> cast_embed(:training_parameters, with: &training_parameters_changeset/2)
     |> validate_required([:name])
     |> foreign_key_constraint(:decision_site)
   end
 
-  def training_metric_changeset(training_metric, attrs \\ %{}) do
-    training_metric
+  def training_parameters_changeset(training_parameters, attrs \\ %{}) do
+    training_parameters
+    |> cast(attrs, [:learning_rate, :batch_size, :sequence_length, :epochs])
+    |> validate_required([:learning_rate, :batch_size, :sequence_length, :epochs])
+    |> validate_number(:learning_rate, greater_than: 0.0)
+    |> validate_number(:batch_size, greater_than: 0)
+    |> validate_number(:sequence_length, greater_than: 0)
+    |> validate_number(:epochs, greater_than: 0)
+  end
+
+  def training_metric_changeset(training_metrics, attrs \\ %{}) do
+    training_metrics
     |> cast(attrs, [:timestamp, :loss, :accuracy])
     |> validate_required([:timestamp, :loss, :accuracy])
   end
 
   def default_baseline_classifier do
-    %__MODULE__{name: "baseline", status: :trained}
+    %__MODULE__{name: "baseline", status: :trained, training_parameters: %__MODULE__.TrainingParameters{}}
   end
 end

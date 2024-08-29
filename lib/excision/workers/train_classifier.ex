@@ -21,12 +21,13 @@ defmodule Excision.Workers.TrainClassifier do
       Excisions.update_classifier_status(classifier, :training)
 
       train(classifier)
-      #emit_fake_metrics(classifier)
+      # emit_fake_metrics(classifier)
     end
   end
 
   def train(classifier) do
     num_labels = classifier.decision_site.choices |> Enum.count()
+
     {:ok, {%{model: model, params: params}, tokenizer}} =
       load_model_and_tokenizer("distilbert/distilbert-base-uncased", num_labels)
 

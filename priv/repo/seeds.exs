@@ -40,5 +40,11 @@ end
 {:ok, _} =
   Excisions.create_classifier(%{
     decision_site_id: decision_site.id,
-    name: "example"
+    name: "seeded classifier",
+    training_parameters: %{
+      learning_rate: 5.0e-3,
+      batch_size: 64,
+      sequence_length: 64,
+      epochs: 3,
+    }
   })
