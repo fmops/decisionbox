@@ -39,24 +39,26 @@ defmodule ExcisionWeb.ClassifierLive.FormComponent do
 
   @impl true
   def update(%{classifier: classifier, action: action} = assigns, socket) do
-    form = if action == :new do
-        to_form(Excisions.change_classifier(classifier,%{
-          training_parameters: %{
-            epochs: 3,
-            learning_rate: 5.0e-3,
-            batch_size: 64,
-            sequence_length: 64,
-          }
-        }
-        ))
-    else
-      to_form(Excisions.change_classifier(classifier))
-    end
+    form =
+      if action == :new do
+        to_form(
+          Excisions.change_classifier(classifier, %{
+            training_parameters: %{
+              epochs: 3,
+              learning_rate: 5.0e-3,
+              batch_size: 64,
+              sequence_length: 64
+            }
+          })
+        )
+      else
+        to_form(Excisions.change_classifier(classifier))
+      end
 
     {:ok,
      socket
-      |> assign(assigns)
-      |> assign_new(:form, fn -> form end)}
+     |> assign(assigns)
+     |> assign_new(:form, fn -> form end)}
   end
 
   @impl true

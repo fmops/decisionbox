@@ -29,9 +29,9 @@ defmodule Excision.Workers.TrainClassifier do
     num_labels = classifier.decision_site.choices |> Enum.count()
 
     {:ok, {%{model: model, params: params}, tokenizer}} =
-      load_model_and_tokenizer("distilbert/distilbert-base-uncased", num_labels)
+      load_model_and_tokenizer("distilbert/distilbert-base-uncased", num_labels, classifier.training_parameters.sequence_length)
 
-    {train_data, test_data} = load_data(classifier.decision_site, tokenizer)
+    {train_data, test_data} = load_data(classifier.decision_site, tokenizer, classifier.training_parameters.batch_size)
 
     # run the fine-time
     logits_model = Axon.nx(model, & &1.logits)
@@ -43,8 +43,7 @@ defmodule Excision.Workers.TrainClassifier do
         sparse: true
       )
 
-    # TODO: configurable and report hyperparameters like lr, batch size, seq length
-    optimizer = Polaris.Optimizers.adam(learning_rate: 5.0e-5)
+    optimizer = Polaris.Optimizers.adam(learning_rate: classifier.training_parameters.learning_rate)
     accuracy = &Axon.Metrics.accuracy(&1, &2, from_logits: true, sparse: true)
 
     # TODO: configurable number of epochs
@@ -63,7 +62,7 @@ defmodule Excision.Workers.TrainClassifier do
       )
       |> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
       |> then(fn loop -> %{loop | output_transform: & &1} end)
-      |> Axon.Loop.run(train_data, params, epochs: 3, strict?: false)
+      |> Axon.Loop.run(train_data, params, epochs: classifier.training_parameters.epochs, strict?: false)
 
     trained_model_state = loop.step_state.model_state
     train_accuracy = loop.metrics[0]["accuracy"] |> Nx.to_number()
@@ -86,7 +85,7 @@ defmodule Excision.Workers.TrainClassifier do
     :ok
   end
 
-  defp load_model_and_tokenizer(model_name, num_labels) do
+  defp load_model_and_tokenizer(model_name, num_labels, sequence_length) do
     {:ok, spec} =
       Bumblebee.load_spec({:hf, model_name},
         architecture: :for_sequence_classification
@@ -97,14 +96,12 @@ defmodule Excision.Workers.TrainClassifier do
     {:ok, model} = Bumblebee.load_model({:hf, model_name}, spec: spec)
     {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, model_name})
 
-    sequence_length = 64
     tokenizer = Bumblebee.configure(tokenizer, length: sequence_length)
 
     {:ok, {model, tokenizer}}
   end
 
-  defp load_data(decision_site, tokenizer) do
-    batch_size = 64
+  defp load_data(decision_site, tokenizer, batch_size) do
     label_map = Excisions.build_label_map(decision_site)
 
     df =

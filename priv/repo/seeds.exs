@@ -45,6 +45,6 @@ end
       learning_rate: 5.0e-3,
       batch_size: 64,
       sequence_length: 64,
-      epochs: 3,
+      epochs: 3
     }
   })

@@ -38,7 +38,7 @@ defmodule Excision.Excisions.Classifier do
       :status,
       :checkpoint_path,
       :train_accuracy,
-      :test_accuracy,
+      :test_accuracy
     ])
     |> cast_embed(:training_parameters, with: &training_parameters_changeset/2)
     |> validate_required([:name])
@@ -62,6 +62,10 @@ defmodule Excision.Excisions.Classifier do
   end
 
   def default_baseline_classifier do
-    %__MODULE__{name: "baseline", status: :trained, training_parameters: %__MODULE__.TrainingParameters{}}
+    %__MODULE__{
+      name: "baseline",
+      status: :trained,
+      training_parameters: %__MODULE__.TrainingParameters{}
+    }
   end
 end
