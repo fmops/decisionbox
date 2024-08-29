@@ -165,8 +165,6 @@ defmodule ExcisionWeb.ClassifierLive.Show do
 
     seconds_per_iter = estimate_time_per_iter(metrics)
 
-    IO.inspect({seconds_per_iter, max_iters, iter})
-
     %{
       iter: iter,
       max_iters: max_iters,
@@ -175,7 +173,7 @@ defmodule ExcisionWeb.ClassifierLive.Show do
       eta:
         case seconds_per_iter do
           nil ->
-            nil
+            "n/a"
 
           _ ->
             Timex.Duration.from_seconds(seconds_per_iter * (max_iters - iter))
