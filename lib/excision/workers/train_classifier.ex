@@ -9,7 +9,7 @@ defmodule Excision.Workers.TrainClassifier do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"classifier_id" => classifier_id}, attempt: attempt}) do
-    classifier = Excisions.get_classifier!(classifier_id, preloads: [:decision_site])
+    classifier = Excisions.get_classifier!(classifier_id, preloads: [decision_site: [:choices]])
 
     if attempt > 1 do
       case Excisions.update_classifier_status(classifier, :failed) do
@@ -18,16 +18,17 @@ defmodule Excision.Workers.TrainClassifier do
       end
     else
       {:ok, _} = Excisions.clear_training_metrics(classifier)
+      Excisions.update_classifier_status(classifier, :training)
+
       train(classifier)
-      # emit_fake_metrics(classifier)
+      #emit_fake_metrics(classifier)
     end
   end
 
   def train(classifier) do
-    Excisions.update_classifier_status(classifier, :training)
-
+    num_labels = classifier.decision_site.choices |> Enum.count()
     {:ok, {%{model: model, params: params}, tokenizer}} =
-      load_model_and_tokenizer("distilbert/distilbert-base-uncased")
+      load_model_and_tokenizer("distilbert/distilbert-base-uncased", num_labels)
 
     {train_data, test_data} = load_data(classifier.decision_site, tokenizer)
 
@@ -45,7 +46,6 @@ defmodule Excision.Workers.TrainClassifier do
     optimizer = Polaris.Optimizers.adam(learning_rate: 5.0e-5)
     accuracy = &Axon.Metrics.accuracy(&1, &2, from_logits: true, sparse: true)
 
-    # TODO: callback to report progress back to postgres
     # TODO: configurable number of epochs
     checkpoint_path = "checkpoints/#{classifier.id}/"
 
@@ -85,14 +85,13 @@ defmodule Excision.Workers.TrainClassifier do
     :ok
   end
 
-  defp load_model_and_tokenizer(model_name) do
+  defp load_model_and_tokenizer(model_name, num_labels) do
     {:ok, spec} =
       Bumblebee.load_spec({:hf, model_name},
         architecture: :for_sequence_classification
       )
 
-    # TODO: support multi-class when we can customize choices
-    spec = Bumblebee.configure(spec, num_labels: 2)
+    spec = Bumblebee.configure(spec, num_labels: num_labels)
 
     {:ok, model} = Bumblebee.load_model({:hf, model_name}, spec: spec)
     {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, model_name})
@@ -105,7 +104,7 @@ defmodule Excision.Workers.TrainClassifier do
 
   defp load_data(decision_site, tokenizer) do
     batch_size = 64
-    label_map = %{true => 1, false => 0}
+    label_map = Excisions.build_label_map(decision_site)
 
     df =
       Excisions.list_labelled_decisions_for_site(decision_site)
@@ -113,7 +112,7 @@ defmodule Excision.Workers.TrainClassifier do
                        input: input,
                        label: label
                      } ->
-        %{label: Map.get(label_map, label), text: to_string(input)}
+        %{label: Map.get(label_map, label.name), text: to_string(input)}
       end)
       |> Explorer.DataFrame.new()
 

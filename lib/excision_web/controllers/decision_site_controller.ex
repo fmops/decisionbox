@@ -104,7 +104,7 @@ defmodule ExcisionWeb.DecisionSiteController do
       probs = outputs.logits |> Nx.sigmoid()
       prediction_idx = probs |> Nx.argmax(axis: 1) |> then(& &1[0]) |> Nx.to_number()
 
-      label_map = %{true => 1, false => 0}
+      label_map = Excisions.build_label_map(decision_site)
       idx_to_label = Map.new(label_map, fn {k, v} -> {v, k} end)
       prediction = idx_to_label[prediction_idx]
 

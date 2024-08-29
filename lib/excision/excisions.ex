@@ -167,7 +167,8 @@ defmodule Excision.Excisions do
   def list_labelled_decisions_for_site(%DecisionSite{} = decision_site) do
     from(d in Decision)
     |> where([d], d.decision_site_id == ^decision_site.id)
-    |> where([d], not is_nil(d.label))
+    |> where([d], not is_nil(d.label_id))
+    |> preload([:label])
     |> Repo.all()
   end
 
@@ -453,6 +454,15 @@ defmodule Excision.Excisions do
   def is_default_classifier?(classifier) do
     classifier.name == "baseline"
   end
+
+  def build_label_map(decision_site) do
+    decision_site = Repo.preload(decision_site, [:choices])
+    decision_site.choices
+      |> Enum.map(& &1.name) 
+      |> Enum.with_index()
+      |> Enum.into(%{})
+  end
+  
 
   def compute_accuracy(%Classifier{} = classifier) do
     classifier = Repo.preload(classifier, :decisions)

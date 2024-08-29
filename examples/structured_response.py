@@ -3,7 +3,7 @@ import os
 import asyncio
 import aiohttp
 
-EXBOX_URL = "http://localhost:4000/api/decision_sites/1/invoke"
+EXBOX_URL = "http://localhost:4000/api/decision_sites/2/invoke"
 
 async def main():
     async with aiohttp.ClientSession() as session:
