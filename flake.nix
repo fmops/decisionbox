@@ -60,6 +60,8 @@
 
             # probably needed for your Phoenix assets
             nodejs_22
+
+            sqlite
           ]
           ++
           # Linux only

@@ -6,7 +6,7 @@ defmodule ExcisionWeb.DecisionLive.Index do
 
   @impl true
   def handle_params(%{"decision_site_id" => decision_site_id} = params, _url, socket) do
-    decision_site = Excisions.get_decision_site!(decision_site_id)
+    decision_site = Excisions.get_decision_site!(decision_site_id, preloads: [:decisions, :choices])
     classifier_id = Map.get(params, "classifier_id")
 
     classifier =
@@ -16,9 +16,9 @@ defmodule ExcisionWeb.DecisionLive.Index do
 
     decisions =
       if classifier_id do
-        Excisions.list_decisions_for_classifier(classifier, preloads: [:classifier])
+        Excisions.list_decisions_for_classifier(classifier, preloads: [:classifier, :label, :prediction])
       else
-        Excisions.list_decisions_for_site(decision_site, preloads: [:classifier])
+        Excisions.list_decisions_for_site(decision_site, preloads: [:classifier, :label, :prediction])
       end
 
     {:noreply,
@@ -61,15 +61,9 @@ defmodule ExcisionWeb.DecisionLive.Index do
   end
 
   @impl true
-  def handle_event("label", %{"id" => id, "value" => value}, socket) do
-    value =
-      case value do
-        "true" -> true
-        "false" -> false
-      end
-
-    decision = Excisions.get_decision!(id, preloads: [:classifier])
-    {:ok, decision} = Excisions.label_decision(decision, value)
+  def handle_event("label", %{"decision_id" => decision_id, "value" => label_choice_id}, socket) do
+    decision = Excisions.get_decision!(decision_id)
+    {:ok, decision} = Excisions.label_decision(decision, label_choice_id)
 
     {:noreply, stream_insert(socket, :decisions, decision)}
   end

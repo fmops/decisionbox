@@ -6,7 +6,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :decision_sites, Excisions.list_decision_sites())}
+    {:ok, stream(socket, :decision_sites, Excisions.list_decision_sites(preloads: [:decisions]))}
   end
 
   @impl true

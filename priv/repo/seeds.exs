@@ -11,39 +11,34 @@
 # and so on) as they will fail if something goes wrong.
 
 alias Excision.Excisions
-alias Excision.Excisions.Classifier
+
+%{review: texts, rating: labels} = Scidata.YelpFullReviews.download()
 
 {:ok, decision_site} =
   Excisions.create_decision_site(%{
-    name: "example"
+    name: "yelp reviews",
+    choices:
+      labels
+      |> Enum.uniq()
+      |> Enum.map(&to_string/1)
+      |> Enum.sort()
+      |> Enum.with_index()
+      |> Enum.map(fn {val, idx} -> {idx, %{name: val}} end)
+      |> Enum.into(%{})
   })
+
+for {text, label} <- Enum.zip(texts, labels) |> Enum.take(100) do
+  Excisions.create_decision(%{
+    decision_site_id: decision_site.id,
+    classifier_id: decision_site.classifiers |> Enum.at(0) |> then(& &1.id),
+    input: text,
+    prediction_id: decision_site.choices |> Enum.random() |> then(& &1.id),
+    label_id: decision_site.choices |> Enum.find(&(&1.name == to_string(label))) |> then(& &1.id)
+  })
+end
 
 {:ok, _} =
-  Excision.Repo.insert(%Classifier{
+  Excisions.create_classifier(%{
     decision_site_id: decision_site.id,
     name: "example",
-    status: :waiting
   })
-
-for i <- 1..100 do
-  {:ok, _} =
-    Excisions.create_decision(%{
-      decision_site_id: decision_site.id,
-      # this is a test + random string
-      input:
-        "This is a test: " <>
-          (:crypto.strong_rand_bytes(10) |> Base.encode16() |> String.downcase()),
-      label: if(i <= 80, do: true, else: nil)
-    })
-end
-
-for i <- 1..100 do
-  {:ok, _} =
-    Excisions.create_decision(%{
-      decision_site_id: decision_site.id,
-      input:
-        "This is no longer a test: " <>
-          (:crypto.strong_rand_bytes(10) |> Base.encode16() |> String.downcase()),
-      label: if(i <= 80, do: false, else: nil)
-    })
-end

@@ -13,6 +13,9 @@
   row_click={fn {_id, decision_site} -> JS.navigate(~p"/decision_sites/#{decision_site}") end}
 >
   <:col :let={{_id, decision_site}} label="Name"><%= decision_site.name %></:col>
+  <:col :let={{_id, decision_site}} label="Updated"><%= decision_site.updated_at %></:col>
+  <:col :let={{_id, decision_site}} label="# Decisions"><%= decision_site.decisions |> Enum.count() %></:col>
+  <:col :let={{_id, decision_site}} label="# Labelled Decisions"><%= decision_site.decisions |> Enum.filter(& not is_nil(&1.label_id))|> Enum.count() %></:col>
   <:action :let={{_id, decision_site}}>
     <div class="sr-only">
       <.link navigate={~p"/decision_sites/#{decision_site}"}>Show</.link>

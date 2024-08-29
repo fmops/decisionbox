@@ -13,7 +13,7 @@ defmodule ExcisionWeb.DecisionLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:decision, Excisions.get_decision!(id))}
+     |> assign(:decision, Excisions.get_decision!(id, preloads: [:prediction, :label]))}
   end
 
   defp page_title(:show), do: "Show Decision"

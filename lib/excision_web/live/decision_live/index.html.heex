@@ -7,8 +7,12 @@
 </.header>
 
 <.table id="decisions" rows={@streams.decisions}>
-  <:col :let={{_id, decision}} label="Input"><%= decision.input %></:col>
-  <:col :let={{_id, decision}} label="Decision"><%= decision.prediction %></:col>
+  <:col :let={{_id, decision}} label="Input">
+    <div class="overflow-auto max-h-64">
+      <%= decision.input %>
+    </div>
+  </:col>
+  <:col :let={{_id, decision}} label="Decision"><%= decision.prediction.name %></:col>
   <:col :let={{_id, decision}} label="Classifier">
     <%= if decision.classifier do %>
       <.link
@@ -22,26 +26,15 @@
     <% end %>
   </:col>
   <:col :let={{_id, decision}} label="Label">
-    <.link
-      class={[
-        decision.label && "underline font-bold"
-      ]}
-      phx-click="label"
-      phx-value-id={decision.id}
-      phx-value-value="true"
-    >
-      ✅ (true)
-    </.link>
-    <.link
-      class={[
-        decision.label == false && "underline font-bold"
-      ]}
-      phx-click="label"
-      phx-value-id={decision.id}
-      phx-value-value="false"
-    >
-      ❌ (false)
-    </.link>
+    <div class="w-16">
+      <.input
+        type="select"
+        name="label"
+        options={@decision_site.choices |> Enum.map(&{&1.name, &1.id})}
+        value={decision.label |> then(& &1.id)}
+        phx-click={JS.push("label", value: %{decision_id: decision.id})}
+      />
+    </div>
   </:col>
   <:action :let={{id, decision}}>
     <.link
