@@ -253,7 +253,9 @@ defmodule Excision.Excisions do
   def label_decision(%Decision{} = decision, label_choice_id) do
     case update_decision(decision, %{label_id: label_choice_id}) do
       {:ok, updated_decision} ->
-        updated_decision = get_decision!(updated_decision.id, preloads: [:classifier, :prediction, :label])
+        updated_decision =
+          get_decision!(updated_decision.id, preloads: [:classifier, :prediction, :label])
+
         if is_nil(decision.label) do
           Phoenix.PubSub.broadcast(
             Excision.PubSub,

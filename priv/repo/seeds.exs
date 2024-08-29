@@ -40,5 +40,5 @@ end
 {:ok, _} =
   Excisions.create_classifier(%{
     decision_site_id: decision_site.id,
-    name: "example",
+    name: "example"
   })
