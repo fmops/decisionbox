@@ -5,6 +5,7 @@ defmodule Excision.Excisions.DecisionSite do
   schema "decision_sites" do
     field :name, :string
     belongs_to :active_classifier, Excision.Excisions.Classifier
+    has_many :labels, Excision.Ontologies.Label
     has_many :classifiers, Excision.Excisions.Classifier
     has_many :decisions, Excision.Excisions.Decision
 

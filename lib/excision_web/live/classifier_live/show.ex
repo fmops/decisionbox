@@ -89,6 +89,8 @@ defmodule ExcisionWeb.ClassifierLive.Show do
      |> assign(:metrics, [])}
   end
 
+  def handle_info(_, socket), do: {:noreply, socket}
+
   defp make_loss_plot(metrics) do
     metrics
     |> Enum.map(fn %{timestamp: date, loss: loss} ->
