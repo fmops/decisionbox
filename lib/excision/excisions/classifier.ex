@@ -19,6 +19,8 @@ defmodule Excision.Excisions.Classifier do
 
     embeds_many :training_metrics, TrainingMetric, on_replace: :delete do
       field :timestamp, :utc_datetime
+      field :epoch, :integer
+      field :iteration, :integer
       field :loss, :float
       field :accuracy, :float
     end

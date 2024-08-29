@@ -29,9 +29,14 @@ defmodule Excision.Workers.TrainClassifier do
     num_labels = classifier.decision_site.choices |> Enum.count()
 
     {:ok, {%{model: model, params: params}, tokenizer}} =
-      load_model_and_tokenizer("distilbert/distilbert-base-uncased", num_labels, classifier.training_parameters.sequence_length)
+      load_model_and_tokenizer(
+        "distilbert/distilbert-base-uncased",
+        num_labels,
+        classifier.training_parameters.sequence_length
+      )
 
-    {train_data, test_data} = load_data(classifier.decision_site, tokenizer, classifier.training_parameters.batch_size)
+    {train_data, test_data} =
+      load_data(classifier.decision_site, tokenizer, classifier.training_parameters.batch_size)
 
     # run the fine-time
     logits_model = Axon.nx(model, & &1.logits)
@@ -43,7 +48,9 @@ defmodule Excision.Workers.TrainClassifier do
         sparse: true
       )
 
-    optimizer = Polaris.Optimizers.adam(learning_rate: classifier.training_parameters.learning_rate)
+    optimizer =
+      Polaris.Optimizers.adam(learning_rate: classifier.training_parameters.learning_rate)
+
     accuracy = &Axon.Metrics.accuracy(&1, &2, from_logits: true, sparse: true)
 
     # TODO: configurable number of epochs
@@ -62,7 +69,10 @@ defmodule Excision.Workers.TrainClassifier do
       )
       |> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
       |> then(fn loop -> %{loop | output_transform: & &1} end)
-      |> Axon.Loop.run(train_data, params, epochs: classifier.training_parameters.epochs, strict?: false)
+      |> Axon.Loop.run(train_data, params,
+        epochs: classifier.training_parameters.epochs,
+        strict?: false
+      )
 
     trained_model_state = loop.step_state.model_state
     train_accuracy = loop.metrics[0]["accuracy"] |> Nx.to_number()
@@ -76,11 +86,12 @@ defmodule Excision.Workers.TrainClassifier do
     test_accuracy = test_results[0]["accuracy"] |> Nx.to_number()
 
     Excisions.update_classifier(classifier, %{
-      status: :trained,
       checkpoint_path: checkpoint_path,
       train_accuracy: train_accuracy,
       test_accuracy: test_accuracy
     })
+
+    Excisions.update_classifier_status(classifier, :trained)
 
     :ok
   end
@@ -115,7 +126,7 @@ defmodule Excision.Workers.TrainClassifier do
       |> Explorer.DataFrame.new()
 
     {num_examples, _} = Explorer.DataFrame.shape(df)
-    num_train = (num_examples * 0.8) |> round() |> Kernel.max(1)
+    num_train = (num_examples * frac_train()) |> round() |> Kernel.max(1)
 
     train_data =
       df
@@ -147,14 +158,18 @@ defmodule Excision.Workers.TrainClassifier do
            metrics: %{
              "accuracy" => accuracy,
              "loss" => loss
-           }
+           },
+           epoch: epoch,
+           iteration: iteration
          } = state,
          classifier
        ) do
     training_metrics = %TrainingMetric{
       timestamp: DateTime.utc_now(),
       accuracy: accuracy |> Nx.to_number(),
-      loss: loss |> Nx.to_number()
+      loss: loss |> Nx.to_number(),
+      epoch: epoch,
+      iteration: iteration
     }
 
     Excisions.append_training_metrics(classifier, training_metrics)
@@ -173,7 +188,9 @@ defmodule Excision.Workers.TrainClassifier do
       training_metrics = %TrainingMetric{
         timestamp: DateTime.utc_now(),
         accuracy: i,
-        loss: 0.1 * i
+        loss: 0.1 * i,
+        epoch: 1,
+        iteration: i
       }
 
       Excisions.append_training_metrics(classifier, training_metrics)
@@ -181,4 +198,6 @@ defmodule Excision.Workers.TrainClassifier do
 
     :ok
   end
+
+  def frac_train, do: 0.8
 end

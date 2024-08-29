@@ -70,7 +70,8 @@ defmodule Excision.MixProject do
       {:axon, "~> 0.6"},
       {:explorer, "~> 0.9"},
       {:contex, "~> 0.5"},
-      {:scidata, "~> 0.1"}
+      {:scidata, "~> 0.1"},
+      {:timex, "~> 3.7"}
     ]
   end
 
