@@ -16,6 +16,7 @@
 
 <.list>
   <:item title="Name"><%= @decision_site.name %></:item>
+  <:item title="Choices"><%= inspect(@decision_site.choices |> Enum.map(& &1.name)) %></:item>
   <:item title="Active Classifier">
     <.link
       patch={
@@ -27,7 +28,7 @@
     </.link>
   </:item>
   <:item title="# Decisions"><%= @num_decisions %></:item>
-  <:item title="# Labels"><%= @num_labelled_decisions %></:item>
+  <:item title="# Labelled Decisions"><%= @num_labelled_decisions %></:item>
   <:item title="# Classifiers"><%= @num_classifiers %></:item>
 </.list>
 

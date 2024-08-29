@@ -13,7 +13,9 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
     Phoenix.PubSub.subscribe(Excision.PubSub, "decision_site:#{id}")
 
     decision_site =
-      Excisions.get_decision_site!(id, preloads: [:active_classifier, :decisions, :classifiers])
+      Excisions.get_decision_site!(id,
+        preloads: [:active_classifier, :decisions, :classifiers, :choices]
+      )
 
     accuracy_plot =
       decision_site.classifiers

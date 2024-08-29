@@ -1,10 +1,10 @@
-defmodule Excision.Ontologies.Label do
+defmodule Excision.Excisions.Choice do
   use Ecto.Schema
   import Ecto.Changeset
 
-  schema "labels" do
+  schema "choices" do
     field :name, :string
-    belongs_to :decision_site, Excision.Ontologies.DecisionSite
+    belongs_to :decision_site, Excision.Excisions.DecisionSite
 
     timestamps(type: :utc_datetime)
   end

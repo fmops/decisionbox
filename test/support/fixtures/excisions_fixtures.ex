@@ -50,4 +50,19 @@ defmodule Excision.ExcisionsFixtures do
 
     classifier
   end
+
+  @doc """
+  Generate a choice.
+  """
+  def choice_fixture(attrs \\ %{}) do
+    {:ok, choice} =
+      attrs
+      |> Enum.into(%{
+        name: "some name",
+        decision_site_id: Map.get(attrs, :decision_site_id, decision_site_fixture().id)
+      })
+      |> Excision.Excisions.create_choice()
+
+    choice
+  end
 end

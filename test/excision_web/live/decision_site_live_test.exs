@@ -4,7 +4,13 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
   import Phoenix.LiveViewTest
   import Excision.ExcisionsFixtures
 
-  @create_attrs %{name: "some name"}
+  @create_attrs %{
+    name: "some name",
+    choices: %{
+      0 => %{name: "true"},
+      1 => %{name: "false"}
+    }
+  }
   @update_attrs %{name: "some updated name"}
   @invalid_attrs %{name: nil}
 

@@ -202,4 +202,58 @@ defmodule Excision.ExcisionsTest do
       assert %Ecto.Changeset{} = Excisions.change_classifier(classifier)
     end
   end
+
+  describe "choices" do
+    alias Excision.Excisions.Choice
+
+    import Excision.ExcisionsFixtures
+
+    @invalid_attrs %{name: nil}
+
+    test "list_choices/0 returns all choices" do
+      choice = choice_fixture()
+      assert Excisions.list_choices() == [choice]
+    end
+
+    test "get_choice!/1 returns the choice with given id" do
+      choice = choice_fixture()
+      assert Excisions.get_choice!(choice.id) == choice
+    end
+
+    test "create_choice/1 with valid data creates a choice" do
+      valid_attrs = %{name: "some name", decision_site_id: decision_site_fixture().id}
+
+      assert {:ok, %Choice{} = choice} = Excisions.create_choice(valid_attrs)
+      assert choice.name == "some name"
+    end
+
+    test "create_choice/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Excisions.create_choice(@invalid_attrs)
+    end
+
+    test "update_choice/2 with valid data updates the choice" do
+      choice = choice_fixture()
+      update_attrs = %{name: "some updated name"}
+
+      assert {:ok, %Choice{} = choice} = Excisions.update_choice(choice, update_attrs)
+      assert choice.name == "some updated name"
+    end
+
+    test "update_choice/2 with invalid data returns error changeset" do
+      choice = choice_fixture()
+      assert {:error, %Ecto.Changeset{}} = Excisions.update_choice(choice, @invalid_attrs)
+      assert choice == Excisions.get_choice!(choice.id)
+    end
+
+    test "delete_choice/1 deletes the choice" do
+      choice = choice_fixture()
+      assert {:ok, %Choice{}} = Excisions.delete_choice(choice)
+      assert_raise Ecto.NoResultsError, fn -> Excisions.get_choice!(choice.id) end
+    end
+
+    test "change_choice/1 returns a choice changeset" do
+      choice = choice_fixture()
+      assert %Ecto.Changeset{} = Excisions.change_choice(choice)
+    end
+  end
 end

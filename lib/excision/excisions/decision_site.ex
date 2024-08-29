@@ -5,7 +5,7 @@ defmodule Excision.Excisions.DecisionSite do
   schema "decision_sites" do
     field :name, :string
     belongs_to :active_classifier, Excision.Excisions.Classifier
-    has_many :labels, Excision.Ontologies.Label
+    has_many :choices, Excision.Excisions.Choice
     has_many :classifiers, Excision.Excisions.Classifier
     has_many :decisions, Excision.Excisions.Decision
 
@@ -16,6 +16,10 @@ defmodule Excision.Excisions.DecisionSite do
   def changeset(decision_site, attrs) do
     decision_site
     |> cast(attrs, [:name, :active_classifier_id])
+    |> cast_assoc(:choices,
+      sort_param: :choices_sort,
+      drop_param: :choices_drop
+    )
     |> validate_required([:name, :active_classifier_id])
     |> foreign_key_constraint(:active_classifier)
   end

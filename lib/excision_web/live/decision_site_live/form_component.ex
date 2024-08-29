@@ -20,6 +20,38 @@ defmodule ExcisionWeb.DecisionSiteLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
+        <%= if @action == :new do %>
+          <fieldset>
+            <legend class="text-sm font-semibold text-zinc-800">Choices</legend>
+            <.inputs_for :let={fp} field={@form[:choices]}>
+              <div class="flex">
+                <input type="hidden" name="decision_site[choices_sort][]" value={fp.index} />
+                <div class="grow">
+                  <.input field={fp[:name]} type="text" placeholder="Choice name" />
+                </div>
+                <button
+                  type="button"
+                  class="flex"
+                  name="decision_site[choices_drop][]"
+                  value={fp.index}
+                  phx-click={JS.dispatch("change")}
+                >
+                  <.icon name="hero-x-mark" class="w-6 h-6 relative top-4" />
+                </button>
+              </div>
+            </.inputs_for>
+            <input type="hidden" name="decision_site[choices_drop][]" />
+
+            <.button
+              type="button"
+              name="decision_site[choices_sort][]"
+              value="new"
+              phx-click={JS.dispatch("change")}
+            >
+              Add Choice
+            </.button>
+          </fieldset>
+        <% end %>
         <:actions>
           <.button phx-disable-with="Saving...">Save Decision site</.button>
         </:actions>
@@ -30,11 +62,20 @@ defmodule ExcisionWeb.DecisionSiteLive.FormComponent do
 
   @impl true
   def update(%{decision_site: decision_site} = assigns, socket) do
+    params = %{
+      name: "foo",
+      choices: [
+        %{name: "true"},
+        %{name: "false"}
+      ]
+    }
+
     {:ok,
      socket
      |> assign(assigns)
      |> assign_new(:form, fn ->
-       to_form(Excisions.change_decision_site(decision_site))
+       # to_form(Excisions.change_decision_site(decision_site))
+       to_form(Excisions.change_decision_site(decision_site, params))
      end)}
   end
 
