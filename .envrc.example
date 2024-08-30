@@ -1,2 +1,3 @@
 use flake
 export ERL_AFLAGS="-kernel shell_history enabled"
+export XLA_TARGET="cuda12"

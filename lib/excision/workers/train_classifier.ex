@@ -28,8 +28,8 @@ defmodule Excision.Workers.TrainClassifier do
   def train(classifier) do
     num_labels = classifier.decision_site.choices |> Enum.count()
     # TODO: allow variable model name
-    model_name = "albert/albert-base-v2"
-    #model_name = "distilbert/distilbert-base-uncased"
+    #model_name = "albert/albert-base-v2"
+    model_name = "distilbert/distilbert-base-uncased"
 
     {:ok, {%{model: model, params: params}, tokenizer}} =
       load_model_and_tokenizer(
