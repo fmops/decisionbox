@@ -77,7 +77,7 @@ defmodule ExcisionWeb.ClassifierLive.Show do
            max_iters: 10,
            epoch: 0,
            max_epochs: classifier.training_parameters.epochs,
-           eta: nil
+           eta: "n/a"
          })}
 
       {:error, %Ecto.Changeset{}} ->

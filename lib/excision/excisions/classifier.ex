@@ -17,7 +17,7 @@ defmodule Excision.Excisions.Classifier do
       field :epochs, :integer
     end
 
-    embeds_many :training_metrics, TrainingMetric, on_replace: :delete do
+    embeds_many :training_metrics, TrainingMetric, primary_key: false, on_replace: :delete do
       field :timestamp, :utc_datetime
       field :epoch, :integer
       field :iteration, :integer

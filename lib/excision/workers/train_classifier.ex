@@ -27,14 +27,18 @@ defmodule Excision.Workers.TrainClassifier do
 
   def train(classifier) do
     num_labels = classifier.decision_site.choices |> Enum.count()
+    # TODO: allow variable model name
+    model_name = "albert/albert-base-v2"
+    #model_name = "distilbert/distilbert-base-uncased"
 
     {:ok, {%{model: model, params: params}, tokenizer}} =
       load_model_and_tokenizer(
-        "distilbert/distilbert-base-uncased",
+        model_name,
         num_labels,
         classifier.training_parameters.sequence_length
       )
 
+    # TODO: if OOM killed, can fix by reducing batch size. Report it.
     {train_data, test_data} =
       load_data(classifier.decision_site, tokenizer, classifier.training_parameters.batch_size)
 
@@ -53,7 +57,6 @@ defmodule Excision.Workers.TrainClassifier do
 
     accuracy = &Axon.Metrics.accuracy(&1, &2, from_logits: true, sparse: true)
 
-    # TODO: configurable number of epochs
     checkpoint_path = "checkpoints/#{classifier.id}/"
 
     # preserve the complete loop struct for grabbing loss traces and metrics
@@ -67,7 +70,9 @@ defmodule Excision.Workers.TrainClassifier do
         fn loop -> log_metrics(loop, classifier) end,
         every: 1
       )
-      |> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
+      # TODO: allow checkpointing in training_parameters and warn about sapce usage
+      # TODO: resume interrupted training from checkpoints 
+      #|> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
       |> then(fn loop -> %{loop | output_transform: & &1} end)
       |> Axon.Loop.run(train_data, params,
         epochs: classifier.training_parameters.epochs,
@@ -75,8 +80,15 @@ defmodule Excision.Workers.TrainClassifier do
       )
 
     trained_model_state = loop.step_state.model_state
+
+    model
+      |> Axon.serialize(model, trained_model_state)
+      |> then(&File.write!(Path.join([checkpoint_path, "model.axon"]), &1))
+
+
     train_accuracy = loop.metrics[0]["accuracy"] |> Nx.to_number()
 
+    # TODO: eval once per epoch during training
     test_results =
       logits_model
       |> Axon.Loop.evaluator()
@@ -199,5 +211,6 @@ defmodule Excision.Workers.TrainClassifier do
     :ok
   end
 
+  # TODO: move to training_parameters
   def frac_train, do: 0.8
 end

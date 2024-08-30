@@ -79,25 +79,17 @@ defmodule ExcisionWeb.DecisionSiteController do
       classifier = decision_site.active_classifier
 
       # TODO: this is really slow, need GenServer (Agent?) to keep model in memory
-      model_name = "distilbert/distilbert-base-uncased"
+      # TODO: read model name from classifier
+      # model_name = "albert/albert-base-v2"
+      model_name = "distilbert/distllbert-base-uncased"
 
-      {:ok, spec} =
-        Bumblebee.load_spec({:hf, model_name},
-          architecture: :for_sequence_classification
-        )
-
-      model = Bumblebee.build_model(spec)
       {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, model_name})
       checkpoint_path = classifier.checkpoint_path
-      {:ok, checkpoints} = File.ls(checkpoint_path)
-      last_checkpoint = checkpoints |> Enum.max()
-
-      params =
-        [checkpoint_path, last_checkpoint]
-        |> Path.join()
-        |> File.read!()
-        |> Axon.Loop.deserialize_state()
-        |> then(& &1.step_state.model_state)
+      {model, params} = 
+        [checkpoint_path, "model.axon"]
+          |> Path.join()
+          |> File.read!()
+          |> Axon.deserialize()
 
       input = Jason.encode!(conn.body_params["messages"])
       outputs = Axon.predict(model, params, Bumblebee.apply_tokenizer(tokenizer, input))
