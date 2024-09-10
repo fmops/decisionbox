@@ -24,6 +24,7 @@ defmodule ExcisionWeb.DecisionController do
 
   def create(conn, %{"decision" => decision_params}) do
     with {:ok, %Decision{} = decision} <- Excisions.create_decision(decision_params) do
+      decision = Excisions.get_decision!(decision.id, preloads: [:prediction, :label])
       conn
       |> put_status(:created)
       |> put_resp_header(
@@ -39,7 +40,7 @@ defmodule ExcisionWeb.DecisionController do
     description: "Show a decision"
 
   def show(conn, %{"id" => id}) do
-    decision = Excisions.get_decision!(id)
+    decision = Excisions.get_decision!(id, preloads: [:prediction, :label])
     render(conn, :show, decision: decision)
   end
 
@@ -51,6 +52,7 @@ defmodule ExcisionWeb.DecisionController do
     decision = Excisions.get_decision!(id)
 
     with {:ok, %Decision{} = decision} <- Excisions.update_decision(decision, decision_params) do
+      decision = Excisions.get_decision!(decision.id, preloads: [:prediction, :label])
       render(conn, :show, decision: decision)
     end
   end

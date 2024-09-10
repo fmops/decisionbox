@@ -8,14 +8,12 @@ defmodule ExcisionWeb.DecisionControllerTest do
   @create_attrs %{
     input: "some input",
     label: true,
-    prediction: true
   }
   @update_attrs %{
     input: "some updated input",
     label: false,
-    prediction: false
   }
-  @invalid_attrs %{input: nil, label: nil, prediction: nil}
+  @invalid_attrs %{input: nil, label: nil, prediction_id: nil}
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
@@ -36,7 +34,7 @@ defmodule ExcisionWeb.DecisionControllerTest do
     test "renders decision when data is valid", %{conn: conn, decision_site: decision_site} do
       conn =
         post(conn, ~p"/api/decision_sites/#{decision_site}/decisions",
-          decision: @create_attrs |> Enum.into(%{decision_site_id: decision_site.id})
+          decision: @create_attrs |> Enum.into(%{decision_site_id: decision_site.id, prediction_id: decision_site.choices |> hd() |> then(& &1.id)})
         )
 
       assert %{"id" => id} = json_response(conn, 201)["data"]
@@ -46,8 +44,8 @@ defmodule ExcisionWeb.DecisionControllerTest do
       assert %{
                "id" => ^id,
                "input" => "some input",
-               "label" => true,
-               "prediction" => true
+               "label" => nil,
+               "prediction" => %{"decision_site_id" => 1}
              } = json_response(conn, 200)["data"]
     end
 
@@ -78,8 +76,8 @@ defmodule ExcisionWeb.DecisionControllerTest do
       assert %{
                "id" => ^id,
                "input" => "some updated input",
-               "label" => false,
-               "prediction" => false
+               "label" => nil,
+               "prediction" => %{"decision_site_id" => 1}
              } = json_response(conn, 200)["data"]
     end
 

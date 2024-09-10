@@ -6,7 +6,13 @@ defmodule ExcisionWeb.ClassifierControllerTest do
   alias Excision.Excisions.Classifier
 
   @create_attrs %{
-    name: "some name"
+    name: "some name",
+    training_parameters: %{
+      learning_rate: 0.1,
+      batch_size: 32,
+      sequence_length: 100,
+      epochs: 10
+    }
   }
   @update_attrs %{
     name: "some updated name"
