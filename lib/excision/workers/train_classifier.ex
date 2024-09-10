@@ -81,9 +81,11 @@ defmodule Excision.Workers.TrainClassifier do
 
     trained_model_state = loop.step_state.model_state
 
-    model
-      |> Axon.serialize(model, trained_model_state)
-      |> then(&File.write!(Path.join([checkpoint_path, "model.axon"]), &1))
+    if !File.exists?(checkpoint_path) do
+      File.mkdir!(checkpoint_path)
+    end
+    Nx.serialize(trained_model_state)
+      |> then(&File.write!(Path.join([checkpoint_path, "parameters.nx"]), &1))
 
 
     train_accuracy = loop.metrics[0]["accuracy"] |> Nx.to_number()
