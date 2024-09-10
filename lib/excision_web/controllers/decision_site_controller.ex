@@ -175,13 +175,13 @@ defmodule ExcisionWeb.DecisionSiteController do
 
     # parse response and record decision
     resp_body =
-      resp.resp_body
-      |> then(
-        case Plug.Conn.get_resp_header(resp, "content-encoding") do
-          ["gzip"] -> &:zlib.gunzip/1
-          _ -> fn x -> x end
-        end
-      )
+      case Plug.Conn.get_resp_header(resp, "content-encoding") do
+        ["gzip"] -> :zlib.gunzip(resp.resp_body)
+        ["br"] -> 
+          {:ok, data} = :brotli.decode(resp.resp_body)
+          data
+        _ -> resp.resp_body
+      end
       |> Jason.decode!()
 
     # record the decision

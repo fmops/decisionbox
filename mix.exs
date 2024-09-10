@@ -71,7 +71,8 @@ defmodule Excision.MixProject do
       {:explorer, "~> 0.9"},
       {:contex, "~> 0.5"},
       {:scidata, "~> 0.1"},
-      {:timex, "~> 3.7"}
+      {:timex, "~> 3.7"},
+      {:brotli, "~> 0.3"}
     ]
   end
 
