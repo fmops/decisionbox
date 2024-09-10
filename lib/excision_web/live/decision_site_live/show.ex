@@ -2,6 +2,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
   use ExcisionWeb, :live_view
 
   alias Excision.Excisions
+  import ExcisionWeb.Components, only: [pulsing_dot: 1]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -36,8 +37,8 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
      |> assign(:decision_site, decision_site)
      |> assign(:num_decisions, decision_site.decisions |> Enum.count())
      |> assign(
-       :num_labelled_decisions,
-       decision_site.decisions |> Enum.filter(&(not is_nil(&1.label))) |> Enum.count()
+       :num_unlabelled_decisions,
+       decision_site.decisions |> Enum.filter(&(is_nil(&1.label_id))) |> Enum.count()
      )
      |> assign(:num_classifiers, decision_site.classifiers |> Enum.count())
      |> assign(:accuracy_plot, accuracy_plot)}

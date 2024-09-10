@@ -28,7 +28,14 @@
     </.link>
   </:item>
   <:item title="# Decisions"><%= @num_decisions %></:item>
-  <:item title="# Labelled Decisions"><%= @num_labelled_decisions %></:item>
+  <:item title="# Unlabelled Decisions">
+    <div class="flex flex-row items-center">
+      <%= @num_unlabelled_decisions %>
+      <%= if @num_unlabelled_decisions > 0 do %>
+        <.pulsing_dot />
+      <% end %>
+    </div>
+  </:item>
   <:item title="# Classifiers"><%= @num_classifiers %></:item>
 </.list>
 
