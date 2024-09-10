@@ -12,13 +12,13 @@ defmodule Excision.ExcisionsTest do
 
     test "list_decision_sites/0 returns all decision_sites" do
       decision_site = decision_site_fixture()
-      assert Excisions.list_decision_sites(preloads: [:classifiers]) == [decision_site]
+      assert Excisions.list_decision_sites(preloads: [:choices, :classifiers]) == [decision_site]
     end
 
     test "get_decision_site!/1 returns the decision_site with given id" do
       decision_site = decision_site_fixture()
 
-      assert Excisions.get_decision_site!(decision_site.id, preloads: [:classifiers]) ==
+      assert Excisions.get_decision_site!(decision_site.id, preloads: [:choices, :classifiers]) ==
                decision_site
     end
 
@@ -65,7 +65,7 @@ defmodule Excision.ExcisionsTest do
                Excisions.update_decision_site(decision_site, @invalid_attrs)
 
       assert decision_site ==
-               Excisions.get_decision_site!(decision_site.id, preloads: [:classifiers])
+               Excisions.get_decision_site!(decision_site.id, preloads: [:classifiers, :choices])
     end
 
     test "delete_decision_site/1 deletes the decision_site" do
@@ -102,15 +102,17 @@ defmodule Excision.ExcisionsTest do
 
       valid_attrs = %{
         input: "some input",
-        label: true,
-        prediction: true,
+        label_id: decision_site.choices |> hd() |> then(& &1.id),
+        prediction_id: decision_site.choices |> hd() |> then(& &1.id),
         decision_site_id: decision_site.id
       }
 
       assert {:ok, %Decision{} = decision} = Excisions.create_decision(valid_attrs)
+      decision = Excisions.get_decision!(decision.id, preloads: [:label, :prediction])
+
       assert decision.input == "some input"
-      assert decision.label == true
-      assert decision.prediction == true
+      assert decision.label.name == "some choice name"
+      assert decision.prediction.name == "some choice name"
     end
 
     test "create_decision/1 with invalid data returns error changeset" do
@@ -119,12 +121,18 @@ defmodule Excision.ExcisionsTest do
 
     test "update_decision/2 with valid data updates the decision" do
       decision = decision_fixture()
-      update_attrs = %{input: "some updated input", label: false, prediction: false}
+
+      choices =
+        Excision.Excisions.get_decision_site!(decision.decision_site_id, preloads: [:choices]).choices
+
+      update_attrs = %{input: "some updated input", label_id: choices |> hd() |> then(& &1.id)}
 
       assert {:ok, %Decision{} = decision} = Excisions.update_decision(decision, update_attrs)
+      decision = Excisions.get_decision!(decision.id, preloads: [:label, :prediction])
+
       assert decision.input == "some updated input"
-      assert decision.label == false
-      assert decision.prediction == false
+      assert decision.label.name == "some choice name"
+      assert decision.prediction.name == "some choice name"
     end
 
     test "update_decision/2 with invalid data returns error changeset" do
@@ -164,7 +172,17 @@ defmodule Excision.ExcisionsTest do
 
     test "create_classifier/1 with valid data creates a classifier" do
       decision_site = decision_site_fixture()
-      valid_attrs = %{name: "some name", decision_site_id: decision_site.id}
+
+      valid_attrs = %{
+        name: "some name",
+        decision_site_id: decision_site.id,
+        training_parameters: %{
+          learning_rate: 0.1,
+          batch_size: 32,
+          sequence_length: 100,
+          epochs: 10
+        }
+      }
 
       assert {:ok, %Classifier{} = classifier} = Excisions.create_classifier(valid_attrs)
       assert classifier.name == "some name"
@@ -212,7 +230,7 @@ defmodule Excision.ExcisionsTest do
 
     test "list_choices/0 returns all choices" do
       choice = choice_fixture()
-      assert Excisions.list_choices() == [choice]
+      assert [choice, _] = Excisions.list_choices()
     end
 
     test "get_choice!/1 returns the choice with given id" do

@@ -12,11 +12,9 @@ defmodule Excision.ExcisionsFixtures do
       attrs
       |> Enum.into(%{
         name: "some name",
-        choices: [
-          %{
-            name: "some name"
-          }
-        ]
+        choices: %{
+          0 => %{name: "some choice name"}
+        }
       })
       |> Excision.Excisions.create_decision_site()
 
@@ -27,7 +25,12 @@ defmodule Excision.ExcisionsFixtures do
   Generate a decision.
   """
   def decision_fixture(attrs \\ %{}) do
-    decision_site = Excision.Excisions.get_decision_site!(Map.get(attrs, :decision_site_id, decision_site_fixture().id), preloads: [:choices])
+    decision_site =
+      Excision.Excisions.get_decision_site!(
+        Map.get(attrs, :decision_site_id, decision_site_fixture().id),
+        preloads: [:choices]
+      )
+
     {:ok, decision} =
       attrs
       |> Enum.into(%{

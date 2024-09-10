@@ -2,13 +2,14 @@ defmodule Excision.Excisions.Choice do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Jason.Encoder, only: [
-    :id,
-    :name,
-    :decision_site_id,
-    :inserted_at,
-    :updated_at
-  ]}
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :name,
+             :decision_site_id,
+             :inserted_at,
+             :updated_at
+           ]}
   schema "choices" do
     field :name, :string
     belongs_to :decision_site, Excision.Excisions.DecisionSite

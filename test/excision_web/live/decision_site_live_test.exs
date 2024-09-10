@@ -32,8 +32,8 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
     test "saves new decision_site", %{conn: conn} do
       {:ok, index_live, _html} = live(conn, ~p"/decision_sites")
 
-      assert index_live |> element("a", "New Decision site") |> render_click() =~
-               "New Decision site"
+      assert index_live |> element("a", "Create New") |> render_click() =~
+               "Create New"
 
       assert_patch(index_live, ~p"/decision_sites/new")
 

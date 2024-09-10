@@ -35,7 +35,12 @@ defmodule ExcisionWeb.DecisionSiteLive.Index do
 
   @impl true
   def handle_info({ExcisionWeb.DecisionSiteLive.FormComponent, {:saved, decision_site}}, socket) do
-    {:noreply, stream_insert(socket, :decision_sites, decision_site)}
+    {:noreply,
+     stream_insert(
+       socket,
+       :decision_sites,
+       Excisions.get_decision_site!(decision_site.id, preloads: [:decisions, :choices])
+     )}
   end
 
   @impl true

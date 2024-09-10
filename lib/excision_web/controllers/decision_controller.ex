@@ -25,6 +25,7 @@ defmodule ExcisionWeb.DecisionController do
   def create(conn, %{"decision" => decision_params}) do
     with {:ok, %Decision{} = decision} <- Excisions.create_decision(decision_params) do
       decision = Excisions.get_decision!(decision.id, preloads: [:prediction, :label])
+
       conn
       |> put_status(:created)
       |> put_resp_header(

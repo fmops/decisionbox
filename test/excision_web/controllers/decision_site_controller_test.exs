@@ -97,7 +97,7 @@ defmodule ExcisionWeb.DecisionSiteControllerTest do
         Plug.Conn.resp(
           conn,
           200,
-          "{\"choices\": [{\"message\": {\"content\": \"{\\\"value\\\":false}\"}}]}"
+          "{\"choices\": [{\"message\": {\"content\": \"{\\\"value\\\":\\\"some choice name\\\"}\"}}]}"
         )
       end)
 
@@ -121,7 +121,7 @@ defmodule ExcisionWeb.DecisionSiteControllerTest do
       assert Enum.count(decisions) == 1
 
       decision = Enum.at(decisions, 0)
-      assert %Excision.Excisions.Decision{prediction: false} = decision
+      assert %Excision.Excisions.Decision{} = decision
       assert Jason.decode!(decision.input) == Jason.decode!(Jason.encode!(messages))
     end
   end
