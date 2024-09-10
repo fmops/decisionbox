@@ -64,20 +64,10 @@ defmodule Excision.MixProject do
       {:req, "~> 0.5"},
       {:bypass, "~> 2.1"},
       {:oban, "~> 2.18"},
-      # TODO: mainline when 0.8 compatible
-      {:bumblebee, 
-        git: "https://github.com/feynmanliang/bumblebee.git",
-        branch: "patch-1"
-      },
-      {:nx, "~> 0.8"},
-      {:exla, "~> 0.8"},
-      {:xla, "~> 0.8"},
-      # TODO: mainline when 0.8 compatible
-      {:axon, 
-        git: "https://github.com/feynmanliang/axon.git",
-        branch: "patch-1",
-        override: true
-      },
+      {:bumblebee, "~> 0.5"},
+      {:nx, "~> 0.7"},
+      {:exla, "~> 0.7"},
+      {:axon, "~> 0.6"},
       {:explorer, "~> 0.9"},
       {:contex, "~> 0.5"},
       {:scidata, "~> 0.1"},

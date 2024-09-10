@@ -1,4 +1,4 @@
-# Excision
+# DecisionBox
 
 To start your Phoenix server:
 
@@ -23,4 +23,12 @@ EXLA NIF fails to load with SELinux
 
 ```sh
 execstack -c _build/dev/lib/exla/priv/libexla.so
+```
+
+Switching between CPU/GPU
+
+```sh
+# export XLA_TARGET=cuda12
+export XLA_TARGET=cpu
+mix deps.clean xla exla && mix deps.get
 ```
