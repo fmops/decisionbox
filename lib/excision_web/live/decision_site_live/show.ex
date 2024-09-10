@@ -38,7 +38,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
      |> assign(:num_decisions, decision_site.decisions |> Enum.count())
      |> assign(
        :num_unlabelled_decisions,
-       decision_site.decisions |> Enum.filter(&(is_nil(&1.label_id))) |> Enum.count()
+       decision_site.decisions |> Enum.filter(&is_nil(&1.label_id)) |> Enum.count()
      )
      |> assign(:num_classifiers, decision_site.classifiers |> Enum.count())
      |> assign(:accuracy_plot, accuracy_plot)}

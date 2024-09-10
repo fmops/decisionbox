@@ -19,10 +19,10 @@
   </:col>
   <:col :let={{_id, decision_site}} label="# Unlabelled Decisions">
     <div class="flex flex-row items-center">
-        <%= decision_site.decisions |> Enum.filter(&(is_nil(&1.label_id))) |> Enum.count() %>
-        <%= if decision_site.decisions |> Enum.filter(&(is_nil(&1.label_id))) |> Enum.count() > 0 do%>
-          <.pulsing_dot />
-        <% end %>
+      <%= decision_site.decisions |> Enum.filter(&is_nil(&1.label_id)) |> Enum.count() %>
+      <%= if decision_site.decisions |> Enum.filter(&(is_nil(&1.label_id))) |> Enum.count() > 0 do %>
+        <.pulsing_dot />
+      <% end %>
     </div>
   </:col>
   <:action :let={{_id, decision_site}}>

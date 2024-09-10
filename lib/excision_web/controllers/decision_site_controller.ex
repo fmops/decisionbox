@@ -85,11 +85,12 @@ defmodule ExcisionWeb.DecisionSiteController do
 
       {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, model_name})
       checkpoint_path = classifier.checkpoint_path
-      {model, params} = 
+
+      {model, params} =
         [checkpoint_path, "model.axon"]
-          |> Path.join()
-          |> File.read!()
-          |> Axon.deserialize()
+        |> Path.join()
+        |> File.read!()
+        |> Axon.deserialize()
 
       input = Jason.encode!(conn.body_params["messages"])
       outputs = Axon.predict(model, params, Bumblebee.apply_tokenizer(tokenizer, input))
@@ -176,11 +177,15 @@ defmodule ExcisionWeb.DecisionSiteController do
     # parse response and record decision
     resp_body =
       case Plug.Conn.get_resp_header(resp, "content-encoding") do
-        ["gzip"] -> :zlib.gunzip(resp.resp_body)
-        ["br"] -> 
+        ["gzip"] ->
+          :zlib.gunzip(resp.resp_body)
+
+        ["br"] ->
           {:ok, data} = :brotli.decode(resp.resp_body)
           data
-        _ -> resp.resp_body
+
+        _ ->
+          resp.resp_body
       end
       |> Jason.decode!()
 
@@ -189,14 +194,16 @@ defmodule ExcisionWeb.DecisionSiteController do
       decision_site_id: decision_site.id,
       classifier_id: decision_site.active_classifier.id,
       input: Jason.encode!(req_body["messages"]),
-      prediction_id: decision_site.choices 
-        |> Enum.find(fn c -> c.name == (
-          resp_body["choices"]
-          |> hd()
-          |> then(& &1["message"]["content"])
-          |> then(&Jason.decode!/1)
-          |> then(& &1["value"])
-        ) end)
+      prediction_id:
+        decision_site.choices
+        |> Enum.find(fn c ->
+          c.name ==
+            resp_body["choices"]
+            |> hd()
+            |> then(& &1["message"]["content"])
+            |> then(&Jason.decode!/1)
+            |> then(& &1["value"])
+        end)
         |> then(& &1.id)
     })
 

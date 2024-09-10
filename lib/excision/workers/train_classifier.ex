@@ -28,7 +28,7 @@ defmodule Excision.Workers.TrainClassifier do
   def train(classifier) do
     num_labels = classifier.decision_site.choices |> Enum.count()
     # TODO: allow variable model name
-    #model_name = "albert/albert-base-v2"
+    # model_name = "albert/albert-base-v2"
     model_name = "distilbert/distilbert-base-uncased"
 
     {:ok, {%{model: model, params: params}, tokenizer}} =
@@ -72,7 +72,7 @@ defmodule Excision.Workers.TrainClassifier do
       )
       # TODO: allow checkpointing in training_parameters and warn about sapce usage
       # TODO: resume interrupted training from checkpoints 
-      #|> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
+      # |> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
       |> then(fn loop -> %{loop | output_transform: & &1} end)
       |> Axon.Loop.run(train_data, params,
         epochs: classifier.training_parameters.epochs,
@@ -84,9 +84,9 @@ defmodule Excision.Workers.TrainClassifier do
     if !File.exists?(checkpoint_path) do
       File.mkdir!(checkpoint_path)
     end
-    Nx.serialize(trained_model_state)
-      |> then(&File.write!(Path.join([checkpoint_path, "parameters.nx"]), &1))
 
+    Nx.serialize(trained_model_state)
+    |> then(&File.write!(Path.join([checkpoint_path, "parameters.nx"]), &1))
 
     train_accuracy = loop.metrics[0]["accuracy"] |> Nx.to_number()
 
