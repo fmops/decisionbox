@@ -12,6 +12,8 @@ on:
 
 jobs:
   docker_publish:
+    permissions: 
+      packages: write
     runs-on: "ubuntu-20.04"
 
     steps:
