@@ -44,6 +44,12 @@ defmodule Excision.ExcisionsFixtures do
       |> Enum.into(%{
         name: "some name",
         status: "waiting",
+        training_parameters: %{
+          learning_rate: 0.1,
+          batch_size: 32,
+          sequence_length: 100,
+          epochs: 10
+        },
         decision_site_id: Map.get(attrs, :decision_site_id, decision_site_fixture().id)
       })
       |> Excision.Excisions.create_classifier()
