@@ -17,7 +17,7 @@ defmodule ExcisionWeb.CoreComponents do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  import ExcisionWeb.Gettext
+  use Gettext, backend: ExcisionWeb.Gettext
 
   @doc """
   Renders a modal.

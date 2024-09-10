@@ -2,9 +2,6 @@
   Decision <%= @decision.id %>
   <:subtitle>This is a decision record from your database.</:subtitle>
   <:actions>
-    <.link patch={~p"/decisions/#{@decision}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit decision</.button>
-    </.link>
   </:actions>
 </.header>
 
@@ -14,20 +11,4 @@
   <:item title="Label"><%= @decision.label %></:item>
 </.list>
 
-<.back navigate={~p"/decisions"}>Back to decisions</.back>
-
-<.modal
-  :if={@live_action == :edit}
-  id="decision-modal"
-  show
-  on_cancel={JS.patch(~p"/decisions/#{@decision}")}
->
-  <.live_component
-    module={ExcisionWeb.DecisionLive.FormComponent}
-    id={@decision.id}
-    title={@page_title}
-    action={@live_action}
-    decision={@decision}
-    patch={~p"/decisions/#{@decision}"}
-  />
-</.modal>
+<.back navigate={~p"/decision_sites/#{@decision_site}/decisions"}>Back to decisions</.back>

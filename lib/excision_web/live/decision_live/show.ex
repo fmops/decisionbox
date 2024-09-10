@@ -17,5 +17,4 @@ defmodule ExcisionWeb.DecisionLive.Show do
   end
 
   defp page_title(:show), do: "Show Decision"
-  defp page_title(:edit), do: "Edit Decision"
 end

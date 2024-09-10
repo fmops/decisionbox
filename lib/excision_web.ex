@@ -43,7 +43,7 @@ defmodule ExcisionWeb do
         layouts: [html: ExcisionWeb.Layouts]
 
       import Plug.Conn
-      import ExcisionWeb.Gettext
+      use Gettext, backend: ExcisionWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -85,7 +85,7 @@ defmodule ExcisionWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import ExcisionWeb.CoreComponents
-      import ExcisionWeb.Gettext
+      use Gettext, backend: ExcisionWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
