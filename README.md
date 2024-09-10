@@ -1,5 +1,7 @@
 # DecisionBox
 
+Dependencies are managed with `flake.nix` and `nix-direnv`.
+
 To start your Phoenix server:
 
   * Run `mix setup` to install and setup dependencies
@@ -7,7 +9,13 @@ To start your Phoenix server:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## Examples
+
+The python examples in `examples/` also use `flake.nix`. To invoke a decision site:
+
+```sh
+python structured_response.py
+```
 
 ## Learn more
 
