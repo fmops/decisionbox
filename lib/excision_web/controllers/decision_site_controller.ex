@@ -71,7 +71,7 @@ defmodule ExcisionWeb.DecisionSiteController do
     description: "Invoke a decision site"
 
   def invoke(conn, %{"id" => id}) do
-    decision_site = Excisions.get_decision_site!(id, preloads: [:active_classifier])
+    decision_site = Excisions.get_decision_site!(id, preloads: [:active_classifier, :choices])
 
     if Excisions.is_default_classifier?(decision_site.active_classifier) do
       proxy_openai_structured_response(conn, decision_site)
@@ -142,7 +142,7 @@ defmodule ExcisionWeb.DecisionSiteController do
               type: "object",
               properties: %{
                 value: %{
-                  type: "boolean"
+                  enum: decision_site.choices |> Enum.map(& &1.name)
                 }
               }
             }
@@ -189,12 +189,15 @@ defmodule ExcisionWeb.DecisionSiteController do
       decision_site_id: decision_site.id,
       classifier_id: decision_site.active_classifier.id,
       input: Jason.encode!(req_body["messages"]),
-      prediction:
-        resp_body["choices"]
-        |> Enum.at(0)
-        |> then(& &1["message"]["content"])
-        |> Jason.decode!()
-        |> then(& &1["value"])
+      prediction_id: decision_site.choices 
+        |> Enum.find(fn c -> c.name == (
+          resp_body["choices"]
+          |> hd()
+          |> then(& &1["message"]["content"])
+          |> then(&Jason.decode!/1)
+          |> then(& &1["value"])
+        ) end)
+        |> then(& &1.id)
     })
 
     resp
