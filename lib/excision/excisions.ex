@@ -223,7 +223,7 @@ defmodule Excision.Excisions do
         Phoenix.PubSub.broadcast(
           Excision.PubSub,
           "decision_site:#{decision.decision_site_id}",
-          {:decision_created, nil}
+          {:decision_created, %{decision: decision}}
         )
 
         {:ok, decision}
@@ -261,7 +261,7 @@ defmodule Excision.Excisions do
           Phoenix.PubSub.broadcast(
             Excision.PubSub,
             "decision_site:#{decision.decision_site_id}",
-            {:label_created, nil}
+            {:label_created, %{decision: decision}}
           )
         end
 

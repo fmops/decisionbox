@@ -15,12 +15,13 @@
   <:col :let={{_id, decision_site}} label="Name"><%= decision_site.name %></:col>
   <:col :let={{_id, decision_site}} label="Updated"><%= decision_site.updated_at %></:col>
   <:col :let={{_id, decision_site}} label="# Decisions">
-    <%= decision_site.decisions |> Enum.count() %>
+    <%= @num_decisions[decision_site.id] %>
   </:col>
   <:col :let={{_id, decision_site}} label="# Unlabelled Decisions">
     <div class="flex flex-row items-center">
-      <%= decision_site.decisions |> Enum.filter(&is_nil(&1.label_id)) |> Enum.count() %>
-      <%= if decision_site.decisions |> Enum.filter(&(is_nil(&1.label_id))) |> Enum.count() > 0 do %>
+
+      <%= @num_unlabelled_decisions[decision_site.id] %>
+      <%= if @num_unlabelled_decisions[decision_site.id] > 0 do %>
         <.pulsing_dot />
       <% end %>
     </div>
