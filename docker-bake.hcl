@@ -1,5 +1,5 @@
 variable "DEFAULT_TAG" {
-  default = "app:local"
+  default = "decisionbox:local"
 }
 
 // Special target: https://github.com/docker/metadata-action#bake-definition
@@ -26,8 +26,5 @@ target "image-all" {
   platforms = [
     "linux/amd64",
     "linux/arm64"
-    # TODO: enable when hexpm/elixir supports it
-    # "linux/arm/v6",
-    # "linux/arm/v7",
   ]
 }
