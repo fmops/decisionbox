@@ -45,4 +45,34 @@ defmodule ExcisionWeb.ClassifierLive.Index do
 
     {:noreply, stream_delete(socket, :classifiers, classifier)}
   end
+
+  @impl true
+  def handle_event("promote", %{"id" => id}, socket) do
+    classifier = Excisions.get_classifier!(id)
+
+    case Excisions.promote_classifier(classifier) do
+      {:ok, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Classifier promoted successfully")}
+
+      {:error, %Ecto.Changeset{}} ->
+        {:noreply, socket |> put_flash(:error, "Error promoting classifier")}
+    end
+  end
+
+  @impl true
+  def handle_event("train", %{"id" => id}, socket) do
+    classifier = Excisions.get_classifier!(id)
+
+    case Excisions.train_classifier(classifier) do
+      {:ok, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Training job submitted successfully")}
+
+      {:error, %Ecto.Changeset{}} ->
+        {:noreply, socket |> put_flash(:error, "Error submitting training job")}
+    end
+  end
 end
