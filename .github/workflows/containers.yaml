@@ -30,7 +30,7 @@ on:
   push:
 
 env:
-  REGISTRY_IMAGE: ghcr.io/fmops/decisionbox
+  REGISTRY_IMAGE: ghcr.io/${{ github.repository }}
 
 jobs:
   prepare:
@@ -163,6 +163,13 @@ jobs:
       #   with:
       #     username: ${{ vars.DOCKERHUB_USERNAME }}
       #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: 'Login to GitHub Container Registry'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo $GITHUB_TOKEN | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
       
       - name: Create manifest list and push
         working-directory: /tmp/digests
