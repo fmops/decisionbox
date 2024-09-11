@@ -1,5 +1,5 @@
 <.header>
-  Decision site <%= @decision_site.id %>
+  <%= @decision_site.name %>
   <:subtitle>This is a decision_site record from your database.</:subtitle>
   <:actions>
     <.link patch={~p"/decision_sites/#{@decision_site}/show/edit"} phx-click={JS.push_focus()}>
@@ -15,8 +15,19 @@
 </.header>
 
 <.list>
-  <:item title="Name"><%= @decision_site.name %></:item>
   <:item title="Choices"><%= inspect(@decision_site.choices |> Enum.map(& &1.name)) %></:item>
+  <:item title="# Decisions"><%= @num_decisions %></:item>
+  <:item title="# Unlabelled Decisions">
+    <div class="flex flex-row items-center">
+      <%= @num_unlabelled_decisions %>
+      <%= if @num_unlabelled_decisions > 0 do %>
+        <.pulsing_dot />
+      <% end %>
+    </div>
+  </:item>
+  <:item title="Created Date"><%= @decision_site.inserted_at %></:item>
+  <:item title="Most Recent Decision"><%= @most_recent_decision %></:item>
+  <:item title="# Classifiers"><%= @num_classifiers %></:item>
   <:item title="Active Classifier">
     <.link
       patch={
@@ -27,16 +38,6 @@
       <%= @decision_site.active_classifier.name %>
     </.link>
   </:item>
-  <:item title="# Decisions"><%= @num_decisions %></:item>
-  <:item title="# Unlabelled Decisions">
-    <div class="flex flex-row items-center">
-      <%= @num_unlabelled_decisions %>
-      <%= if @num_unlabelled_decisions > 0 do %>
-        <.pulsing_dot />
-      <% end %>
-    </div>
-  </:item>
-  <:item title="# Classifiers"><%= @num_classifiers %></:item>
 </.list>
 
 <%= @accuracy_plot %>

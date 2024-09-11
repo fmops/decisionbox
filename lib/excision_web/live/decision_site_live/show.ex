@@ -40,6 +40,9 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
        :num_unlabelled_decisions,
        decision_site.decisions |> Enum.filter(&is_nil(&1.label_id)) |> Enum.count()
      )
+     |> assign(:most_recent_decision,
+       decision_site.decisions |> Enum.map(& &1.inserted_at) |> Enum.max(DateTime)
+     )
      |> assign(:num_classifiers, decision_site.classifiers |> Enum.count())
      |> assign(:accuracy_plot, accuracy_plot)}
   end
@@ -49,6 +52,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
     {:noreply, socket 
       |> assign(:num_decisions, socket.assigns.num_decisions + 1)
       |> assign(:num_unlabelled_decisions, socket.assigns.num_unlabelled_decisions + 1)
+      |> assign(:most_recent_decision, DateTime.utc_now())
     }
   end
 
