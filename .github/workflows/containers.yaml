@@ -1,15 +1,4 @@
 name: Build and publish container image
-# on:
-#
-#   # publish on releases, e.g. v2.1.13 (image tagged as "2.1.13" - "v" prefix is removed)
-#   release:
-#     types: [ published ]
-#
-#   # publish on pushes to the main branch (image tagged as "latest")
-#   push:
-#     branches:
-#       - main
-#
 # jobs:
 #   docker_publish:
 #     permissions: 
@@ -27,7 +16,14 @@ name: Build and publish container image
 #           github_token: ${{ secrets.GITHUB_TOKEN }}
 
 on:
+  # publish on releases, e.g. v2.1.13 (image tagged as "2.1.13" - "v" prefix is removed)
+  release:
+    types: [ published ]
+
+  # publish on pushes to the main branch (image tagged as "latest")
   push:
+    branches:
+      - main
 
 env:
   REGISTRY_IMAGE: ghcr.io/${{ github.repository }}

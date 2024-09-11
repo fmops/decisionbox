@@ -1,28 +1,13 @@
-# Find eligible builder and runner images on Docker Hub. We use Ubuntu/Debian
-# instead of Alpine to avoid DNS resolution issues in production.
-#
-# https://hub.docker.com/r/hexpm/elixir/tags?page=1&name=ubuntu
-# https://hub.docker.com/_/ubuntu?tab=tags
-#
-# This file is based on these images:
-#
-#   - https://hub.docker.com/r/hexpm/elixir/tags - for the build image
-#   - https://hub.docker.com/_/debian?tab=tags&page=1&name=bullseye-20240701-slim - for the release image
-#   - https://pkgs.org/ - resource for finding needed packages
-#   - Ex: hexpm/elixir:1.17.2-erlang-27.0-debian-bullseye-20240701-slim
-#
-ARG ELIXIR_VERSION=1.17.2
-ARG OTP_VERSION=27.0
-ARG DEBIAN_VERSION=bullseye-20240701-slim
+ARG BUILDER_IMAGE="cgr.dev/chainguard/wolfi-base:latest"
+ARG RUNNER_IMAGE="cgr.dev/chainguard/wolfi-base:latest"
 
-ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
-ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
+ARG COMMIT=""
 
 FROM ${BUILDER_IMAGE} as builder
 
 # install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git curl \
-    && apt-get clean && rm -f /var/lib/apt/lists/*_*
+# erlang 26.2.3 has some issues, see https://github.com/erlang/otp/issues/8238
+RUN apk add elixir-1.16 'erlang<26.2.3' 'erlang-dev<26.2.3' git make gcc glibc-dev rust npm nodejs curl
 
 # prepare build dir
 WORKDIR /app
@@ -33,6 +18,8 @@ RUN mix local.hex --force && \
 
 # set build ENV
 ENV MIX_ENV="prod"
+ENV RUSTFLAGS="-C target-feature=-crt-static"
+ENV ERL_FLAGS="+JPperf true"
 
 # install mix dependencies
 COPY mix.exs mix.lock ./
@@ -51,6 +38,10 @@ COPY lib lib
 
 COPY assets assets
 
+# Make sure image contains node modules referenced in assets/
+# https://elixirforum.com/t/how-to-get-daisyui-and-phoenix-to-work/46612/16
+RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
+
 # compile assets
 RUN mix assets.deploy
 
@@ -66,10 +57,9 @@ RUN mix release
 # start a new build stage so that the final image will only contain
 # the compiled release and other runtime necessities
 FROM ${RUNNER_IMAGE}
+ARG COMMIT
 
-RUN apt-get update -y && \
-  apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates \
-  && apt-get clean && rm -f /var/lib/apt/lists/*_*
+RUN apk add ncurses libstdc++
 
 # Set the locale
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
@@ -83,6 +73,7 @@ RUN chown nobody /app
 
 # set runner ENV
 ENV MIX_ENV="prod"
+ENV COMMIT=${COMMIT}
 
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/excision ./
