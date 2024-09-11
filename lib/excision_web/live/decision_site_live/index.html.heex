@@ -19,7 +19,6 @@
   </:col>
   <:col :let={{_id, decision_site}} label="# Unlabelled Decisions">
     <div class="flex flex-row items-center">
-
       <%= @num_unlabelled_decisions[decision_site.id] %>
       <%= if @num_unlabelled_decisions[decision_site.id] > 0 do %>
         <.pulsing_dot />
@@ -65,11 +64,15 @@
   on_cancel={JS.patch(~p"/decision_sites")}
 >
   <h2 class="text-2xl font-bold mb-4 text-gray-800">Your Decision Site is Ready!</h2>
-  <p class="text-gray-600 mb-6">You're all set to start making informed decisions using our powerful platform. Here's a quick guide to get you started:</p>
-  
+  <p class="text-gray-600 mb-6">
+    You're all set to start making informed decisions using our powerful platform. Here's a quick guide to get you started:
+  </p>
+
   <h3 class="text-lg font-semibold mb-2 text-gray-700">1. Use the API to Submit Data</h3>
-  <p class="text-gray-600 mb-4">Use our API to send your data directly to the decision engine. Here’s a simple example:</p>
-  
+  <p class="text-gray-600 mb-4">
+    Use our API to send your data directly to the decision engine. Here’s a simple example:
+  </p>
+
   <div class="bg-gray-100 p-4 rounded-md mb-6">
     <pre class="text-sm text-gray-800 whitespace-pre-wrap">
 <code>import requests
@@ -111,15 +114,24 @@ else:
   </div>
 
   <h3 class="text-lg font-semibold mb-2 text-gray-700">2. Review the API Documentation</h3>
-  <p class="text-gray-600 mb-4">For more detailed information on how to use our APIs, check out the 
-    <a href="https://github.com/fmops/decisionbox/wiki" class="text-slate-600 hover:text-slate-700 underline">API documentation</a>.
+  <p class="text-gray-600 mb-4">
+    For more detailed information on how to use our APIs, check out the <a
+      href="https://github.com/fmops/decisionbox/wiki"
+      class="text-slate-600 hover:text-slate-700 underline"
+    >API documentation</a>.
   </p>
 
   <h3 class="text-lg font-semibold mb-2 text-gray-700">3. Monitor Decisions</h3>
-  <p class="text-gray-600 mb-6">Stay informed on decision outcomes by visiting the <strong>Decision Dashboard</strong> where you can review analytics and insights.</p>
-  
+  <p class="text-gray-600 mb-6">
+    Stay informed on decision outcomes by visiting the <strong>Decision Dashboard</strong>
+    where you can review analytics and insights.
+  </p>
+
   <div class="text-center">
-    <a class="bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700" phx-click={hide_modal("decision_site-modal")}>
+    <a
+      class="bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700"
+      phx-click={hide_modal("decision_site-modal")}
+    >
       OK
     </a>
   </div>

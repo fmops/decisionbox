@@ -23,7 +23,8 @@ defmodule Excision.Seed do
         classifier_id: decision_site.classifiers |> Enum.at(0) |> then(& &1.id),
         input: text,
         prediction_id: decision_site.choices |> Enum.random() |> then(& &1.id),
-        label_id: decision_site.choices |> Enum.find(&(&1.name == to_string(label))) |> then(& &1.id)
+        label_id:
+          decision_site.choices |> Enum.find(&(&1.name == to_string(label))) |> then(& &1.id)
       })
     end
 
@@ -40,4 +41,3 @@ defmodule Excision.Seed do
       })
   end
 end
-

@@ -73,4 +73,9 @@ defmodule ExcisionWeb.DecisionLive.Index do
 
     {:noreply, stream_insert(socket, :decisions, decision)}
   end
+
+  @impl true
+  def handle_event("share-clicked", _, socket) do
+    {:noreply, socket |> put_flash(:info, "Permalink copied to clipboard")}
+  end
 end

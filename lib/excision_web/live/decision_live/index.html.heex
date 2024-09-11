@@ -6,9 +6,15 @@
   <% end %>
 </.header>
 
-<.table id="decisions" rows={@streams.decisions}
-  row_click={fn {_id, decision} -> JS.navigate(~p"/decision_sites/#{@decision_site}/decisions/#{decision.id}") end}
-  >
+<.table
+  id="decisions"
+  rows={@streams.decisions}
+  row_click={
+    fn {_id, decision} ->
+      JS.navigate(~p"/decision_sites/#{@decision_site}/decisions/#{decision.id}")
+    end
+  }
+>
   <:col :let={{_id, decision}} label="Input">
     <div class="overflow-auto max-h-64">
       <%= decision.input %>
@@ -32,12 +38,26 @@
       <.input
         type="select"
         name="label"
-        options={@decision_site.choices |> Enum.map(&{&1.name, &1.id}) |> then(& Enum.concat([{"n/a", nil}], &1))}
+        options={
+          @decision_site.choices
+          |> Enum.map(&{&1.name, &1.id})
+          |> then(&Enum.concat([{"n/a", nil}], &1))
+        }
         value={if is_nil(decision.label), do: nil, else: decision.label.id}
         phx-click={JS.push("label", value: %{decision_id: decision.id})}
       />
     </div>
   </:col>
+  <:action :let={{id, decision}}>
+    <.link phx-click={JS.dispatch("phx:copy", to: "#permalink-#{id}") |> JS.push("share-clicked")}>
+      Share
+    </.link>
+    <input
+      type="hidden"
+      id={"permalink-#{id}"}
+      value={"#{ExcisionWeb.Endpoint.url()}/decision_sites/#{@decision_site.id}/decisions/#{decision.id}"}
+    />
+  </:action>
   <:action :let={{id, decision}}>
     <.link
       phx-click={JS.push("delete", value: %{id: decision.id}) |> hide("##{id}")}

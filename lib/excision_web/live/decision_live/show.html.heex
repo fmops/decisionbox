@@ -5,12 +5,17 @@
 </.header>
 
 <.list>
+  <:item title="Created Date"><%= @decision.inserted_at %></:item>
+  <:item title="Updated Date"><%= @decision.updated_at %></:item>
   <:item title="Input"><%= @decision.input %></:item>
   <:item title="Prediction"><%= @decision.prediction.name %></:item>
-  <:item title="Label"><%= @decision.label |> case do
-    nil -> "n/a"
-    label -> label
-  end %></:item>
+  <:item title="Label">
+    <%= @decision.label
+    |> case do
+      nil -> "n/a"
+      label -> label.name
+    end %>
+  </:item>
 </.list>
 
 <.back navigate={~p"/decision_sites/#{@decision_site}/decisions"}>Back to decisions</.back>
