@@ -38,10 +38,6 @@ COPY lib lib
 
 COPY assets assets
 
-# Make sure image contains node modules referenced in assets/
-# https://elixirforum.com/t/how-to-get-daisyui-and-phoenix-to-work/46612/16
-RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
-
 # compile assets
 RUN mix assets.deploy
 
