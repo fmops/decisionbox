@@ -46,13 +46,16 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
 
   @impl true
   def handle_info({:decision_created, _}, socket) do
-    {:noreply, socket |> assign(:num_decisions, socket.assigns.num_decisions + 1)}
+    {:noreply, socket 
+      |> assign(:num_decisions, socket.assigns.num_decisions + 1)
+      |> assign(:num_unlabelled_decisions, socket.assigns.num_unlabelled_decisions + 1)
+    }
   end
 
   @impl true
   def handle_info({:label_created, _}, socket) do
     {:noreply,
-     socket |> assign(:num_labelled_decisions, socket.assigns.num_labelled_decisions + 1)}
+     socket |> assign(:num_unlabelled_decisions, socket.assigns.num_unlabelled_decisions - 1)}
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
