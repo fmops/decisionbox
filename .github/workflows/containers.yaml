@@ -102,6 +102,13 @@ jobs:
       #   with:
       #     username: ${{ vars.DOCKERHUB_USERNAME }}
       #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: 'Login to GitHub Container Registry'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo $GITHUB_TOKEN | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
       
       - name: Build
         id: bake
