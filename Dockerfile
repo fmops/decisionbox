@@ -3,7 +3,7 @@ ARG RUNNER_IMAGE="cgr.dev/chainguard/wolfi-base:latest"
 
 ARG COMMIT=""
 
-FROM ${BUILDER_IMAGE} as builder
+FROM ${BUILDER_IMAGE} AS builder
 
 # install build dependencies
 # erlang 26.2.3 has some issues, see https://github.com/erlang/otp/issues/8238
@@ -58,9 +58,9 @@ ARG COMMIT
 RUN apk add ncurses libstdc++
 
 # Set the locale
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 WORKDIR "/app"
 RUN chown nobody /app
