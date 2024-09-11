@@ -1,5 +1,37 @@
 # DecisionBox
 
+## Getting Started
+
+```sh
+docker pull ghcr.io/fmops/decisionbox:latest
+docker run \
+    --rm \
+    -p 4000:4000 \
+    -v ./db:/app/db:z \
+    -v ./checkpoints:/app/checkpoints:z \
+    --env DATABASE_PATH=/app/db/db.sqlite \
+    --env SECRET_KEY_BASE=`mix phx.gen.secret` \
+    --env PHX_HOST=localhost \
+    ghcr.io/fmops/decisionbox:latest \
+    bash -c "/app/bin/migrate && /app/bin/server"
+```
+
+In a web browser: [http://localhost:4000](http://localhost:4000)
+
+
+Explanation:
+
+ - Port maps `4000` on the host to `4000` in the container
+ - Volume maps `./db` (sqlite DB) and `./checkpoints` (model checkpoints)
+ - Runs idempotent migrations and starts server
+
+
+### Examples
+
+The python examples in `examples/` also use `flake.nix`. To invoke a decision site:
+
+## Developing
+
 Dependencies are managed with `flake.nix` and `nix-direnv`.
 
 To start your Phoenix server:
@@ -9,9 +41,6 @@ To start your Phoenix server:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-## Examples
-
-The python examples in `examples/` also use `flake.nix`. To invoke a decision site:
 
 ```sh
 python structured_response.py
