@@ -41,7 +41,10 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
        decision_site.decisions |> Enum.filter(&is_nil(&1.label_id)) |> Enum.count()
      )
      |> assign(:most_recent_decision,
-       decision_site.decisions |> Enum.map(& &1.inserted_at) |> Enum.max(DateTime)
+       decision_site.decisions |> Enum.map(& &1.inserted_at) |> case do 
+          [] -> "n/a"
+          x -> x |> Enum.max(DateTime)
+        end
      )
      |> assign(:num_classifiers, decision_site.classifiers |> Enum.count())
      |> assign(:accuracy_plot, accuracy_plot)}
