@@ -1,9 +1,10 @@
+import json
 import os
 
 import asyncio
 import aiohttp
 
-EXBOX_URL = "http://localhost:4000/api/decision_sites/1/invoke"
+EXBOX_URL = "http://localhost:4000/api/decision_sites/3/invoke"
 
 async def main():
     async with aiohttp.ClientSession() as session:
@@ -32,6 +33,6 @@ async def main():
             # }
         }, headers={ 'Authorization': f"Bearer {os.environ.get('OPENAI_API_KEY')}" }) as resp:
             print(resp)
-            print(await resp.text())
+            print(json.loads((await resp.json())['choices'][0]['message']['content'])['value'])
 
 asyncio.run(main())
