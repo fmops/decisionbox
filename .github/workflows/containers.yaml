@@ -37,6 +37,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |
+            latest
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
