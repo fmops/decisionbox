@@ -36,7 +36,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY_IMAGE }}
-          tags: |
+          jags: |
             latest
             type=ref,event=branch
             type=ref,event=pr
@@ -103,6 +103,7 @@ jobs:
           targets: image
           push: true
           set: |
+            *.platform=${{ matrix.platform }}
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
       
