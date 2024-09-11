@@ -1135,6 +1135,18 @@ select {
   width: 100%;
 }
 
+.w-32 {
+  width: 8rem;
+}
+
+.w-24 {
+  width: 6rem;
+}
+
+.w-20 {
+  width: 5rem;
+}
+
 .max-w-2xl {
   max-width: 42rem;
 }

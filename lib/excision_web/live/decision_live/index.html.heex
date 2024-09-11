@@ -26,12 +26,12 @@
     <% end %>
   </:col>
   <:col :let={{_id, decision}} label="Label">
-    <div class="w-16">
+    <div class="w-20">
       <.input
         type="select"
         name="label"
-        options={@decision_site.choices |> Enum.map(&{&1.name, &1.id})}
-        value={decision.label |> then(& &1.id)}
+        options={@decision_site.choices |> Enum.map(&{&1.name, &1.id}) |> then(& Enum.concat([{"n/a", nil}], &1))}
+        value={if is_nil(decision.label), do: nil, else: decision.label.id}
         phx-click={JS.push("label", value: %{decision_id: decision.id})}
       />
     </div>
