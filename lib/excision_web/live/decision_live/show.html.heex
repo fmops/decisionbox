@@ -6,8 +6,11 @@
 
 <.list>
   <:item title="Input"><%= @decision.input %></:item>
-  <:item title="Prediction"><%= @decision.prediction %></:item>
-  <:item title="Label"><%= @decision.label %></:item>
+  <:item title="Prediction"><%= @decision.prediction.name %></:item>
+  <:item title="Label"><%= @decision.label |> case do
+    nil -> "n/a"
+    label -> label
+  end %></:item>
 </.list>
 
 <.back navigate={~p"/decision_sites/#{@decision_site}/decisions"}>Back to decisions</.back>

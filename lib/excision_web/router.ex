@@ -32,6 +32,7 @@ defmodule ExcisionWeb.Router do
 
         scope "/decision_sites/:decision_site_id" do
           live "/decisions", DecisionLive.Index, :index
+          live "/decisions/:id", DecisionLive.Show, :show
 
           live "/classifiers", ClassifierLive.Index, :index
           live "/classifiers/new", ClassifierLive.Index, :new

@@ -6,7 +6,9 @@
   <% end %>
 </.header>
 
-<.table id="decisions" rows={@streams.decisions}>
+<.table id="decisions" rows={@streams.decisions}
+  row_click={fn {_id, decision} -> JS.navigate(~p"/decision_sites/#{@decision_site}/decisions/#{decision.id}") end}
+  >
   <:col :let={{_id, decision}} label="Input">
     <div class="overflow-auto max-h-64">
       <%= decision.input %>
