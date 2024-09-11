@@ -36,7 +36,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY_IMAGE }}
-          jags: |
+          tags: |
             latest
             type=ref,event=branch
             type=ref,event=pr
