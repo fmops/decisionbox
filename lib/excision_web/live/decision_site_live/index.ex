@@ -45,9 +45,11 @@ defmodule ExcisionWeb.DecisionSiteLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    decision_site = Excisions.get_decision_site!(id, preloads: [:decisions, :choices])
+
     socket
-    |> assign(:page_title, "Edit Decision site")
-    |> assign(:decision_site, Excisions.get_decision_site!(id, preloads: [:decisions, :choices]))
+    |> assign(:page_title, "Edit decision site: #{decision_site.name}")
+    |> assign(:decision_site, decision_site)
   end
 
   defp apply_action(socket, :new, _params) do
