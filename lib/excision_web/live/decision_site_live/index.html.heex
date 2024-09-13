@@ -15,12 +15,12 @@
   <:col :let={{_id, decision_site}} label="Name"><%= decision_site.name %></:col>
   <:col :let={{_id, decision_site}} label="Updated"><%= decision_site.updated_at %></:col>
   <:col :let={{_id, decision_site}} label="# Decisions">
-    <%= @num_decisions[decision_site.id] %>
+    <%= Map.get(@num_decisions, decision_site.id, 0) %>
   </:col>
   <:col :let={{_id, decision_site}} label="# Unlabeled Decisions">
     <div class="flex flex-row items-center">
-      <%= @num_unlabeled_decisions[decision_site.id] %>
-      <%= if @num_unlabeled_decisions[decision_site.id] > 0 do %>
+      <%= Map.get(@num_unlabeled_decisions, decision_site.id, 0) %>
+      <%= if Map.get(@num_unlabeled_decisions, decision_site.id, 0) > 0 do %>
         <.pulsing_dot />
       <% end %>
     </div>
