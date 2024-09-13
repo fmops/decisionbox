@@ -37,7 +37,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
      |> assign(:decision_site, decision_site)
      |> assign(:num_decisions, decision_site.decisions |> Enum.count())
      |> assign(
-       :num_unlabelled_decisions,
+       :num_unlabeled_decisions,
        decision_site.decisions |> Enum.filter(&is_nil(&1.label_id)) |> Enum.count()
      )
      |> assign(
@@ -58,14 +58,14 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
     {:noreply,
      socket
      |> assign(:num_decisions, socket.assigns.num_decisions + 1)
-     |> assign(:num_unlabelled_decisions, socket.assigns.num_unlabelled_decisions + 1)
+     |> assign(:num_unlabeled_decisions, socket.assigns.num_unlabeled_decisions + 1)
      |> assign(:most_recent_decision, DateTime.utc_now())}
   end
 
   @impl true
   def handle_info({:label_created, _}, socket) do
     {:noreply,
-     socket |> assign(:num_unlabelled_decisions, socket.assigns.num_unlabelled_decisions - 1)}
+     socket |> assign(:num_unlabeled_decisions, socket.assigns.num_unlabeled_decisions - 1)}
   end
 
   def handle_info(_, socket), do: {:noreply, socket}

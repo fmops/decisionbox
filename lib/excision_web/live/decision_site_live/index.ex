@@ -22,7 +22,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Index do
       end)
       |> Enum.into(%{})
 
-    num_unlabelled_decisions =
+    num_unlabeled_decisions =
       decision_sites
       |> Enum.map(fn decision_site ->
         {decision_site.id,
@@ -36,7 +36,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Index do
      socket
      |> stream(:decision_sites, decision_sites)
      |> assign(:num_decisions, num_decisions)
-     |> assign(:num_unlabelled_decisions, num_unlabelled_decisions)}
+     |> assign(:num_unlabeled_decisions, num_unlabeled_decisions)}
   end
 
   @impl true
@@ -87,7 +87,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Index do
        |> Map.update!(decision.decision_site_id, &(&1 + 1))
      )
      |> assign(
-       :num_unlabelled_decisions,
+       :num_unlabeled_decisions,
        socket.assigns.num_decisions
        |> Map.update!(decision.decision_site_id, &(&1 + 1))
      )}
@@ -98,7 +98,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Index do
     {:noreply,
      socket
      |> assign(
-       :num_unlabelled_decisions,
+       :num_unlabeled_decisions,
        socket.assigns.num_labelled_decisions
        |> Map.update!(decision.decision_site_id, &(&1 - 1))
      )}

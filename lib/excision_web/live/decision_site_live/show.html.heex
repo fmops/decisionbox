@@ -5,11 +5,11 @@
     <.link patch={~p"/decision_sites/#{@decision_site}/decisions"} phx-click={JS.push_focus()}>
       <.button>
         <div class="flex items-center">
-          <%= if @num_unlabelled_decisions > 0 do %>
+          <%= if @num_unlabeled_decisions > 0 do %>
             <.pulsing_dot />
           <% end %>
           <span class="ml-2">
-            Label (<%= @num_unlabelled_decisions %> unlabelled)
+            Label (<%= @num_unlabeled_decisions %> unlabeled)
           </span>
         </div>
       </.button>
@@ -20,9 +20,9 @@
 <.list>
   <:item title="Choices"><%= inspect(@decision_site.choices |> Enum.map(& &1.name)) %></:item>
   <:item title="# Decisions"><%= @num_decisions %></:item>
-  <:item title="# Unlabelled Decisions">
+  <:item title="# unlabeled Decisions">
     <div class="flex flex-row items-center">
-      <%= @num_unlabelled_decisions %>
+      <%= @num_unlabeled_decisions %>
     </div>
   </:item>
   <:item title="Created Date"><%= @decision_site.inserted_at %></:item>
