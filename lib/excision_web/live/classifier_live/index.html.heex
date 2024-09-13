@@ -24,9 +24,11 @@
   <:action :let={{_id, classifier}}>
     <%= case classifier.status do %>
       <% x when x in [:waiting, :failed] -> %>
-        <.link phx-click={JS.push("train", value: %{id: classifier.id})}>
-          Train
-        </.link>
+        <%= if Enum.count(@decision_site.decisions |> Enum.filter(& not is_nil(&1.label_id))) > (1.0 / (1.0 - frac_train())) do %>
+          <.link phx-click={JS.push("train", value: %{id: classifier.id})}>
+            Train
+          </.link>
+        <% end %>
       <% :trained when classifier.id != @decision_site.active_classifier_id -> %>
         <.link phx-click={JS.push("promote", value: %{id: classifier.id})}>
           Promote

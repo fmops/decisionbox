@@ -3,10 +3,11 @@ defmodule ExcisionWeb.ClassifierLive.Index do
 
   alias Excision.Excisions
   alias Excision.Excisions.Classifier
+  import Excision.Workers.TrainClassifier, only: [frac_train: 0]
 
   @impl true
   def handle_params(%{"decision_site_id" => decision_site_id} = params, _url, socket) do
-    decision_site = Excisions.get_decision_site!(decision_site_id)
+    decision_site = Excisions.get_decision_site!(decision_site_id, preloads: [:decisions])
 
     {:noreply,
      socket
@@ -35,6 +36,14 @@ defmodule ExcisionWeb.ClassifierLive.Index do
 
   @impl true
   def handle_info({ExcisionWeb.ClassifierLive.FormComponent, {:saved, classifier}}, socket) do
+    classifier = Excisions.get_classifier!(classifier.id)
+
+    {:noreply,
+     socket
+     |> stream_insert(:classifiers, classifier)
+     |> assign(:classifier, classifier)
+     |> assign(:live_action, :confidence_dialog)}
+
     {:noreply, stream_insert(socket, :classifiers, classifier)}
   end
 

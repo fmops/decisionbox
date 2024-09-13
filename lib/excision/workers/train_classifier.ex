@@ -214,5 +214,7 @@ defmodule Excision.Workers.TrainClassifier do
   end
 
   # TODO: move to training_parameters
+  # NOTE: this means we need at least 1/(1-frac_train) examples to ensure
+  # nonempty datasets
   def frac_train, do: 0.8
 end

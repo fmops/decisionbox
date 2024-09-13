@@ -314,9 +314,12 @@ defmodule Excision.Excisions do
     Repo.all(Classifier)
   end
 
-  def list_classifiers_for_decision_site(%DecisionSite{} = decision_site) do
+  def list_classifiers_for_decision_site(%DecisionSite{} = decision_site, opts \\ []) do
+    preloads = Keyword.get(opts, :preloads, [])
+
     from(c in Classifier, where: c.decision_site_id == ^decision_site.id)
     |> Repo.all()
+    |> Repo.preload(preloads)
   end
 
   @doc """

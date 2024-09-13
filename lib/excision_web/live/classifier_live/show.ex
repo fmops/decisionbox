@@ -3,6 +3,7 @@ defmodule ExcisionWeb.ClassifierLive.Show do
 
   alias Excision.Excisions
   import Excision.Excisions, only: [is_default_classifier?: 1]
+  import Excision.Workers.TrainClassifier, only: [frac_train: 0]
 
   @impl true
   def mount(_params, _session, socket) do
