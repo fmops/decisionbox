@@ -58,7 +58,7 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
       assert index_live
              |> element("#decision_sites-#{decision_site.id} a", "Edit")
              |> render_click() =~
-               "Edit Decision site"
+               "Edit decision site: #{decision_site.name}"
 
       assert_patch(index_live, ~p"/decision_sites/#{decision_site}/edit")
 
