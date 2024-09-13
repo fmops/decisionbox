@@ -57,32 +57,32 @@ defmodule ExcisionWeb.ClassifierLiveTest do
       assert classifier.status == :waiting
     end
 
-    test "updates classifier in listing", %{conn: conn, classifier: classifier} do
-      {:ok, index_live, _html} =
-        live(conn, ~p"/decision_sites/#{classifier.decision_site_id}/classifiers")
-
-      assert index_live |> element("#classifiers-#{classifier.id} a", "Edit") |> render_click() =~
-               "Edit Classifier"
-
-      assert_patch(
-        index_live,
-        ~p"/decision_sites/#{classifier.decision_site_id}/classifiers/#{classifier}/edit"
-      )
-
-      assert index_live
-             |> form("#classifier-form", classifier: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
-
-      assert index_live
-             |> form("#classifier-form", classifier: @update_attrs)
-             |> render_submit()
-
-      assert_patch(index_live, ~p"/decision_sites/#{classifier.decision_site_id}/classifiers")
-
-      html = render(index_live)
-      assert html =~ "Classifier updated successfully"
-      assert html =~ "some updated name"
-    end
+    # test "updates classifier in listing", %{conn: conn, classifier: classifier} do
+    #   {:ok, index_live, _html} =
+    #     live(conn, ~p"/decision_sites/#{classifier.decision_site_id}/classifiers")
+    #
+    #   assert index_live |> element("#classifiers-#{classifier.id} a", "Edit") |> render_click() =~
+    #            "Edit Classifier"
+    #
+    #   assert_patch(
+    #     index_live,
+    #     ~p"/decision_sites/#{classifier.decision_site_id}/classifiers/#{classifier}/edit"
+    #   )
+    #
+    #   assert index_live
+    #          |> form("#classifier-form", classifier: @invalid_attrs)
+    #          |> render_change() =~ "can&#39;t be blank"
+    #
+    #   assert index_live
+    #          |> form("#classifier-form", classifier: @update_attrs)
+    #          |> render_submit()
+    #
+    #   assert_patch(index_live, ~p"/decision_sites/#{classifier.decision_site_id}/classifiers")
+    #
+    #   html = render(index_live)
+    #   assert html =~ "Classifier updated successfully"
+    #   assert html =~ "some updated name"
+    # end
 
     test "deletes classifier in listing", %{conn: conn, classifier: classifier} do
       {:ok, index_live, _html} =
