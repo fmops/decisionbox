@@ -96,6 +96,8 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
 
       assert html =~ "Show Decision site"
       assert html =~ decision_site.name
+
+      assert html =~ "Baseline Accuracy"
     end
 
     # test "updates decision_site within modal", %{conn: conn, decision_site: decision_site} do

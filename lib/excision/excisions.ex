@@ -470,7 +470,7 @@ defmodule Excision.Excisions do
     classifier.decisions
     |> Enum.filter(&(not is_nil(&1.label)))
     |> Enum.reduce({0, 0}, fn decision, {total, correct} ->
-      {total + 1, correct + if(decision.label == decision.prediction, do: 1, else: 0)}
+      {total + 1, correct + if(decision.label_id == decision.prediction_id, do: 1, else: 0)}
     end)
     |> then(fn {total, correct} ->
       if total == 0, do: nil, else: correct / total

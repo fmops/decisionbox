@@ -31,6 +31,14 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
       |> Contex.Plot.axis_labels("Date", "Accuracy")
       |> Contex.Plot.to_svg()
 
+    baseline_accuracy =
+      Excisions.compute_accuracy(
+        decision_site.classifiers
+        |> Enum.find(
+          &(&1.name == Excision.Excisions.Classifier.default_baseline_classifier().name)
+        )
+      )
+
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
@@ -50,7 +58,8 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
        end
      )
      |> assign(:num_classifiers, decision_site.classifiers |> Enum.count())
-     |> assign(:accuracy_plot, accuracy_plot)}
+     |> assign(:accuracy_plot, accuracy_plot)
+     |> assign(:baseline_accuracy, baseline_accuracy)}
   end
 
   @impl true
