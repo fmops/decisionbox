@@ -11,7 +11,7 @@
       <.button>Edit classifier</.button>
     </.link>
     <%= if Enum.member?([:waiting, :failed], @classifier.status) do %>
-      <%= if @num_labels_for_site > (1.0 / (1.0 - frac_train())) do %>
+      <%= if @num_labels_for_site >= (1.0 / (1.0 - frac_train())) do %>
         <.link phx-click="train">
           <.button>Train</.button>
         </.link>
@@ -20,7 +20,7 @@
           "cursor-not-allowed rounded-lg bg-zinc-200 py-2 px-3",
           "text-sm font-semibold leading-6 text-black"
         ]}>
-          Label More To Enable Training
+          Label <%= round(1.0 / (1.0 - frac_train()) - @num_labels_for_site) %> More To Train
         </button>
       <% end %>
     <% end %>
