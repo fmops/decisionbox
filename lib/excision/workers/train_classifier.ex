@@ -57,7 +57,7 @@ defmodule Excision.Workers.TrainClassifier do
 
     accuracy = &Axon.Metrics.accuracy(&1, &2, from_logits: true, sparse: true)
 
-    checkpoint_path = "checkpoints/#{classifier.id}/"
+    checkpoint_path = "#{Application.get_env(:excision, :checkpoint_path)}/#{classifier.id}/"
 
     # preserve the complete loop struct for grabbing loss traces and metrics
     # https://elixirforum.com/t/how-do-i-get-a-history-of-the-loss-from-axon/56008/7
