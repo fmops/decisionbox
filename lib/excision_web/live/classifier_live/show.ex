@@ -27,7 +27,7 @@ defmodule ExcisionWeb.ClassifierLive.Show do
 
     {:noreply,
      socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))
+     |> assign(:page_title, page_title(socket.assigns.live_action, classifier))
      |> assign(:classifier, classifier)
      |> assign(
        :num_labels_for_site,
@@ -202,6 +202,6 @@ defmodule ExcisionWeb.ClassifierLive.Show do
     end
   end
 
-  defp page_title(:show), do: "Show Classifier"
-  defp page_title(:edit), do: "Edit Classifier"
+  defp page_title(:show, _), do: "Show Classifier"
+  defp page_title(:edit, classifier), do: "Edit Classifier: #{classifier.name}"
 end
