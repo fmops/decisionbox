@@ -25,6 +25,11 @@
       <% end %>
     </div>
   </:col>
+  <:col :let={{_id, decision_site}} label="# Classifiers">
+    <div class="flex flex-row items-center">
+      <%= Map.get(@num_classifiers, decision_site.id, 0) %>
+    </div>
+  </:col>
   <:action :let={{_id, decision_site}}>
     <div class="sr-only">
       <.link navigate={~p"/decision_sites/#{decision_site}"}>Show</.link>
