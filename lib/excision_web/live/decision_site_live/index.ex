@@ -8,7 +8,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Index do
   @impl true
   def mount(_params, _session, socket) do
     decision_sites =
-      Excisions.list_decision_sites(preloads: [:decisions])
+      Excisions.list_decision_sites(preloads: [:decisions, :classifiers])
 
     decision_sites
     |> Enum.map(fn decision_site ->
@@ -32,11 +32,19 @@ defmodule ExcisionWeb.DecisionSiteLive.Index do
       end)
       |> Enum.into(%{})
 
+    num_classifiers =
+      decision_sites
+      |> Enum.map(fn decision_site ->
+        {decision_site.id, decision_site.classifiers |> Enum.count()}
+      end)
+      |> Enum.into(%{})
+
     {:ok,
      socket
      |> stream(:decision_sites, decision_sites)
      |> assign(:num_decisions, num_decisions)
-     |> assign(:num_unlabeled_decisions, num_unlabeled_decisions)}
+     |> assign(:num_unlabeled_decisions, num_unlabeled_decisions)
+     |> assign(:num_classifiers, num_classifiers)}
   end
 
   @impl true

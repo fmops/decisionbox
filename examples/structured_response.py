@@ -4,7 +4,7 @@ import os
 import asyncio
 import aiohttp
 
-EXBOX_URL = "http://localhost:4000/api/decision_sites/1/invoke"
+EXBOX_URL = "https://decisionbox.blueteam.ai/api/decision_sites/5/invoke"
 
 async def main():
     async with aiohttp.ClientSession() as session:
@@ -12,7 +12,7 @@ async def main():
             "messages": [
                 {
                     "role": "user",
-                    "content": "I need vitamin C. Should I eat pears?",
+                    "content": "Random choice: nice or bad?",
                 }
             ],
             "model": "gpt-4o-mini",
