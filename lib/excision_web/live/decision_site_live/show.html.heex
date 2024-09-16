@@ -14,6 +14,15 @@
         </div>
       </.button>
     </.link>
+    <.link patch={~p"/decision_sites/#{@decision_site}/classifiers"} phx-click={JS.push_focus()}>
+      <.button>
+        <div class="flex items-center">
+          <span class="ml-2">
+            List Classifiers
+          </span>
+        </div>
+      </.button>
+    </.link>
   </:actions>
 </.header>
 
