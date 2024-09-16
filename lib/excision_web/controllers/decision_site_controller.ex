@@ -81,19 +81,28 @@ defmodule ExcisionWeb.DecisionSiteController do
       # TODO: this is really slow, need GenServer (Agent?) to keep model in memory
       # TODO: read model name from classifier
       # model_name = "albert/albert-base-v2"
-      model_name = "distilbert/distllbert-base-uncased"
+      model_name = "distilbert/distilbert-base-uncased"
 
       {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, model_name})
       checkpoint_path = classifier.checkpoint_path
 
-      {model, params} =
-        [checkpoint_path, "model.axon"]
+      {:ok, spec} =
+        Bumblebee.load_spec({:hf, model_name},
+          architecture: :for_sequence_classification
+        )
+
+      num_labels = decision_site.choices |> Enum.count()
+      spec = Bumblebee.configure(spec, num_labels: num_labels)
+      {:ok, model} = Bumblebee.load_model({:hf, model_name}, spec: spec)
+
+      params =
+        [checkpoint_path, "parameters.nx"]
         |> Path.join()
         |> File.read!()
-        |> Axon.deserialize()
+        |> Nx.deserialize()
 
       input = Jason.encode!(conn.body_params["messages"])
-      outputs = Axon.predict(model, params, Bumblebee.apply_tokenizer(tokenizer, input))
+      outputs = Axon.predict(model.model, params, Bumblebee.apply_tokenizer(tokenizer, input))
       probs = outputs.logits |> Nx.sigmoid()
       prediction_idx = probs |> Nx.argmax(axis: 1) |> then(& &1[0]) |> Nx.to_number()
 
@@ -109,8 +118,9 @@ defmodule ExcisionWeb.DecisionSiteController do
         prediction: prediction
       })
 
-      send_resp(
-        conn,
+      conn
+      |> put_resp_header("content-type", "application/json")
+      |> send_resp(
         :ok,
         Jason.encode!(%{
           choices: [
