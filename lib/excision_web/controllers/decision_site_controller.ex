@@ -111,12 +111,14 @@ defmodule ExcisionWeb.DecisionSiteController do
       prediction = idx_to_label[prediction_idx]
 
       # record the decision
-      Excision.Excisions.create_decision(%{
-        decision_site_id: decision_site.id,
-        classifier_id: decision_site.active_classifier.id,
-        input: input,
-        prediction: prediction
-      })
+      {:ok, _} =
+        Excision.Excisions.create_decision(%{
+          decision_site_id: decision_site.id,
+          classifier_id: decision_site.active_classifier.id,
+          input: input,
+          prediction_id:
+            decision_site.choices |> Enum.find(&(&1.name == prediction)) |> then(& &1.id)
+        })
 
       conn
       |> put_resp_header("content-type", "application/json")
