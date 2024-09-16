@@ -39,7 +39,7 @@
     </.link>
   </:item>
   <:item title="Baseline Accuracy">
-    <%= @baseline_accuracy %>
+    <%= (@baseline_accuracy || 0.0) |> Float.ceil(2) %>
   </:item>
 </.list>
 
