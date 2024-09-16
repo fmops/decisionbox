@@ -20,6 +20,7 @@
       <%= decision.input %>
     </div>
   </:col>
+  <:col :let={{_id, decision}} label="Created At"><%= decision.inserted_at %></:col>
   <:col :let={{_id, decision}} label="Decision"><%= decision.prediction.name %></:col>
   <:col :let={{_id, decision}} label="Classifier">
     <%= if decision.classifier do %>

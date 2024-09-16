@@ -21,10 +21,12 @@ defmodule ExcisionWeb.DecisionLive.Index do
         Excisions.list_decisions_for_classifier(classifier,
           preloads: [:classifier, :label, :prediction]
         )
+        |> Enum.sort_by(& &1.inserted_at, &<=/2)
       else
         Excisions.list_decisions_for_site(decision_site,
           preloads: [:classifier, :label, :prediction]
         )
+        |> Enum.sort_by(& &1.inserted_at, &<=/2)
       end
 
     {:noreply,
