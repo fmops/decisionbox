@@ -18,10 +18,10 @@ The DecisionBox Solution
 DecisionBox empowers developers to make high-accuracy decisions within their LLM apps that continuously improve with more data. It streamlines the data science process into a simple API, allowing developers to achieve business-critical outcomes without extensive data science expertise.
 
 Key Benefits:
-•	High Accuracy Decisions: Make critical decisions within your app with confidence, knowing they're backed by a robust data science process.
-•	Continuous Improvement: As your app gathers more data, DecisionBox models learn and adapt, further enhancing decision accuracy.
-•	Ongoing Accuracy Metrics: Track and monitor decision accuracy to ensure your app meets your business objectives.
-•	Resource Efficiency: Simplify the data science process with an easy-to-use API, eliminating the need for extensive data science resources.
+* High Accuracy Decisions: Make critical decisions within your app with confidence, knowing they're backed by a robust data science process.
+* Continuous Improvement: As your app gathers more data, DecisionBox models learn and adapt, further enhancing decision accuracy.
+* Ongoing Accuracy Metrics: Track and monitor decision accuracy to ensure your app meets your business objectives.
+* Resource Efficiency: Simplify the data science process with an easy-to-use API, eliminating the need for extensive data science resources.
 
 High Level Developer Journey
 
