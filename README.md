@@ -14,7 +14,9 @@ The Pain Point
 Building high-quality LLM applications often hinges on the accuracy of critical decision points within your app. While OpenAI function calls may suffice for quick prototypes, achieving production-level accuracy often necessitates laborious prompt engineering, which yields diminishing returns. Additionally, not every development team has the luxury of a dedicated data science team to support every app they build.
 
 The DecisionBox Solution
+
 DecisionBox empowers developers to make high-accuracy decisions within their LLM apps that continuously improve with more data. It streamlines the data science process into a simple API, allowing developers to achieve business-critical outcomes without extensive data science expertise.
+
 Key Benefits:
 •	High Accuracy Decisions: Make critical decisions within your app with confidence, knowing they're backed by a robust data science process.
 •	Continuous Improvement: As your app gathers more data, DecisionBox models learn and adapt, further enhancing decision accuracy.
@@ -22,6 +24,7 @@ Key Benefits:
 •	Resource Efficiency: Simplify the data science process with an easy-to-use API, eliminating the need for extensive data science resources.
 
 High Level Developer Journey
+
 1.	Install the DecisionBox SDK.
 2.	Replace Existing Code: Replace code using OpenAI function calls or structured outputs with simple API calls to DecisionBox wherever you have a critical decision in your app, for which you need accuracy analytics, and improvements over time.  Initially we recommend you just instrument your existing decisions from your LLM service, so that you capture a baseline of decision quality, before calling your new Classifer.
 3.	Create Task-Specific Model: DecisionBox automatically creates small, task-specific models for each key decision point within your app.
@@ -29,7 +32,7 @@ High Level Developer Journey
 5.	Replace function calls, invoke your Classifer for each critical decision.
 6.	As the app is used, label further responses using the DecisionBox guided interface.
 7.	Now you can train your DecisionBox models and promote them to production to see immediate improvements in decision accuracy.
-3.	Share Metrics: Share accuracy metrics with stakeholders to demonstrate the impact of DecisionBox on your app's performance.
+8.	Share Metrics: Share accuracy metrics with stakeholders to demonstrate the impact of DecisionBox on your app's performance.
 
 ## Getting Started
 
