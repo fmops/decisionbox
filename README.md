@@ -3,7 +3,7 @@
 Thanks for using DecisionBox!  Extra kudos if you could contribute back to the project, or provide your feedback here:
 https://github.com/fmops/decisionbox/discussions
 
-If you want to dive right in to SDK install and config, skip to "Getting Started" below.
+If you want to dive right in to SDK install and config, skip to [Getting Started](#getting-started) below.
 
 ## Introduction - DecisionBox SDK Overview
 
