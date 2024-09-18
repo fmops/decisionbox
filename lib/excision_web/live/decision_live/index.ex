@@ -2,7 +2,20 @@ defmodule ExcisionWeb.DecisionLive.Index do
   use ExcisionWeb, :live_view
 
   alias Excision.Excisions
-  alias Excision.Excisions.Decision
+  alias Excision.Excisions.{Decision, DecisionSite}
+
+  require Ecto.Query
+  import Ecto.Query, only: [where: 2, where: 3]
+
+  def scope(q, %DecisionSite{id: decision_site_id}),
+    do: where(q, decision_site_id: ^decision_site_id)
+
+  def apply_filters(q, opts) do
+    Enum.reduce(opts, q, fn
+      {:unlabeled, bool}, q -> where(q, [p], is_nil(p.label_id) == ^bool)
+      _, q -> q
+    end)
+  end
 
   @impl true
   def handle_params(%{"decision_site_id" => decision_site_id} = params, _url, socket) do
@@ -16,25 +29,42 @@ defmodule ExcisionWeb.DecisionLive.Index do
         Excisions.get_classifier!(classifier_id)
       end
 
-    decisions =
-      if classifier_id do
-        Excisions.list_decisions_for_classifier(classifier,
-          preloads: [:classifier, :label, :prediction]
-        )
-        |> Enum.sort_by(& &1.inserted_at, &<=/2)
-      else
-        Excisions.list_decisions_for_site(decision_site,
-          preloads: [:classifier, :label, :prediction]
-        )
-        |> Enum.sort_by(& &1.inserted_at, &<=/2)
-      end
+    unlabeled = Map.get(params, "unlabeled")
 
     {:noreply,
      socket
-     |> stream(:decisions, decisions)
      |> assign(:decision_site, decision_site)
      |> assign(:classifier, classifier)
-     |> apply_action(socket.assigns.live_action, params)}
+     |> assign(:unlabeled, unlabeled)
+     |> apply_action(socket.assigns.live_action, params)
+     |> then(fn socket ->
+       flop =
+         params
+         |> Map.put("page_size", 10)
+         |> Map.put("order_by", ["inserted_at"])
+         |> Map.put("order_directions", ["asc"])
+         |> Map.put_new("page", 1)
+         |> Flop.validate!()
+
+       Decision
+       |> scope(decision_site)
+       |> apply_filters(
+         unless is_nil(unlabeled) do
+           %{unlabeled: unlabeled}
+         else
+           %{}
+         end
+       )
+       |> Flop.run(flop, for: Decision)
+       |> case do
+         {decisions, meta} ->
+           decisions = decisions |> Excision.Repo.preload([:classifier, :prediction, :label])
+
+           socket
+           |> assign(:meta, meta)
+           |> stream(:decisions, decisions, reset: true)
+       end
+     end)}
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do

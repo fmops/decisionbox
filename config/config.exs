@@ -11,6 +11,11 @@ config :excision,
   ecto_repos: [Excision.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :flop, repo: Excision.Repo
+
+config :flop_phoenix,
+  paginaion: [opts: {ExcisionWeb.CoreComponents, :pagination_opts}]
+
 # Configures the endpoint
 config :excision, ExcisionWeb.Endpoint,
   url: [host: "localhost"],

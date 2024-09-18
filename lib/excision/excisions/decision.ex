@@ -2,6 +2,11 @@ defmodule Excision.Excisions.Decision do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {
+    Flop.Schema,
+    filterable: [:label_id], sortable: [:inserted_at]
+  }
+
   schema "decisions" do
     field :input, :string
     belongs_to :label, Excision.Excisions.Choice

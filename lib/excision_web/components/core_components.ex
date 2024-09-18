@@ -123,7 +123,7 @@ defmodule ExcisionWeb.CoreComponents do
     >
       <p :if={@title} class="flex items-center gap-1.5 text-sm font-semibold leading-6">
         <.icon :if={@kind == :info} name="hero-information-circle-mini" class="h-4 w-4" />
-        <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="h-4 w-4" />
+        <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="h-5 w-4" />
         <%= @title %>
       </p>
       <p class="mt-2 text-sm leading-5"><%= msg %></p>
@@ -672,5 +672,41 @@ defmodule ExcisionWeb.CoreComponents do
   """
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
+  end
+
+  def pagination_opts do
+    [
+      ellipsis_attrs: [class: "ellipsis"],
+      next_link_attrs: [class: "next order-2"],
+      next_link_content: next_icon(),
+      page_links: {:ellipsis, 7},
+      pagination_list_attrs: [
+        class: "inline"
+      ],
+      pagination_list_item_attrs: [
+        class: "inline"
+      ],
+      previous_link_attrs: [class: "prev"],
+      previous_link_content: previous_icon(),
+      wrapper_attrs: [
+        class: "flex items-center justify-center gap-2"
+      ]
+    ]
+  end
+
+  defp next_icon do
+    assigns = %{}
+
+    ~H"""
+    <.icon name="hero-chevron-right" class="h-4 w-4" />
+    """
+  end
+
+  defp previous_icon do
+    assigns = %{}
+
+    ~H"""
+    <.icon name="hero-chevron-left" class="h-4 w-4" />
+    """
   end
 end

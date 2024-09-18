@@ -2,7 +2,15 @@
   <%= @decision_site.name %>
   <:subtitle>This is a decision_site record from your database.</:subtitle>
   <:actions>
-    <.link patch={~p"/decision_sites/#{@decision_site}/decisions"} phx-click={JS.push_focus()}>
+    <.link
+      patch={
+        ~p"/decision_sites/#{@decision_site}/decisions"
+        |> URI.parse()
+        |> Map.put(:query, URI.encode_query(%{unlabeled: true}))
+        |> URI.to_string()
+      }
+      phx-click={JS.push_focus()}
+    >
       <.button>
         <div class="flex items-center">
           <%= if @num_unlabeled_decisions > 0 do %>
