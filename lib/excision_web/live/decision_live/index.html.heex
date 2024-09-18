@@ -4,6 +4,23 @@
   <% else %>
     Listing Decisions for Decision Site <%= @decision_site.name %>
   <% end %>
+
+  <:actions>
+    <%= if @unlabeled do %>
+      <.link patch={~p"/decision_sites/#{@decision_site}/decisions"}>
+        <.button>Showing Unlabeled Only</.button>
+      </.link>
+    <% else %>
+      <.link patch={
+        ~p"/decision_sites/#{@decision_site}/decisions"
+        |> URI.parse()
+        |> Map.put(:query, URI.encode_query(%{unlabeled: true}))
+        |> URI.to_string()
+      }>
+        <.button>Showing All</.button>
+      </.link>
+    <% end %>
+  </:actions>
 </.header>
 
 <.table
@@ -20,6 +37,7 @@
       <%= decision.input %>
     </div>
   </:col>
+  <:col :let={{_id, decision}} label="Created At"><%= decision.inserted_at %></:col>
   <:col :let={{_id, decision}} label="Decision"><%= decision.prediction.name %></:col>
   <:col :let={{_id, decision}} label="Classifier">
     <%= if decision.classifier do %>
@@ -67,6 +85,8 @@
     </.link>
   </:action>
 </.table>
+
+<Flop.Phoenix.pagination meta={@meta} path={~p"/decision_sites/#{@decision_site}/decisions"} />
 
 <%= if @classifier do %>
   <.back navigate={~p"/decision_sites/#{@decision_site}/classifiers/#{@classifier}"}>

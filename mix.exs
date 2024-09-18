@@ -72,7 +72,9 @@ defmodule Excision.MixProject do
       {:contex, "~> 0.5"},
       {:scidata, "~> 0.1"},
       {:timex, "~> 3.7"},
-      {:brotli, "~> 0.3"}
+      {:brotli, "~> 0.3"},
+      {:flop, "~> 0.26.1"},
+      {:flop_phoenix, "~> 0.23.0"}
     ]
   end
 
