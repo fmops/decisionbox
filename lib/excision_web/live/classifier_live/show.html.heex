@@ -84,20 +84,20 @@
     :if={not is_default_classifier?(@classifier) && @classifier.status == :trained}
     title="Accuracy (Train)"
   >
-    <%= @classifier.train_accuracy %>
+    <%= @classifier.train_accuracy |> Float.ceil(2) %>
   </:item>
   <:item
     :if={not is_default_classifier?(@classifier) && @classifier.status == :trained}
     title="Accuracy (Test)"
   >
-    <%= @classifier.test_accuracy %>
+    <%= @classifier.test_accuracy |> Float.ceil(2) %>
   </:item>
 
   <:item :if={@classifier.status == :trained} title="Accuracy (Runtime)">
     <%= if is_nil(@accuracy) do %>
       No decisions yet - promote this classifier to start using it.
     <% else %>
-      <%= @accuracy %>
+      <%= @accuracy |> Float.ceil(2) %>
     <% end %>
   </:item>
 </.list>
