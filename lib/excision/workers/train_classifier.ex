@@ -102,9 +102,9 @@ defmodule Excision.Workers.TrainClassifier do
     Excisions.update_classifier(classifier, %{
       checkpoint_path: checkpoint_path,
       train_accuracy: train_accuracy,
-      test_accuracy: test_accuracy
+      test_accuracy: test_accuracy,
+      trained_at: DateTime.utc_now()
     })
-
     Excisions.update_classifier_status(classifier, :trained)
 
     :ok
