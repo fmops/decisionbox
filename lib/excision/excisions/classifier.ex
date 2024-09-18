@@ -8,6 +8,8 @@ defmodule Excision.Excisions.Classifier do
     field :checkpoint_path, :string
     field :train_accuracy, :float
     field :test_accuracy, :float
+    field :trained_at, :utc_datetime
+    field :promoted_at, :utc_datetime
 
     embeds_one :training_parameters, TrainingParameters, primary_key: false do
       @derive Jason.Encoder
@@ -40,7 +42,9 @@ defmodule Excision.Excisions.Classifier do
       :status,
       :checkpoint_path,
       :train_accuracy,
-      :test_accuracy
+      :test_accuracy,
+      :trained_at,
+      :promoted_at
     ])
     |> cast_embed(:training_parameters, with: &training_parameters_changeset/2)
     |> validate_required([:name])
