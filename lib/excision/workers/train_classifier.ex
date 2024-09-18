@@ -99,13 +99,13 @@ defmodule Excision.Workers.TrainClassifier do
 
     test_accuracy = test_results[0]["accuracy"] |> Nx.to_number()
 
-    Excisions.update_classifier(classifier, %{
+    {:ok, _} = Excisions.update_classifier(classifier, %{
       checkpoint_path: checkpoint_path,
       train_accuracy: train_accuracy,
       test_accuracy: test_accuracy,
       trained_at: DateTime.utc_now()
     })
-    Excisions.update_classifier_status(classifier, :trained)
+    {:ok, _} = Excisions.update_classifier_status(classifier, :trained)
 
     :ok
   end
