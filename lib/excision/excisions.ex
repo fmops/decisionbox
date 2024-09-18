@@ -449,10 +449,12 @@ defmodule Excision.Excisions do
     classifier = Repo.preload(classifier, :decision_site)
 
     # TODO: transaction
-    {:ok, _} = update_decision_site(
-      classifier.decision_site,
-      %{active_classifier_id: classifier.id}
-    )
+    {:ok, _} =
+      update_decision_site(
+        classifier.decision_site,
+        %{active_classifier_id: classifier.id}
+      )
+
     {:ok, _} = update_classifier(classifier, %{promoted_at: DateTime.utc_now()})
   end
 
