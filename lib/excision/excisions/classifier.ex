@@ -70,4 +70,7 @@ defmodule Excision.Excisions.Classifier do
       training_parameters: %__MODULE__.TrainingParameters{}
     }
   end
+
+  def status_to_display_status(:trained), do: :ready
+  def status_to_display_status(s), do: s
 end

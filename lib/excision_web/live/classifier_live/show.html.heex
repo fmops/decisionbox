@@ -44,7 +44,7 @@
   <:item title="Status">
     <div class="flex items-center space-x-2">
       <div>
-        <%= @classifier.status %>
+        <%= Excision.Excisions.Classifier.status_to_display_status(@classifier.status) %>
       </div>
       <%= if @classifier.status == :training && not is_nil(@progress) do %>
         <div
