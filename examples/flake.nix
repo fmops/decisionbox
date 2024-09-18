@@ -19,6 +19,7 @@
               venvShellHook
               openai
               aiohttp
+              requests
             ]);
         };
       });
