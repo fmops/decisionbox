@@ -1,5 +1,5 @@
 <.header>
-  Classifier <%= @classifier.id %>
+  Showing classifier <%= @classifier.id %> for decision site <%= @classifier.decision_site.name %>
   <:subtitle>This is a classifier record from your database.</:subtitle>
   <:actions>
     <.link
@@ -41,6 +41,8 @@
 <.list>
   <:item title="Name"><%= @classifier.name %></:item>
   <:item title="Created"><%= @classifier.inserted_at %></:item>
+  <:item title="Last Trained"><%= @classifier.trained_at %></:item>
+  <:item title="Last Promoted"><%= @classifier.promoted_at %></:item>
   <:item title="Status">
     <div class="flex items-center space-x-2">
       <div>
