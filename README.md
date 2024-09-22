@@ -46,12 +46,12 @@ docker run \
     --rm \
     -p 4000:4000 \
     -v ./db:/app/db:z \
-    -v ./checkpoints:/app/checkpoints:z \
     --env DATABASE_PATH=/app/db/db.sqlite \
-    --env SECRET_KEY_BASE=`mix phx.gen.secret` \
+    -v ./checkpoints:/app/checkpoints:rw,z \
+    --env SECRET_KEY_BASE=$(openssl rand -hex 32) \
     --env PHX_HOST=localhost \
     ghcr.io/fmops/decisionbox:latest \
-    bash -c "/app/bin/migrate && /app/bin/server"
+    sh -c "/app/bin/migrate && /app/bin/server"
 ```
 
 In a web browser: [http://localhost:4000](http://localhost:4000)
@@ -75,6 +75,7 @@ To start your Phoenix server:
 
   * Run `mix setup` to install and setup dependencies
   * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+  * Run `mix run priv/repo/seeds.exs` to seed some fixture data in order to kickstart development
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
@@ -93,4 +94,11 @@ Switching between CPU/GPU
 # export XLA_TARGET=cuda12
 export XLA_TARGET=cpu
 mix deps.clean xla exla && mix deps.get
+```
+
+Ensure db directory is writable so that you can persist data created when running the app via docker
+
+```sh
+sudo chown your-user:your-user db
+chmod 777 db
 ```
