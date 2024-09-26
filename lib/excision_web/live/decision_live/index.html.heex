@@ -18,6 +18,21 @@
   </:actions>
 </.header>
 
+<div class="flex items-center">
+  Labeling progress &nbsp;
+  <div
+    class="flex w-40 h-4 bg-gray-200 rounded-full overflow-hidden dark:bg-neutral-700"
+    role="progressbar"
+  >
+    <div
+      class="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap dark:bg-blue-500 transition duration-500"
+      style={"width: #{round((1 - @num_unlabeled_decisions / @num_decisions) * 100)}%"}
+    >
+      <%= @num_decisions - @num_unlabeled_decisions %> / <%= @num_decisions %>
+    </div>
+  </div>
+</div>
+
 <.table
   id="decisions"
   rows={@streams.decisions}
