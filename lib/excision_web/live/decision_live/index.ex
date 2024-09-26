@@ -17,7 +17,6 @@ defmodule ExcisionWeb.DecisionLive.Index do
           "unlabeled" -> where(q, [p], is_nil(p.label_id))
           "labeled" -> where(q, [p], not is_nil(p.label_id))
           "all" -> q
-          nil -> q
         end
 
       _, q ->
@@ -37,20 +36,20 @@ defmodule ExcisionWeb.DecisionLive.Index do
         Excisions.get_classifier!(classifier_id)
       end
 
-    filter_label = Map.get(params, "filter_label")
+    filter_label = Map.get(params, "filter_label", "all")
 
     {:noreply,
      socket
      |> assign(:decision_site, decision_site)
      |> assign(:classifier, classifier)
-     |> assign(:filters, to_form(%{filter_label: filter_label}))
+     |> assign(:filters, to_form(%{"filter_label" => filter_label}))
      |> apply_action(socket.assigns.live_action, params)
      |> then(fn socket ->
        flop =
          params
          |> Map.put("page_size", 10)
          |> Map.put("order_by", ["inserted_at"])
-         |> Map.put("order_directions", ["asc"])
+         |> Map.put("order_directions", ["desc"])
          |> Map.put_new("page", 1)
          |> Flop.validate!()
 
