@@ -59,11 +59,16 @@ defmodule ExcisionWeb.DecisionLive.Index do
        |> Flop.run(flop, for: Decision)
        |> case do
          {decisions, meta} ->
-           decisions = decisions |> Excision.Repo.preload([:classifier, :prediction, :label])
+           decisions_page = decisions |> Excision.Repo.preload([:classifier, :prediction, :label])
 
            socket
            |> assign(:meta, meta)
-           |> stream(:decisions, decisions, reset: true)
+           |> stream(:decisions, decisions_page, reset: true)
+           |> assign(
+             :num_unlabeled_decisions,
+             decision_site.decisions |> Enum.filter(&is_nil(&1.label_id)) |> Enum.count()
+           )
+           |> assign(:num_decisions, decision_site.decisions |> Enum.count())
        end
      end)}
   end
@@ -101,10 +106,21 @@ defmodule ExcisionWeb.DecisionLive.Index do
 
   @impl true
   def handle_event("label", %{"decision_id" => decision_id, "value" => label_choice_id}, socket) do
-    decision = Excisions.get_decision!(decision_id)
-    {:ok, decision} = Excisions.label_decision(decision, label_choice_id)
+    prev_decision = Excisions.get_decision!(decision_id)
+    {:ok, decision} = Excisions.label_decision(prev_decision, label_choice_id)
 
-    {:noreply, stream_insert(socket, :decisions, decision)}
+    {:noreply,
+     socket
+     |> stream_insert(:decisions, decision)
+     |> assign(
+       :num_unlabeled_decisions,
+       case {prev_decision.label_id, decision.label_id} do
+         {nil, nil} -> socket.assigns.num_unlabeled_decisions
+         {nil, _} -> socket.assigns.num_unlabeled_decisions - 1
+         {_, nil} -> socket.assigns.num_unlabeled_decisions + 1
+         {_, _} -> socket.assigns.num_unlabeled_decisions
+       end
+     )}
   end
 
   @impl true
