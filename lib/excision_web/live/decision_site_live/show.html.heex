@@ -6,7 +6,7 @@
       patch={
         ~p"/decision_sites/#{@decision_site}/decisions"
         |> URI.parse()
-        |> Map.put(:query, URI.encode_query(%{unlabeled: true}))
+        |> Map.put(:query, URI.encode_query(%{filter_label: "unlabeled"}))
         |> URI.to_string()
       }
       phx-click={JS.push_focus()}

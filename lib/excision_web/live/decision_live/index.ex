@@ -12,8 +12,16 @@ defmodule ExcisionWeb.DecisionLive.Index do
 
   def apply_filters(q, opts) do
     Enum.reduce(opts, q, fn
-      {:unlabeled, bool}, q -> where(q, [p], is_nil(p.label_id) == ^bool)
-      _, q -> q
+      {:filter_label, filter_label}, q ->
+        case filter_label do
+          "unlabeled" -> where(q, [p], is_nil(p.label_id))
+          "labeled" -> where(q, [p], not is_nil(p.label_id))
+          "all" -> q
+          nil -> q
+        end
+
+      _, q ->
+        q
     end)
   end
 
@@ -29,13 +37,13 @@ defmodule ExcisionWeb.DecisionLive.Index do
         Excisions.get_classifier!(classifier_id)
       end
 
-    unlabeled = Map.get(params, "unlabeled")
+    filter_label = Map.get(params, "filter_label")
 
     {:noreply,
      socket
      |> assign(:decision_site, decision_site)
      |> assign(:classifier, classifier)
-     |> assign(:unlabeled, unlabeled)
+     |> assign(:filters, to_form(%{filter_label: filter_label}))
      |> apply_action(socket.assigns.live_action, params)
      |> then(fn socket ->
        flop =
@@ -48,13 +56,7 @@ defmodule ExcisionWeb.DecisionLive.Index do
 
        Decision
        |> scope(decision_site)
-       |> apply_filters(
-         unless is_nil(unlabeled) do
-           %{unlabeled: unlabeled}
-         else
-           %{}
-         end
-       )
+       |> apply_filters(%{filter_label: filter_label})
        |> Flop.run(flop, for: Decision)
        |> case do
          {decisions, meta} ->
@@ -109,5 +111,18 @@ defmodule ExcisionWeb.DecisionLive.Index do
   @impl true
   def handle_event("share-clicked", _, socket) do
     {:noreply, socket |> put_flash(:info, "Permalink copied to clipboard")}
+  end
+
+  @impl true
+  def handle_event("filters-updated", %{"filter_label" => filter_label}, socket) do
+    {:noreply,
+     socket
+     |> push_patch(
+       to:
+         ~p"/decision_sites/#{socket.assigns.decision_site}/decisions"
+         |> URI.parse()
+         |> Map.put(:query, URI.encode_query(%{filter_label: filter_label}))
+         |> URI.to_string()
+     )}
   end
 end
