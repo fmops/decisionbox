@@ -14,7 +14,7 @@ config :excision,
 config :flop, repo: Excision.Repo
 
 config :flop_phoenix,
-  paginaion: [opts: {ExcisionWeb.CoreComponents, :pagination_opts}]
+  pagination: [opts: {ExcisionWeb.CoreComponents, :pagination_opts}]
 
 # Configures the endpoint
 config :excision, ExcisionWeb.Endpoint,

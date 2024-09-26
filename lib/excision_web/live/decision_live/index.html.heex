@@ -6,20 +6,14 @@
   <% end %>
 
   <:actions>
-    <%= if @unlabeled do %>
-      <.link patch={~p"/decision_sites/#{@decision_site}/decisions"}>
-        <.button>Showing Unlabeled Only</.button>
-      </.link>
-    <% else %>
-      <.link patch={
-        ~p"/decision_sites/#{@decision_site}/decisions"
-        |> URI.parse()
-        |> Map.put(:query, URI.encode_query(%{unlabeled: true}))
-        |> URI.to_string()
-      }>
-        <.button>Showing All</.button>
-      </.link>
-    <% end %>
+    <.form for={@filters} phx-change="filters-updated">
+      <.input
+        label="Filter labels"
+        type="select"
+        field={@filters[:filter_label]}
+        options={["unlabeled", "labeled", "all"]}
+      />
+    </.form>
   </:actions>
 </.header>
 
