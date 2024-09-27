@@ -1,5 +1,7 @@
 # DecisionBox
 
+<a href="https://www.producthunt.com/posts/decisionbox-sdk?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-decisionbox&#0045;sdk" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=490709&theme=light" alt="DecisionBox&#0032;SDK - Improve&#0032;your&#0032;LLM&#0045;based&#0032;app&#0032;with&#0032;smarter&#0032;decisions&#0032;using&#0032;ML | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
 Thanks for using DecisionBox!  Extra kudos if you could contribute back to the project, or provide your feedback here:
 https://github.com/fmops/decisionbox/discussions
 
