@@ -28,6 +28,7 @@ defmodule Excision.Seed do
       })
     end
 
+    # TODO i guess we want to tweak this classifier?
     {:ok, _} =
       Excisions.create_classifier(%{
         decision_site_id: decision_site.id,

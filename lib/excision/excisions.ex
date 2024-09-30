@@ -357,8 +357,12 @@ defmodule Excision.Excisions do
 
   """
   def create_classifier(attrs \\ %{}) do
+    attrs_with_defaults = case attrs.model_name do
+      nil -> Map.put(attrs, :model_name, Classifier.default_model_name)
+      _ -> attrs
+    end
     %Classifier{}
-    |> Classifier.changeset(attrs)
+    |> Classifier.changeset(attrs_with_defaults)
     |> Repo.insert()
   end
 

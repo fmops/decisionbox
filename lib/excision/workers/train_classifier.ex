@@ -27,13 +27,9 @@ defmodule Excision.Workers.TrainClassifier do
 
   def train(classifier) do
     num_labels = classifier.decision_site.choices |> Enum.count()
-    # TODO: allow variable model name
-    # model_name = "albert/albert-base-v2"
-    model_name = "distilbert/distilbert-base-uncased"
-
     {:ok, {%{model: model, params: params}, tokenizer}} =
       load_model_and_tokenizer(
-        model_name,
+        classifier.model_name,
         num_labels,
         classifier.training_parameters.sequence_length
       )
@@ -71,7 +67,7 @@ defmodule Excision.Workers.TrainClassifier do
         every: 1
       )
       # TODO: allow checkpointing in training_parameters and warn about sapce usage
-      # TODO: resume interrupted training from checkpoints 
+      # TODO: resume interrupted training from checkpoints
       # |> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
       |> then(fn loop -> %{loop | output_transform: & &1} end)
       |> Axon.Loop.run(train_data, params,
