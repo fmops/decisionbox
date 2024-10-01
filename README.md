@@ -7,6 +7,8 @@ https://github.com/fmops/decisionbox/discussions
 
 If you want to dive right in to SDK install and config, skip to [Getting Started](#getting-started) below.
 
+Looking for spcification of RESTful APIs?  See https://decisionbox.blueteam.ai/swaggerui
+
 ## Introduction - DecisionBox SDK Overview
 
 The purpose of this product is to allow you to radically improve your LLM app so it gets smarter with more data
