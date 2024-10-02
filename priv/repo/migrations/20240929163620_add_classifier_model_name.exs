@@ -3,9 +3,9 @@ defmodule Excision.Repo.Migrations.AddClassifierModelName do
 
   def change do
 
-    # add column model_name with default value
+    # add nullable column model_name
     alter table(:classifiers) do
-      add :model_name, :string, null: false, default: Excision.Excisions.Classifier.default_model_name()
+      add :model_name, :string, null: true
     end
 
   end

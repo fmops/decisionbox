@@ -28,11 +28,11 @@ defmodule Excision.Seed do
       })
     end
 
-    # TODO i guess we want to tweak this classifier?
     {:ok, _} =
       Excisions.create_classifier(%{
         decision_site_id: decision_site.id,
         name: "seeded classifier",
+        model_name: "microsoft/deberta-v3-small",
         training_parameters: %{
           learning_rate: 5.0e-3,
           batch_size: 64,
