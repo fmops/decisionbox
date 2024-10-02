@@ -32,7 +32,7 @@ defmodule Excision.Seed do
       Excisions.create_classifier(%{
         decision_site_id: decision_site.id,
         name: "seeded classifier",
-        model_name: "microsoft/deberta-v3-small",
+        model_name: "google/gemma-2b",
         training_parameters: %{
           learning_rate: 5.0e-3,
           batch_size: 64,
