@@ -318,6 +318,11 @@ defmodule Excision.Excisions do
     preloads = Keyword.get(opts, :preloads, [])
 
     from(c in Classifier, where: c.decision_site_id == ^decision_site.id)
+    # order by active_classifier first
+    |> order_by([c], {
+      :asc,
+      fragment("CASE WHEN ? = ? THEN 0 ELSE 1 END", c.id, ^decision_site.active_classifier_id)
+    })
     |> Repo.all()
     |> Repo.preload(preloads)
   end
