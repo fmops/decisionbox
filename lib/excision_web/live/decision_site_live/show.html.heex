@@ -56,6 +56,9 @@
       <%= @decision_site.active_classifier.name %>
     </.link>
   </:item>
+  <:item title="Last Trained On">
+    <%= @decision_site.active_classifier.trained_at %>
+  </:item>
   <:item title="Baseline Accuracy">
     <%= (@baseline_accuracy || 0.0) |> Float.ceil(2) %>
   </:item>
