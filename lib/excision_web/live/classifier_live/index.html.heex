@@ -21,22 +21,21 @@
     <%= Excision.Excisions.Classifier.status_to_display_status(classifier.status) %>
   </:col>
   <:col :let={{_id, classifier}} label="Active">
-    <%= classifier.id == @decision_site.active_classifier_id %>
+    <%= if classifier.id == @decision_site.active_classifier_id, do: "Active", else: "Inactive" %>
   </:col>
   <:action :let={{_id, classifier}}>
-    <%= case classifier.status do %>
-      <% x when x in [:waiting, :failed] -> %>
-        <%= if Enum.count(@decision_site.decisions |> Enum.filter(& not is_nil(&1.label_id))) > (1.0 / (1.0 - frac_train())) do %>
-          <.link phx-click={JS.push("train", value: %{id: classifier.id})}>
-            Train
-          </.link>
-        <% end %>
-      <% :trained when classifier.id != @decision_site.active_classifier_id -> %>
-        <.link phx-click={JS.push("promote", value: %{id: classifier.id})}>
+    <.link phx-click={
+      JS.navigate(~p"/decision_sites/#{@decision_site}/classifiers/#{classifier}")
+    }>
+      <%= case classifier.status do %>
+        <% x when x in [:waiting, :failed] and @enough_labels_to_train -> %>
+          Train
+        <% :trained when classifier.id != @decision_site.active_classifier_id -> %>
           Promote
-        </.link>
-      <% _ -> %>
-    <% end %>
+        <% _ -> %>
+          Details
+      <% end %>
+    </.link>
   </:action>
   <:action :let={{id, classifier}}>
     <.link
