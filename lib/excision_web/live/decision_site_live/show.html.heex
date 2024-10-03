@@ -35,7 +35,9 @@
 </.header>
 
 <.list>
-  <:item title="Endpoint Invoke URL"><%= "https://decisionbox.blueteam.ai/api/decision_sites/#{@decision_site.id}/invoke" %></:item>
+  <:item title="Endpoint Invoke URL">
+    <%= "https://decisionbox.blueteam.ai/api/decision_sites/#{@decision_site.id}/invoke" %>
+  </:item>
   <:item title="Choices"><%= inspect(@decision_site.choices |> Enum.map(& &1.name)) %></:item>
   <:item title="# Decisions"><%= @num_decisions %></:item>
   <:item title="# unlabeled Decisions">
