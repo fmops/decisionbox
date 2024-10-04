@@ -109,15 +109,17 @@ defmodule Excision.Workers.TrainClassifier do
   end
 
   defp load_model_and_tokenizer(model_name, num_labels, sequence_length) do
+    # TODO surface errors to user better
+    repository = {:hf, model_name, auth_token: System.get_env("HUGGING_FACE_API_KEY")}
     {:ok, spec} =
-      Bumblebee.load_spec({:hf, model_name, [auth_token: System.get_env("HUGGING_FACE_API_KEY")]},
+      Bumblebee.load_spec(repository,
         architecture: :for_sequence_classification
       )
 
     spec = Bumblebee.configure(spec, num_labels: num_labels)
 
-    {:ok, model} = Bumblebee.load_model({:hf, model_name}, spec: spec)
-    {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, model_name})
+    {:ok, model} = Bumblebee.load_model(repository, spec: spec)
+    {:ok, tokenizer} = Bumblebee.load_tokenizer(repository)
 
     tokenizer = Bumblebee.configure(tokenizer, length: sequence_length)
 

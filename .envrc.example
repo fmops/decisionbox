@@ -2,4 +2,6 @@ use flake
 export ERL_AFLAGS="-kernel shell_history enabled"
 export XLA_TARGET="cpu"
 #export XLA_TARGET="cuda12"
+
+# for authorizing hugging face calls. Some public repositories don't need this
 export HUGGING_FACE_API_KEY=""

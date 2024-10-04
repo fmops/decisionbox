@@ -71,6 +71,8 @@ The python examples in `examples/` show how you can invoke a decision site and s
 
 Dependencies are managed with `flake.nix` and `nix-direnv`.
 
+Set environment variables in `.envrc`. See `.envrc.example` for what variables to set.
+
 To start your Phoenix server:
 
   * Run `mix setup` to install and setup dependencies
