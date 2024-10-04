@@ -27,6 +27,7 @@ defmodule Excision.Workers.TrainClassifier do
 
   def train(classifier) do
     num_labels = classifier.decision_site.choices |> Enum.count()
+
     {:ok, {%{model: model, params: params}, tokenizer}} =
       load_model_and_tokenizer(
         classifier.model_name,
@@ -111,6 +112,7 @@ defmodule Excision.Workers.TrainClassifier do
   defp load_model_and_tokenizer(model_name, num_labels, sequence_length) do
     # TODO surface errors to user better
     repository = {:hf, model_name, auth_token: System.get_env("HUGGING_FACE_API_KEY")}
+
     {:ok, spec} =
       Bumblebee.load_spec(repository,
         architecture: :for_sequence_classification
