@@ -361,7 +361,8 @@ defmodule Excision.Excisions do
     # with atom keys. This creates conflict errors when creating changesets
     # bc we must set default attributes
     # So, convert string keys to atoms, and set defaults using atom key
-    attrs_w_atom_keys = Enum.reduce(attrs, %{}, fn
+    attrs_w_atom_keys =
+      Enum.reduce(attrs, %{}, fn
         {k, v}, acc when is_atom(k) -> Map.put(acc, k, v)
         {k, v}, acc when is_binary(k) -> Map.put(acc, String.to_existing_atom(k), v)
       end)
