@@ -2,8 +2,13 @@ defmodule Excision.Excisions.Classifier do
   use Ecto.Schema
   import Ecto.Changeset
 
+  def default_model_name do
+    "distilbert/distilbert-base-uncased"
+  end
+
   schema "classifiers" do
     field :name, :string
+    field :model_name, :string
     field :status, Ecto.Enum, values: [:waiting, :failed, :training, :trained], default: :waiting
     field :checkpoint_path, :string
     field :train_accuracy, :float
@@ -38,6 +43,7 @@ defmodule Excision.Excisions.Classifier do
     classifier
     |> cast(attrs, [
       :name,
+      :model_name,
       :decision_site_id,
       :status,
       :checkpoint_path,
