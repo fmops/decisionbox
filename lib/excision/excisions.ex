@@ -357,24 +357,8 @@ defmodule Excision.Excisions do
 
   """
   def create_classifier(attrs \\ %{}) do
-    # live forms send attrs with string keys and BE code sends attrs
-    # with atom keys. This creates conflict errors when creating changesets
-    # bc we must set default attributes
-    # So, convert string keys to atoms, and set defaults using atom key
-    attrs_w_atom_keys =
-      Enum.reduce(attrs, %{}, fn
-        {k, v}, acc when is_atom(k) -> Map.put(acc, k, v)
-        {k, v}, acc when is_binary(k) -> Map.put(acc, String.to_existing_atom(k), v)
-      end)
-
-    attrs_with_defaults =
-      case attrs_w_atom_keys[:model_name] do
-        nil -> Map.put(attrs_w_atom_keys, :model_name, Classifier.default_model_name())
-        _ -> attrs_w_atom_keys
-      end
-
     %Classifier{}
-    |> Classifier.changeset(attrs_with_defaults)
+    |> Classifier.changeset(attrs)
     |> Repo.insert()
   end
 

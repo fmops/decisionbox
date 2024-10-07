@@ -55,7 +55,7 @@ defmodule ExcisionWeb.ClassifierLiveTest do
         |> hd()
 
       assert classifier.status == :waiting
-      assert classifier.model_name == Excision.Excisions.Classifier.default_model_name()
+      assert classifier.base_model_name == "distilbert/distilbert-base-uncased"
     end
 
     # test "updates classifier in listing", %{conn: conn, classifier: classifier} do

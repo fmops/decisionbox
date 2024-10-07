@@ -30,7 +30,7 @@ defmodule Excision.Workers.TrainClassifier do
 
     {:ok, {%{model: model, params: params}, tokenizer}} =
       load_model_and_tokenizer(
-        classifier.model_name,
+        classifier.base_model_name,
         num_labels,
         classifier.training_parameters.sequence_length
       )

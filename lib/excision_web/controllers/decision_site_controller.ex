@@ -80,8 +80,7 @@ defmodule ExcisionWeb.DecisionSiteController do
 
       # TODO: this is really slow, need GenServer (Agent?) to keep model in memory
       # TODO: read model name from classifier
-      # model_name = "albert/albert-base-v2"
-      model_name = "distilbert/distilbert-base-uncased"
+      model_name = classifier.base_model_name
 
       {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, model_name})
       checkpoint_path = classifier.checkpoint_path
