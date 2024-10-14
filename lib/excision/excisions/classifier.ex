@@ -2,10 +2,6 @@ defmodule Excision.Excisions.Classifier do
   use Ecto.Schema
   import Ecto.Changeset
 
-  def default_model_name do
-    "distilbert/distilbert-base-uncased"
-  end
-
   schema "classifiers" do
     field :name, :string
     field :base_model_name, :string, default: "distilbert/distilbert-base-uncased"

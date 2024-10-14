@@ -32,7 +32,6 @@ defmodule Excision.Seed do
       Excisions.create_classifier(%{
         decision_site_id: decision_site.id,
         name: "seeded classifier",
-        base_model_name: Excision.Excisions.Classifier.default_model_name(),
         training_parameters: %{
           learning_rate: 5.0e-3,
           batch_size: 64,
