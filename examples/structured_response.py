@@ -12,7 +12,7 @@ async def main():
             "messages": [
                 {
                     "role": "user",
-                    "content": "you're ok",
+                    "content": "Random choice: nice or bad?",
                 }
             ],
             "model": "gpt-4o-mini",

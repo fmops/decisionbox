@@ -5,6 +5,9 @@ config :nx, default_backend: EXLA.Backend
 config :excision,
   checkpoint_path: System.get_env("CHECKPOINT_PATH") || "./checkpoints/"
 
+config :excision,
+  hugging_face_auth_token: System.get_env("HUGGING_FACE_API_KEY") || nil
+
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
 # system starts, so it is typically used to load production configuration
