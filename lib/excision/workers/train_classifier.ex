@@ -111,7 +111,8 @@ defmodule Excision.Workers.TrainClassifier do
 
   defp load_model_and_tokenizer(model_name, num_labels, sequence_length) do
     # TODO surface errors to user better
-    repository = {:hf, model_name, auth_token: Application.get_env(:excision, :hugging_face_auth_token)}
+    repository =
+      {:hf, model_name, auth_token: Application.get_env(:excision, :hugging_face_auth_token)}
 
     {:ok, spec} =
       Bumblebee.load_spec(repository,
