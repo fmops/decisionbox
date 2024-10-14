@@ -27,13 +27,10 @@ defmodule Excision.Workers.TrainClassifier do
 
   def train(classifier) do
     num_labels = classifier.decision_site.choices |> Enum.count()
-    # TODO: allow variable model name
-    # model_name = "albert/albert-base-v2"
-    model_name = "distilbert/distilbert-base-uncased"
 
     {:ok, {%{model: model, params: params}, tokenizer}} =
       load_model_and_tokenizer(
-        model_name,
+        classifier.base_model_name,
         num_labels,
         classifier.training_parameters.sequence_length
       )
@@ -71,7 +68,7 @@ defmodule Excision.Workers.TrainClassifier do
         every: 1
       )
       # TODO: allow checkpointing in training_parameters and warn about sapce usage
-      # TODO: resume interrupted training from checkpoints 
+      # TODO: resume interrupted training from checkpoints
       # |> Axon.Loop.checkpoint(event: :epoch_completed, path: checkpoint_path)
       |> then(fn loop -> %{loop | output_transform: & &1} end)
       |> Axon.Loop.run(train_data, params,
@@ -113,15 +110,19 @@ defmodule Excision.Workers.TrainClassifier do
   end
 
   defp load_model_and_tokenizer(model_name, num_labels, sequence_length) do
+    # TODO surface errors to user better
+    repository =
+      {:hf, model_name, auth_token: Application.get_env(:excision, :hugging_face_auth_token)}
+
     {:ok, spec} =
-      Bumblebee.load_spec({:hf, model_name},
+      Bumblebee.load_spec(repository,
         architecture: :for_sequence_classification
       )
 
     spec = Bumblebee.configure(spec, num_labels: num_labels)
 
-    {:ok, model} = Bumblebee.load_model({:hf, model_name}, spec: spec)
-    {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, model_name})
+    {:ok, model} = Bumblebee.load_model(repository, spec: spec)
+    {:ok, tokenizer} = Bumblebee.load_tokenizer(repository)
 
     tokenizer = Bumblebee.configure(tokenizer, length: sequence_length)
 

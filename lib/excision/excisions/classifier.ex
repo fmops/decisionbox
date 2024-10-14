@@ -4,6 +4,7 @@ defmodule Excision.Excisions.Classifier do
 
   schema "classifiers" do
     field :name, :string
+    field :base_model_name, :string, default: "distilbert/distilbert-base-uncased"
     field :status, Ecto.Enum, values: [:waiting, :failed, :training, :trained], default: :waiting
     field :checkpoint_path, :string
     field :train_accuracy, :float
@@ -38,6 +39,7 @@ defmodule Excision.Excisions.Classifier do
     classifier
     |> cast(attrs, [
       :name,
+      :base_model_name,
       :decision_site_id,
       :status,
       :checkpoint_path,
