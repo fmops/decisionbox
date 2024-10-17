@@ -362,9 +362,13 @@ defmodule Excision.Excisions do
 
   """
   def create_classifier(attrs \\ %{}) do
-    %Classifier{}
-    |> Classifier.changeset(attrs)
-    |> Repo.insert()
+    case validate_classifier_inputs(attrs) do
+      {:error, err} -> {:error, err}
+      {:ok, _} ->
+        %Classifier{}
+        |> Classifier.changeset(attrs)
+        |> Repo.insert()
+    end
   end
 
   @doc """
@@ -632,4 +636,20 @@ defmodule Excision.Excisions do
   def change_choice(%Choice{} = choice, attrs \\ %{}) do
     Choice.changeset(choice, attrs)
   end
+
+  defp validate_classifier_inputs(attrs) do
+    #  Validates the attributes for a classifier changeset
+    #  Returns an error if fails
+    #  TODO typedef and should it just raise?
+
+    # validate base model is real
+    base_model_name = attrs["base_model_name"]
+    if base_model_name != "" && base_model_name != nil do
+      # TODO make shared util for creating repository input and use with train_classifier also
+      repository =
+        {:hf, base_model_name, auth_token: Application.get_env(:excision, :hugging_face_auth_token)}
+      Bumblebee.load_spec(repository)
+    end
+  end
+
 end
