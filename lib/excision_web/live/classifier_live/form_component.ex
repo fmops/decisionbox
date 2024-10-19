@@ -20,9 +20,9 @@ defmodule ExcisionWeb.ClassifierLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
+        <.input field={@form[:base_model_name]} type="text" label="Base model name" />
         <fieldset :if={@action == :new}>
           <legend class="text-md font-semibold text-zinc-800">Training Parameters</legend>
-          <.input field={@form[:base_model_name]} type="text" label="Base model name" />
           <.inputs_for :let={fp} field={@form[:training_parameters]}>
             <.input field={fp[:epochs]} type="number" label="# Epochs" />
             <.input field={fp[:learning_rate]} type="number" label="Learning Rate" />

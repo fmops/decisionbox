@@ -381,9 +381,9 @@ defmodule Excision.Excisions do
 
   """
   def update_classifier(%Classifier{} = classifier, attrs) do
-    # TODO
     classifier
     |> Classifier.changeset(attrs)
+    |> Classifier.validate_base_model_name
     |> Repo.update()
   end
 
