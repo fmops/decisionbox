@@ -100,7 +100,6 @@ defmodule Excision.MixProject do
       ]
     ]
   end
-
 end
 
 defmodule Mix.Tasks.SetupGitHooks do

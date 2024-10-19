@@ -89,7 +89,8 @@ defmodule Excision.Excisions.Classifier do
 
   @spec validate_base_model_name(Ecto.Changeset.t()) :: Ecto.Changeset.t()
   def validate_base_model_name(changeset) do
-    Ecto.Changeset.validate_change(changeset, :base_model_name, fn :base_model_name, base_model_name ->
+    Ecto.Changeset.validate_change(changeset, :base_model_name, fn :base_model_name,
+                                                                   base_model_name ->
       case fetch_model_spec(base_model_name) do
         {:ok, _} -> []
         {:error, exn} -> [base_model_name: exn]
