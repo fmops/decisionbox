@@ -462,7 +462,7 @@ defmodule Excision.Excisions do
         %{active_classifier_id: classifier.id}
       )
 
-    {:ok, _} = update_classifier(classifier, %{promoted_at: DateTime.utc_now()})
+    update_classifier(classifier, %{promoted_at: DateTime.utc_now()})
   end
 
   def is_default_classifier?(classifier) do

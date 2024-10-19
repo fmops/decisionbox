@@ -86,6 +86,8 @@ defmodule Excision.Excisions.Classifier do
   Validates the base_model_name on a changeset
   This validation is expensive, because it reaches out to hugging face. Use only when appropriate
   """
+
+  @spec validate_base_model_name(Ecto.Changeset.t()) :: Ecto.Changeset.t()
   def validate_base_model_name(changeset) do
     Ecto.Changeset.validate_change(changeset, :base_model_name, fn :base_model_name, base_model_name ->
       case fetch_model_spec(base_model_name) do
@@ -95,6 +97,7 @@ defmodule Excision.Excisions.Classifier do
     end)
   end
 
+  @spec fetch_model_spec(String.t()) :: {:ok, Bumblebee.ModelSpec.t()} | {:error, String.t()}
   defp fetch_model_spec(model_name) do
     # tries to fetch the model spec for a model
     if model_name != "" && model_name != nil do

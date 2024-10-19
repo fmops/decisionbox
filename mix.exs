@@ -74,7 +74,8 @@ defmodule Excision.MixProject do
       {:timex, "~> 3.7"},
       {:brotli, "~> 0.3"},
       {:flop, "~> 0.26.1"},
-      {:flop_phoenix, "~> 0.23.0"}
+      {:flop_phoenix, "~> 0.23.0"},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
     ]
   end
 
