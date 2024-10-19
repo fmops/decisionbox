@@ -634,5 +634,4 @@ defmodule Excision.Excisions do
   def change_choice(%Choice{} = choice, attrs \\ %{}) do
     Choice.changeset(choice, attrs)
   end
-
 end
