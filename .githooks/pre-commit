@@ -1,4 +1,4 @@
 #!/bin/bash
 
-# run dialyzer
+# run dialyzer for checking types
 mix dialyzer
