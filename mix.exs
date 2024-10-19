@@ -87,7 +87,7 @@ defmodule Excision.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
+      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build", "setup_git_hooks"],
       "ecto.setup": ["ecto.create", "ecto.migrate"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
@@ -99,5 +99,16 @@ defmodule Excision.MixProject do
         "phx.digest"
       ]
     ]
+  end
+
+end
+
+defmodule Mix.Tasks.SetupGitHooks do
+  @moduledoc "Sets up the git hooks for this repository"
+  use Mix.Task
+
+  def run(_) do
+    # sets up the precommit hooks for this user
+    System.cmd("git", ["config", "--local", "core.hooksPath", ".githooks/"], [])
   end
 end
