@@ -364,12 +364,7 @@ defmodule Excision.Excisions do
   def create_classifier(attrs \\ %{}) do
     %Classifier{}
     |> Classifier.changeset(attrs)
-    |> Ecto.Changeset.validate_change(:base_model_name, fn :base_model_name, base_model_name ->
-      case validate_base_model_name(base_model_name) do
-        {:ok, _} -> []
-        {:error, exn} -> [base_model_name: exn]
-      end
-    end)
+    |> Classifier.validate_base_model_name
     |> Repo.insert()
   end
 
@@ -386,6 +381,7 @@ defmodule Excision.Excisions do
 
   """
   def update_classifier(%Classifier{} = classifier, attrs) do
+    # TODO
     classifier
     |> Classifier.changeset(attrs)
     |> Repo.update()
@@ -637,19 +633,6 @@ defmodule Excision.Excisions do
   """
   def change_choice(%Choice{} = choice, attrs \\ %{}) do
     Choice.changeset(choice, attrs)
-  end
-
-  defp validate_base_model_name(base_model_name) do
-    #  Validates the attributes for a classifier changeset
-    #  Returns an error if fails
-
-    # validate base model is real
-    if base_model_name != "" && base_model_name != nil do
-      # TODO make shared util for creating repository input and use with train_classifier also
-      repository =
-        {:hf, base_model_name, auth_token: Application.get_env(:excision, :hugging_face_auth_token)}
-      Bumblebee.load_spec(repository)
-    end
   end
 
 end
