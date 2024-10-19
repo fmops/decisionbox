@@ -110,8 +110,6 @@ defmodule ExcisionWeb.ClassifierLive.FormComponent do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
-
-      # TODO surface errors
     end
   end
 

@@ -362,13 +362,15 @@ defmodule Excision.Excisions do
 
   """
   def create_classifier(attrs \\ %{}) do
-    case validate_classifier_inputs(attrs) do
-      {:error, err} -> {:error, err}
-      {:ok, _} ->
-        %Classifier{}
-        |> Classifier.changeset(attrs)
-        |> Repo.insert()
-    end
+    %Classifier{}
+    |> Classifier.changeset(attrs)
+    |> Ecto.Changeset.validate_change(:base_model_name, fn :base_model_name, base_model_name ->
+      case validate_base_model_name(base_model_name) do
+        {:ok, _} -> []
+        {:error, exn} -> [base_model_name: exn]
+      end
+    end)
+    |> Repo.insert()
   end
 
   @doc """
@@ -637,13 +639,11 @@ defmodule Excision.Excisions do
     Choice.changeset(choice, attrs)
   end
 
-  defp validate_classifier_inputs(attrs) do
+  defp validate_base_model_name(base_model_name) do
     #  Validates the attributes for a classifier changeset
     #  Returns an error if fails
-    #  TODO typedef and should it just raise?
 
     # validate base model is real
-    base_model_name = attrs["base_model_name"]
     if base_model_name != "" && base_model_name != nil do
       # TODO make shared util for creating repository input and use with train_classifier also
       repository =
