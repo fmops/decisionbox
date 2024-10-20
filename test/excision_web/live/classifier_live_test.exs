@@ -172,5 +172,37 @@ defmodule ExcisionWeb.ClassifierLiveTest do
       assert html =~ "Classifier updated successfully"
       assert html =~ "some updated name"
     end
+
+    test "fails to update classifier with error message if base model not findable", %{
+      conn: conn,
+      classifier: classifier
+    } do
+      invalid_model_name_attrs = %{
+        name: "my-new-model-name",
+        base_model_name: "my-fake-model"
+      }
+
+      {:ok, show_live, _html} =
+        live(conn, ~p"/decision_sites/#{classifier.decision_site_id}/classifiers/#{classifier}")
+
+      show_live
+      |> element("a", "Edit")
+      |> render_click() =~ "Edit Classifier"
+
+      show_live
+      |> form("#classifier-form", classifier: invalid_model_name_attrs)
+      |> render_submit()
+
+      # verify error
+      html = render(show_live)
+      assert html =~ "repository not found"
+
+      # verify classifer was not saved
+      found =
+        Excision.Excisions.list_classifiers()
+        |> Enum.find(fn x -> x.base_model_name == "my-new-model-name" end)
+
+      assert found == nil
+    end
   end
 end
