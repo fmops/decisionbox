@@ -58,6 +58,44 @@ defmodule ExcisionWeb.ClassifierLiveTest do
       assert classifier.base_model_name == "distilbert/distilbert-base-uncased"
     end
 
+    test "fails to save new classifier with error message if base model not findable", %{
+      conn: conn
+    } do
+      decision_site = decision_site_fixture()
+
+      invalid_model_name_attrs = %{
+        name: "my-new-model",
+        base_model_name: "my-fake-model",
+        training_parameters: %{
+          epochs: 3,
+          learning_rate: 5.0e-3,
+          batch_size: 64,
+          sequence_length: 64
+        }
+      }
+
+      {:ok, index_live, _html} = live(conn, ~p"/decision_sites/#{decision_site}/classifiers")
+
+      index_live
+      |> element("a", "New Classifier")
+      |> render_click() =~ "New Classifier"
+
+      index_live
+      |> form("#classifier-form", classifier: invalid_model_name_attrs)
+      |> render_submit()
+
+      # verify error
+      html = render(index_live)
+      assert html =~ "repository not found"
+
+      # verify classifer was not saved
+      found =
+        Excision.Excisions.list_classifiers()
+        |> Enum.find(fn x -> x.base_model_name == "my-new-model" end)
+
+      assert found == nil
+    end
+
     # test "updates classifier in listing", %{conn: conn, classifier: classifier} do
     #   {:ok, index_live, _html} =
     #     live(conn, ~p"/decision_sites/#{classifier.decision_site_id}/classifiers")
