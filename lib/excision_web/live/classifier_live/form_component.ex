@@ -20,6 +20,7 @@ defmodule ExcisionWeb.ClassifierLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
+        <.input field={@form[:base_model_name]} type="text" label="Base model name" />
         <fieldset :if={@action == :new}>
           <legend class="text-md font-semibold text-zinc-800">Training Parameters</legend>
           <.inputs_for :let={fp} field={@form[:training_parameters]}>
@@ -43,6 +44,7 @@ defmodule ExcisionWeb.ClassifierLive.FormComponent do
       if action == :new do
         to_form(
           Excisions.change_classifier(classifier, %{
+            base_model_name: "distilbert/distilbert-base-uncased",
             training_parameters: %{
               epochs: 3,
               learning_rate: 5.0e-3,

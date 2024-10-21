@@ -177,7 +177,7 @@ defmodule ExcisionWeb.ClassifierLive.Show do
             "n/a"
 
           _ ->
-            Timex.Duration.from_seconds(seconds_per_iter * (max_iters - iter))
+            Timex.Duration.from_seconds(round(seconds_per_iter * (max_iters - iter)))
             |> Timex.format_duration(:humanized)
         end
     }

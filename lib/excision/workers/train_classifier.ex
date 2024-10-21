@@ -6,6 +6,7 @@ defmodule Excision.Workers.TrainClassifier do
 
   alias Excision.Excisions
   alias Excision.Excisions.Classifier.TrainingMetric
+  alias Excision.Util
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"classifier_id" => classifier_id}, attempt: attempt}) do
@@ -111,8 +112,7 @@ defmodule Excision.Workers.TrainClassifier do
 
   defp load_model_and_tokenizer(model_name, num_labels, sequence_length) do
     # TODO surface errors to user better
-    repository =
-      {:hf, model_name, auth_token: Application.get_env(:excision, :hugging_face_auth_token)}
+    repository = Util.build_bumblebee_model_repository(model_name)
 
     {:ok, spec} =
       Bumblebee.load_spec(repository,

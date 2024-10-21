@@ -364,6 +364,7 @@ defmodule Excision.Excisions do
   def create_classifier(attrs \\ %{}) do
     %Classifier{}
     |> Classifier.changeset(attrs)
+    |> Classifier.validate_base_model_name()
     |> Repo.insert()
   end
 
@@ -382,6 +383,7 @@ defmodule Excision.Excisions do
   def update_classifier(%Classifier{} = classifier, attrs) do
     classifier
     |> Classifier.changeset(attrs)
+    |> Classifier.validate_base_model_name()
     |> Repo.update()
   end
 
@@ -460,7 +462,7 @@ defmodule Excision.Excisions do
         %{active_classifier_id: classifier.id}
       )
 
-    {:ok, _} = update_classifier(classifier, %{promoted_at: DateTime.utc_now()})
+    update_classifier(classifier, %{promoted_at: DateTime.utc_now()})
   end
 
   def is_default_classifier?(classifier) do

@@ -2,6 +2,8 @@ defmodule Excision.Excisions.Classifier do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Excision.Util
+
   schema "classifiers" do
     field :name, :string
     field :base_model_name, :string, default: "distilbert/distilbert-base-uncased"
@@ -79,4 +81,29 @@ defmodule Excision.Excisions.Classifier do
 
   def status_to_display_status(:trained), do: :ready
   def status_to_display_status(s), do: s
+
+  @doc """
+  Validates the base_model_name on a changeset
+  This validation is expensive, because it reaches out to hugging face. Use only when appropriate
+  """
+
+  @spec validate_base_model_name(Ecto.Changeset.t()) :: Ecto.Changeset.t()
+  def validate_base_model_name(changeset) do
+    Ecto.Changeset.validate_change(changeset, :base_model_name, fn :base_model_name,
+                                                                   base_model_name ->
+      case fetch_model_spec(base_model_name) do
+        {:ok, _} -> []
+        {:error, exn} -> [base_model_name: exn]
+      end
+    end)
+  end
+
+  @spec fetch_model_spec(String.t()) :: {:ok, Bumblebee.ModelSpec.t()} | {:error, String.t()}
+  defp fetch_model_spec(model_name) do
+    # tries to fetch the model spec for a model
+    if model_name != "" && model_name != nil do
+      repository = Util.build_bumblebee_model_repository(model_name)
+      Bumblebee.load_spec(repository)
+    end
+  end
 end
