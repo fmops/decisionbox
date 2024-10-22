@@ -28,6 +28,7 @@ defmodule ExcisionWeb.Router do
         live "/decision_sites/:id/edit", DecisionSiteLive.Index, :edit
 
         live "/decision_sites/:id", DecisionSiteLive.Show, :show
+        live "/decision_sites/:id/show/quickstart", DecisionSiteLive.Show, :quickstart
         live "/decision_sites/:id/show/edit", DecisionSiteLive.Show, :edit
 
         scope "/decision_sites/:decision_site_id" do
