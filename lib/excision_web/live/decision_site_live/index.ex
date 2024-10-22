@@ -83,7 +83,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Index do
        :decision_sites,
        decision_site
      )
-     |> assign(:decision_site, decision_site)}
+     |> push_navigate(to: ~p"/decision_sites/#{decision_site}/show/quickstart")}
   end
 
   @impl true

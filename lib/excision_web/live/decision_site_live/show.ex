@@ -65,9 +65,12 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
   @impl true
   def handle_event("toggle-quickstart", _, socket) do
     if socket.assigns.live_action == :quickstart do
-      {:noreply, assign(socket, :live_action, :show)}
+      {:noreply, push_patch(socket, to: ~p"/decision_sites/#{socket.assigns.decision_site.id}")}
     else
-      {:noreply, assign(socket, :live_action, :quickstart)}
+      {:noreply,
+       push_patch(socket,
+         to: ~p"/decision_sites/#{socket.assigns.decision_site.id}/show/quickstart"
+       )}
     end
   end
 
@@ -89,5 +92,6 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
   def handle_info(_, socket), do: {:noreply, socket}
 
   defp page_title(:show), do: "Show Decision site"
+  defp page_title(:quickstart), do: "Show Decision site"
   defp page_title(:edit), do: "Edit Decision site"
 end
