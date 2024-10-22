@@ -46,8 +46,7 @@ defmodule ExcisionWeb.ClassifierLive.Index do
     {:noreply,
      socket
      |> stream_insert(:classifiers, classifier)
-     |> assign(:classifier, classifier)
-     |> assign(:live_action, :confidence_dialog)}
+     |> assign(:classifier, classifier)}
 
     {:noreply, stream_insert(socket, :classifiers, classifier)}
   end

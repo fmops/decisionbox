@@ -83,8 +83,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Index do
        :decision_sites,
        decision_site
      )
-     |> assign(:decision_site, decision_site)
-     |> assign(:live_action, :confidence_dialog)}
+     |> assign(:decision_site, decision_site)}
   end
 
   @impl true
