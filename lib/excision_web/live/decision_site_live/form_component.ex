@@ -92,7 +92,7 @@ defmodule ExcisionWeb.DecisionSiteLive.FormComponent do
   defp save_decision_site(socket, :edit, decision_site_params) do
     case Excisions.update_decision_site(socket.assigns.decision_site, decision_site_params) do
       {:ok, decision_site} ->
-        notify_parent({:saved, decision_site})
+        notify_parent({:saved, {:edit, decision_site}})
 
         {:noreply,
          socket
@@ -107,7 +107,7 @@ defmodule ExcisionWeb.DecisionSiteLive.FormComponent do
   defp save_decision_site(socket, :new, decision_site_params) do
     case Excisions.create_decision_site(decision_site_params) do
       {:ok, decision_site} ->
-        notify_parent({:saved, decision_site})
+        notify_parent({:saved, {:new, decision_site}})
 
         {:noreply,
          socket

@@ -73,7 +73,12 @@ defmodule ExcisionWeb.DecisionSiteLive.Index do
   end
 
   @impl true
-  def handle_info({ExcisionWeb.DecisionSiteLive.FormComponent, {:saved, decision_site}}, socket) do
+  def handle_info(
+        {ExcisionWeb.DecisionSiteLive.FormComponent, {:saved, {action, decision_site}}},
+        socket
+      ) do
+    is_new = action == :new
+
     decision_site =
       Excisions.get_decision_site!(decision_site.id, preloads: [:decisions, :choices])
 
@@ -83,7 +88,13 @@ defmodule ExcisionWeb.DecisionSiteLive.Index do
        :decision_sites,
        decision_site
      )
-     |> push_navigate(to: ~p"/decision_sites/#{decision_site}/show/quickstart")}
+     |> then(fn socket ->
+       if is_new do
+         push_navigate(socket, to: ~p"/decision_sites/#{decision_site}/show/quickstart")
+       else
+         socket
+       end
+     end)}
   end
 
   @impl true
