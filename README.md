@@ -39,14 +39,13 @@ We're hoping that DecisionBox enables you to demonstrate that your app is making
 Using docker:
 
 ```sh
+export SECRET_KEY_BASE=$(openssl rand -hex 32)
 docker pull ghcr.io/fmops/decisionbox:latest
 docker run \
     --rm \
     -p 4000:4000 \
-    -v ./db:/app/db:z \
     --env DATABASE_PATH=/app/db/db.sqlite \
-    -v ./checkpoints:/app/checkpoints:rw,z \
-    --env SECRET_KEY_BASE=$(openssl rand -hex 32) \
+    --env SECRET_KEY_BASE=$SECRET_KEY_BASE \
     --env PHX_HOST=localhost \
     ghcr.io/fmops/decisionbox:latest \
     sh -c "/app/bin/migrate && /app/bin/server"
