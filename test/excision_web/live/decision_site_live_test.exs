@@ -48,7 +48,6 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
       decision_site =
         Excision.Excisions.list_decision_sites()
         |> List.last()
-        |> IO.inspect()
 
       assert_redirect(index_live, ~p"/decision_sites/#{decision_site}/show/quickstart")
     end
@@ -71,11 +70,11 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
              |> form("#decision_site-form", decision_site: @update_attrs)
              |> render_submit()
 
-      # assert_patch(index_live, ~p"/decision_sites")
-      #
-      # html = render(index_live)
-      # assert html =~ "Decision site updated successfully"
-      # assert html =~ "some updated name"
+      assert_patch(index_live, ~p"/decision_sites")
+
+      html = render(index_live)
+      assert html =~ "Decision site updated successfully"
+      assert html =~ "some updated name"
     end
 
     test "deletes decision_site in listing", %{conn: conn, decision_site: decision_site} do
