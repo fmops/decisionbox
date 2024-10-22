@@ -15,13 +15,13 @@ defmodule ExcisionWeb.Live.DecisionSiteLive.QuickstartModal do
 
     <div class="bg-gray-100 p-4 rounded-md mb-6">
       <pre class="text-sm text-gray-800 whitespace-pre-wrap">
-    <code> import json
+    <code>import json
     import os
 
     import requests
 
     url = '<%= ExcisionWeb.Endpoint.url() %>/api/decision_sites/<%= @decision_site.id %>/invoke'
-    headers = {'Authorization': 'Bearer os.environ.get("OPENAI_API_KEY")'}
+    headers = {'Authorization': f'Bearer {os.environ.get("OPENAI_API_KEY")}'}
     data = {
       "messages": [
         {
