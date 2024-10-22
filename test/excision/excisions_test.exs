@@ -230,7 +230,7 @@ defmodule Excision.ExcisionsTest do
 
     test "list_choices/0 returns all choices" do
       choice = choice_fixture()
-      assert [choice, _] = Excisions.list_choices()
+      assert [_choice, _] = Excisions.list_choices()
     end
 
     test "get_choice!/1 returns the choice with given id" do
