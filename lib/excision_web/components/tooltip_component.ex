@@ -12,17 +12,18 @@ defmodule ExcisionWeb.Components.TooltipComponent do
   attr :width, :string, default: "w-64"
 
   def tooltip(assigns) do
-    assigns = assign(assigns, :tooltip_classes, """
-      absolute z-10 invisible opacity-0 group-hover:visible group-hover:opacity-100
-      #{assigns.width} min-h-[40px] max-h-[200px] overflow-y-auto
-      bottom-full left-1/2 -translate-x-1/2 mb-3
-      bg-gray-900/95 backdrop-blur-sm
-      text-white/90 text-sm
-      rounded-lg shadow-lg
-      border border-white/10
-      p-3
-      transition-all duration-200 ease-in-out
-    """)
+    assigns =
+      assign(assigns, :tooltip_classes, """
+        absolute z-10 invisible opacity-0 group-hover:visible group-hover:opacity-100
+        #{assigns.width} min-h-[40px] max-h-[200px] overflow-y-auto
+        bottom-full left-1/2 -translate-x-1/2 mb-3
+        bg-gray-900/95 backdrop-blur-sm
+        text-white/90 text-sm
+        rounded-lg shadow-lg
+        border border-white/10
+        p-3
+        transition-all duration-200 ease-in-out
+      """)
 
     ~H"""
     <div class="relative inline-block group">
