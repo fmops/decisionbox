@@ -55,23 +55,23 @@
   <:item title="Created Date"><%= @decision_site.inserted_at %></:item>
   <:item title="Most Recent Decision"><%= @most_recent_decision %></:item>
   <:item title="# Classifiers"><%= @num_classifiers %></:item>
-  <:item title="Active Classifier">
+  <:item title="Default Classifier">
     <div class="flex items-center">
       <.link
         patch={
-          ~p"/decision_sites/#{@decision_site}/classifiers/#{@decision_site.active_classifier}"
+          ~p"/decision_sites/#{@decision_site}/classifiers/#{@decision_site.default_classifier}"
         }
         class="hover:underline"
       >
-        <%= @decision_site.active_classifier.name %>
+        <%= @decision_site.default_classifier.name %>
       </.link>
-      <%= if Excision.Excisions.is_default_classifier?(@decision_site.active_classifier) do %>
+      <%= if Excision.Excisions.is_default_passthrough_classifier?(@decision_site.default_classifier) do %>
         <ExcisionWeb.Components.TooltipComponent.tooltip text='When a Decision Site is created, an associated "Passthrough" entity is also automatically created, which replicates the same behavior as making a function call to a model provider, with the added benefit that decisions coming from the LLM are recorded in your DecisionBox database.   Those decisions can now be inspected and labeled, establishing a baseline for accuracy before you replace it with a newly created, purpose-built classifier which can be trained through labeling for even greater accuracy.  Note that a Passthrough cannot be trained.' />
       <% end %>
     </div>
   </:item>
   <:item title="Last Trained On">
-    <%= @decision_site.active_classifier.trained_at %>
+    <%= @decision_site.default_classifier.trained_at %>
   </:item>
   <:item title="Baseline Accuracy">
     <%= (@baseline_accuracy || 0.0) |> Float.ceil(2) %>

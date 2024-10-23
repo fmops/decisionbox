@@ -18,15 +18,15 @@
 >
   <:col :let={{_id, classifier}} label="Name">
     <%= classifier.name %>
-    <%= if Excision.Excisions.is_default_classifier?(classifier) do %>
+    <%= if Excision.Excisions.is_default_passthrough_classifier?(classifier) do %>
       <ExcisionWeb.Components.TooltipComponent.tooltip text='When a Decision Site is created, an associated "Passthrough" entity is also automatically created, which replicates the same behavior as making a function call to a model provider, with the added benefit that decisions coming from the LLM are recorded in your DecisionBox database.   Those decisions can now be inspected and labeled, establishing a baseline for accuracy before you replace it with a newly created, purpose-built classifier which can be trained through labeling for even greater accuracy.  Note that a Passthrough cannot be trained.' />
     <% end %>
   </:col>
   <:col :let={{_id, classifier}} label="Status">
     <%= Excision.Excisions.Classifier.status_to_display_status(classifier.status) %>
   </:col>
-  <:col :let={{_id, classifier}} label="Active">
-    <%= if classifier.id == @decision_site.active_classifier_id, do: "Active", else: "Inactive" %>
+  <:col :let={{_id, classifier}} label="Is Default?">
+    <%= classifier.id == @decision_site.default_classifier_id %>
   </:col>
   <:action :let={{_id, classifier}}>
     <.link phx-click={
@@ -35,7 +35,7 @@
       <%= case classifier.status do %>
         <% x when x in [:waiting, :failed] and @enough_labels_to_train -> %>
           Train
-        <% :trained when classifier.id != @decision_site.active_classifier_id -> %>
+        <% :trained when classifier.id != @decision_site.default_classifier_id -> %>
           Promote
         <% _ -> %>
           Details

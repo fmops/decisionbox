@@ -71,12 +71,12 @@ defmodule ExcisionWeb.DecisionSiteController do
     description: "Invoke a decision site"
 
   def invoke(conn, %{"id" => id}) do
-    decision_site = Excisions.get_decision_site!(id, preloads: [:active_classifier, :choices])
+    decision_site = Excisions.get_decision_site!(id, preloads: [:default_classifier, :choices])
 
-    if Excisions.is_default_classifier?(decision_site.active_classifier) do
+    if Excisions.is_default_passthrough_classifier?(decision_site.default_classifier) do
       proxy_openai_structured_response(conn, decision_site)
     else
-      classifier = decision_site.active_classifier
+      classifier = decision_site.default_classifier
 
       # TODO: this is really slow, need GenServer (Agent?) to keep model in memory
       # TODO: read model name from classifier
@@ -113,7 +113,7 @@ defmodule ExcisionWeb.DecisionSiteController do
       {:ok, _} =
         Excision.Excisions.create_decision(%{
           decision_site_id: decision_site.id,
-          classifier_id: decision_site.active_classifier.id,
+          classifier_id: decision_site.default_classifier.id,
           input: input,
           prediction_id:
             decision_site.choices |> Enum.find(&(&1.name == prediction)) |> then(& &1.id)
@@ -203,7 +203,7 @@ defmodule ExcisionWeb.DecisionSiteController do
     # record the decision
     Excision.Excisions.create_decision(%{
       decision_site_id: decision_site.id,
-      classifier_id: decision_site.active_classifier.id,
+      classifier_id: decision_site.default_classifier.id,
       input: Jason.encode!(req_body["messages"]),
       prediction_id:
         decision_site.choices
