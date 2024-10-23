@@ -60,6 +60,10 @@ defmodule ExcisionWeb.Router do
       resources "/decision_sites/:decision_site_id/classifiers", ClassifierController,
         except: [:new, :edit]
 
+      post "/decision_sites/:decision_site_id/classifiers/:id/invoke",
+           ClassifierController,
+           :invoke
+
       resources "/decision_sites/:decision_site_id/decisions", DecisionController,
         except: [:new, :edit]
     end
