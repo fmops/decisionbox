@@ -62,7 +62,7 @@ defmodule Excision.Excisions do
   def create_decision_site(attrs \\ %{}) do
     # create the default classifier
     {:ok, classifier} =
-      Excision.Excisions.Classifier.default_baseline_classifier()
+      Excision.Excisions.Classifier.default_passthrough_classifier()
       |> Excision.Excisions.Classifier.changeset(%{})
       |> Repo.insert()
 
@@ -466,7 +466,7 @@ defmodule Excision.Excisions do
   end
 
   def is_default_classifier?(classifier) do
-    classifier.name == "baseline"
+    classifier.name == Excision.Excisions.Classifier.default_passthrough_classifier().name
   end
 
   def build_label_map(decision_site) do
