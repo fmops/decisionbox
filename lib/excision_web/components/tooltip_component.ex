@@ -12,7 +12,7 @@ defmodule ExcisionWeb.Components.TooltipComponent do
   attr :width, :string, default: "w-64"
 
   def tooltip(assigns) do
-    tooltip_classes = """
+    assigns = assign(assigns, :tooltip_classes, """
       absolute z-10 invisible opacity-0 group-hover:visible group-hover:opacity-100
       #{assigns.width} min-h-[40px] max-h-[200px] overflow-y-auto
       bottom-full left-1/2 -translate-x-1/2 mb-3
@@ -22,14 +22,14 @@ defmodule ExcisionWeb.Components.TooltipComponent do
       border border-white/10
       p-3
       transition-all duration-200 ease-in-out
-    """
+    """)
 
     ~H"""
     <div class="relative inline-block group">
       <div class="cursor-help">
         <.icon name="hero-question-mark-circle" class={@icon_class <> " " <> @class} />
       </div>
-      <div class={tooltip_classes}>
+      <div class={@tooltip_classes}>
         <%= @text %>
         <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 transform">
           <div class="
