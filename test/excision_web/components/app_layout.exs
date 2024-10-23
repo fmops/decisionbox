@@ -10,4 +10,13 @@ defmodule ExcisionWeb.Components.AppLayout do
     {path, _flash} = assert_redirect(index_live)
     assert path == "https://github.com/fmops/decisionbox/wiki"
   end
+
+  test "link to swaggerui", %{conn: conn} do
+    {:ok, index_live, _html} =
+      live(conn, ~p"/decision_sites")
+
+    index_live |> element("a", "API") |> render_click()
+    {path, _flash} = assert_redirect(index_live)
+    assert path =~ "/swaggerui"
+  end
 end
