@@ -71,9 +71,9 @@ defmodule Excision.Excisions.Classifier do
     |> validate_required([:timestamp, :loss, :accuracy])
   end
 
-  def default_baseline_classifier do
+  def default_passthrough_classifier do
     %__MODULE__{
-      name: "baseline",
+      name: "passthrough",
       status: :trained,
       training_parameters: %__MODULE__.TrainingParameters{}
     }

@@ -34,9 +34,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
     baseline_accuracy =
       Excisions.compute_accuracy(
         decision_site.classifiers
-        |> Enum.find(
-          &(&1.name == Excision.Excisions.Classifier.default_baseline_classifier().name)
-        )
+        |> Enum.find(&Excision.Excisions.is_default_classifier?/1)
       )
 
     {:noreply,

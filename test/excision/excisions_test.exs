@@ -29,7 +29,7 @@ defmodule Excision.ExcisionsTest do
       assert decision_site.name == "some name"
     end
 
-    test "create_decision_site/1 creates a baseline classifier" do
+    test "create_decision_site/1 creates a passthrough classifier" do
       valid_attrs = %{name: "some name"}
 
       assert {:ok, %DecisionSite{} = decision_site} = Excisions.create_decision_site(valid_attrs)
@@ -40,7 +40,7 @@ defmodule Excision.ExcisionsTest do
 
       assert Enum.count(decision_site.classifiers) == 1
 
-      assert [%Excision.Excisions.Classifier{name: "baseline"}] =
+      assert [%Excision.Excisions.Classifier{name: "passthrough"}] =
                Enum.take(decision_site.classifiers, 1)
     end
 

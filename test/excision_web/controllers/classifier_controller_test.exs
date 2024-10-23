@@ -32,7 +32,7 @@ defmodule ExcisionWeb.ClassifierControllerTest do
       assert json_response(conn, 200)["data"] == [
                %{
                  "id" => 1,
-                 "name" => "baseline"
+                 "name" => "passthrough"
                }
              ]
     end
