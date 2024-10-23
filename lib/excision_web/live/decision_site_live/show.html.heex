@@ -9,6 +9,15 @@
         </span>
       </div>
     </.button>
+    <.link patch={~p"/decision_sites/#{@decision_site}/show/edit"}>
+      <.button>
+        <div class="flex items-center">
+          <span class="ml-2">
+            Edit
+          </span>
+        </div>
+      </.button>
+    </.link>
     <.link
       patch={
         ~p"/decision_sites/#{@decision_site}/decisions"
