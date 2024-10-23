@@ -42,7 +42,7 @@
 </.header>
 
 <.list>
-  <:item title="Endpoint Invoke URL">
+  <:item title="Decision Site Invoke URL">
     <%= "#{ExcisionWeb.Endpoint.url()}/api/decision_sites/#{@decision_site.id}/invoke" %>
   </:item>
   <:item title="Choices"><%= inspect(@decision_site.choices |> Enum.map(& &1.name)) %></:item>
