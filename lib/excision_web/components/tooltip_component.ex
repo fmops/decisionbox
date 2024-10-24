@@ -43,4 +43,10 @@ defmodule ExcisionWeb.Components.TooltipComponent do
     </div>
     """
   end
+
+  def passthrough_classifier_tooltip(assigns) do
+    ~H"""
+    <.tooltip text='When a Decision Site is created, an associated "Passthrough" entity is also automatically created, which replicates the same behavior as making a function call to a model provider, with the added benefit that decisions coming from the LLM are recorded in your DecisionBox database.   Those decisions can now be inspected and labeled, establishing a baseline for accuracy before you replace it with a newly created, purpose-built classifier which can be trained through labeling for even greater accuracy.  Note that a Passthrough cannot be trained.' />
+    """
+  end
 end

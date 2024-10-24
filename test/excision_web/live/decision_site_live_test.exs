@@ -100,6 +100,15 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
       assert html =~ "Baseline Accuracy"
     end
 
+    test "toggles the quickstart", %{conn: conn, decision_site: decision_site} do
+      {:ok, show_live, _html} = live(conn, ~p"/decision_sites/#{decision_site}")
+
+      assert show_live |> element("button", "Quickstart") |> render_click() =~
+               "Use the API to Submit Data"
+
+      assert_patch(show_live, ~p"/decision_sites/#{decision_site}/show/quickstart")
+    end
+
     test "updates decision_site within modal", %{conn: conn, decision_site: decision_site} do
       {:ok, show_live, _html} = live(conn, ~p"/decision_sites/#{decision_site}")
 

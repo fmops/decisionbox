@@ -8,7 +8,6 @@ on:
   push:
     branches: [ "main" ]  # adapt branch for project
   pull_request:
-    branches: [ "main" ]  # adapt branch for project
 
 # Sets the ENV `MIX_ENV` to `test` for running tests
 env:
