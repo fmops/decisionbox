@@ -16,7 +16,12 @@
     end
   }
 >
-  <:col :let={{_id, classifier}} label="Name"><%= classifier.name %></:col>
+  <:col :let={{_id, classifier}} label="Name">
+    <%= classifier.name %>
+    <%= if Excision.Excisions.is_default_classifier?(classifier) do %>
+      <ExcisionWeb.Components.TooltipComponent.passthrough_classifier_tooltip />
+    <% end %>
+  </:col>
   <:col :let={{_id, classifier}} label="Status">
     <%= Excision.Excisions.Classifier.status_to_display_status(classifier.status) %>
   </:col>

@@ -56,14 +56,19 @@
   <:item title="Most Recent Decision"><%= @most_recent_decision %></:item>
   <:item title="# Classifiers"><%= @num_classifiers %></:item>
   <:item title="Active Classifier">
-    <.link
-      patch={
-        ~p"/decision_sites/#{@decision_site}/classifiers/#{@decision_site.active_classifier}"
-      }
-      class="hover:underline"
-    >
-      <%= @decision_site.active_classifier.name %>
-    </.link>
+    <div class="flex items-center">
+      <.link
+        patch={
+          ~p"/decision_sites/#{@decision_site}/classifiers/#{@decision_site.active_classifier}"
+        }
+        class="hover:underline"
+      >
+        <%= @decision_site.active_classifier.name %>
+      </.link>
+      <%= if Excision.Excisions.is_default_classifier?(@decision_site.active_classifier) do %>
+        <ExcisionWeb.Components.TooltipComponent.passthrough_classifier_tooltip />
+      <% end %>
+    </div>
   </:item>
   <:item title="Last Trained On">
     <%= @decision_site.active_classifier.trained_at %>
