@@ -109,27 +109,27 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
       assert_patch(show_live, ~p"/decision_sites/#{decision_site}/show/quickstart")
     end
 
-    # test "updates decision_site within modal", %{conn: conn, decision_site: decision_site} do
-    #   {:ok, show_live, _html} = live(conn, ~p"/decision_sites/#{decision_site}")
-    #
-    #   assert show_live |> element("a", "Edit") |> render_click() =~
-    #            "Edit Decision site"
-    #
-    #   assert_patch(show_live, ~p"/decision_sites/#{decision_site}/show/edit")
-    #
-    #   assert show_live
-    #          |> form("#decision_site-form", decision_site: @invalid_attrs)
-    #          |> render_change() =~ "can&#39;t be blank"
-    #
-    #   assert show_live
-    #          |> form("#decision_site-form", decision_site: @update_attrs)
-    #          |> render_submit()
-    #
-    #   assert_patch(show_live, ~p"/decision_sites/#{decision_site}")
-    #
-    #   html = render(show_live)
-    #   assert html =~ "Decision site updated successfully"
-    #   assert html =~ "some updated name"
-    # end
+    test "updates decision_site within modal", %{conn: conn, decision_site: decision_site} do
+      {:ok, show_live, _html} = live(conn, ~p"/decision_sites/#{decision_site}")
+
+      assert show_live |> element("a", "Edit") |> render_click() =~
+               "Edit Decision site"
+
+      assert_patch(show_live, ~p"/decision_sites/#{decision_site}/show/edit")
+
+      assert show_live
+             |> form("#decision_site-form", decision_site: @invalid_attrs)
+             |> render_change() =~ "can&#39;t be blank"
+
+      assert show_live
+             |> form("#decision_site-form", decision_site: @update_attrs)
+             |> render_submit()
+
+      assert_patch(show_live, ~p"/decision_sites/#{decision_site}")
+
+      html = render(show_live)
+      assert html =~ "Decision site updated successfully"
+      assert html =~ "some updated name"
+    end
   end
 end

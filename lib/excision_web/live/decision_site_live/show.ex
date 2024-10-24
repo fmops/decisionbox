@@ -15,7 +15,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
 
     decision_site =
       Excisions.get_decision_site!(id,
-        preloads: [:active_classifier, :decisions, :classifiers, :choices]
+        preloads: [:default_classifier, :decisions, :classifiers, :choices]
       )
 
     accuracy_plot =
@@ -34,7 +34,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
     baseline_accuracy =
       Excisions.compute_accuracy(
         decision_site.classifiers
-        |> Enum.find(&Excision.Excisions.is_default_classifier?/1)
+        |> Enum.find(&Excision.Excisions.is_default_passthrough_classifier?/1)
       )
 
     {:noreply,

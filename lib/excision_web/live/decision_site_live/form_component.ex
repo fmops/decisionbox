@@ -20,40 +20,43 @@ defmodule ExcisionWeb.DecisionSiteLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
-        <%= if @action == :new do %>
-          <fieldset>
-            <legend class="text-sm font-semibold text-zinc-800">Choices</legend>
-            <.inputs_for :let={fp} field={@form[:choices]}>
-              <div class="flex">
-                <input type="hidden" name="decision_site[choices_sort][]" value={fp.index} />
-                <div class="grow">
-                  <.input field={fp[:name]} type="text" placeholder="Choice name" />
-                </div>
-                <button
-                  type="button"
-                  class="flex"
-                  name="decision_site[choices_drop][]"
-                  value={fp.index}
-                  phx-click={JS.dispatch("change")}
-                >
-                  <.icon name="hero-x-mark" class="w-6 h-6 relative top-4" />
-                </button>
+        <fieldset>
+          <legend class="text-sm font-semibold text-zinc-800">Choices</legend>
+          <.inputs_for :let={fp} field={@form[:choices]}>
+            <div class="flex">
+              <input type="hidden" name="decision_site[choices_sort][]" value={fp.index} />
+              <div class="grow">
+                <.input field={fp[:name]} type="text" placeholder="Choice name" />
               </div>
-            </.inputs_for>
-            <input type="hidden" name="decision_site[choices_drop][]" />
+              <button
+                type="button"
+                class="flex"
+                name="decision_site[choices_drop][]"
+                value={fp.index}
+                phx-click={JS.dispatch("change")}
+              >
+                <.icon name="hero-x-mark" class="w-6 h-6 relative top-4" />
+              </button>
+            </div>
+          </.inputs_for>
+          <input type="hidden" name="decision_site[choices_drop][]" />
 
-            <.button
-              type="button"
-              name="decision_site[choices_sort][]"
-              value="new"
-              phx-click={JS.dispatch("change")}
-            >
-              Add Choice
-            </.button>
-          </fieldset>
-        <% end %>
+          <.button
+            type="button"
+            name="decision_site[choices_sort][]"
+            value="new"
+            phx-click={JS.dispatch("change")}
+          >
+            Add Choice
+          </.button>
+        </fieldset>
         <:actions>
-          <.button phx-disable-with="Saving...">Save Decision site</.button>
+          <.button
+            phx-disable-with="Saving..."
+            data-confirm="Warning: changing choices can affect the integrity of previously labelled data and trained classifiers. Consider creating a new decision site in order to avoid this issue."
+          >
+            Save Decision site
+          </.button>
         </:actions>
       </.simple_form>
     </div>
