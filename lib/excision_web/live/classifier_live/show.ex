@@ -2,7 +2,7 @@ defmodule ExcisionWeb.ClassifierLive.Show do
   use ExcisionWeb, :live_view
 
   alias Excision.Excisions
-  import Excision.Excisions, only: [is_default_classifier?: 1]
+  import Excision.Excisions, only: [is_default_passthrough_classifier?: 1]
   import Excision.Workers.TrainClassifier, only: [frac_train: 0]
 
   @impl true

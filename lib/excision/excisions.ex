@@ -69,7 +69,7 @@ defmodule Excision.Excisions do
     %DecisionSite{}
     |> DecisionSite.changeset(attrs)
     |> Ecto.Changeset.apply_changes()
-    |> DecisionSite.changeset(%{active_classifier_id: classifier.id})
+    |> DecisionSite.changeset(%{default_classifier_id: classifier.id})
     |> Ecto.Changeset.put_assoc(:classifiers, [classifier])
     |> Repo.insert()
   end
@@ -318,10 +318,10 @@ defmodule Excision.Excisions do
     preloads = Keyword.get(opts, :preloads, [])
 
     from(c in Classifier, where: c.decision_site_id == ^decision_site.id)
-    # order by active_classifier first
+    # order by default_classifier first
     |> order_by([c], {
       :asc,
-      fragment("CASE WHEN ? = ? THEN 0 ELSE 1 END", c.id, ^decision_site.active_classifier_id)
+      fragment("CASE WHEN ? = ? THEN 0 ELSE 1 END", c.id, ^decision_site.default_classifier_id)
     })
     |> Repo.all()
     |> Repo.preload(preloads)
@@ -450,7 +450,7 @@ defmodule Excision.Excisions do
   end
 
   @doc """
-  Promotes a classifier to the active_classifier for its decision_site
+  Promotes a classifier to the default_classifier for its decision_site
   """
   def promote_classifier(classifier) do
     classifier = Repo.preload(classifier, :decision_site)
@@ -459,13 +459,13 @@ defmodule Excision.Excisions do
     {:ok, _} =
       update_decision_site(
         classifier.decision_site,
-        %{active_classifier_id: classifier.id}
+        %{default_classifier_id: classifier.id}
       )
 
     update_classifier(classifier, %{promoted_at: DateTime.utc_now()})
   end
 
-  def is_default_classifier?(classifier) do
+  def is_default_passthrough_classifier?(classifier) do
     classifier.name == Excision.Excisions.Classifier.default_passthrough_classifier().name
   end
 

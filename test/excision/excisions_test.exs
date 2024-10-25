@@ -229,7 +229,7 @@ defmodule Excision.ExcisionsTest do
     @invalid_attrs %{name: nil}
 
     test "list_choices/0 returns all choices" do
-      choice = choice_fixture()
+      _choice = choice_fixture()
       assert [_choice, _] = Excisions.list_choices()
     end
 

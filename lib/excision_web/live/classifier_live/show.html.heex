@@ -75,8 +75,8 @@
     ) %>
   </:item>
 
-  <:item :if={@classifier.status == :trained} title="Active">
-    <%= @classifier.decision_site.active_classifier_id == @classifier.id %>
+  <:item :if={@classifier.status == :trained} title="Is Default?">
+    <%= @classifier.decision_site.default_classifier_id == @classifier.id %>
   </:item>
   <:item :if={@classifier.status == :trained} title="# Decisions"><%= @num_decisions %></:item>
   <:item :if={@classifier.status == :trained} title="# Labels">
@@ -84,13 +84,13 @@
   </:item>
 
   <:item
-    :if={not is_default_classifier?(@classifier) && @classifier.status == :trained}
+    :if={not is_default_passthrough_classifier?(@classifier) && @classifier.status == :trained}
     title="Accuracy (Train)"
   >
     <%= @classifier.train_accuracy |> Float.ceil(2) %>
   </:item>
   <:item
-    :if={not is_default_classifier?(@classifier) && @classifier.status == :trained}
+    :if={not is_default_passthrough_classifier?(@classifier) && @classifier.status == :trained}
     title="Accuracy (Test)"
   >
     <%= @classifier.test_accuracy |> Float.ceil(2) %>
