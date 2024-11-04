@@ -22,7 +22,38 @@ defmodule ExcisionWeb.ClassifierLive.FormComponent do
         <.input field={@form[:name]} type="text" label="Name" />
         <.input field={@form[:base_model_name]} type="text" label="Base model name" />
         <fieldset :if={@action == :new}>
-          <legend class="text-md font-semibold text-zinc-800">Training Parameters</legend>
+          <legend class="text-md font-semibold text-zinc-800">
+            Training Parameters
+            <ExcisionWeb.Components.TooltipComponent.tooltip>
+              <div>
+                <h3 class="font-bold mb-1">Epochs</h3>
+                <p class="text-white/75">
+                  An epoch is one complete pass through the entire training dataset during the learning process of a machine learning model.
+                </p>
+              </div>
+
+              <div>
+                <h3 class="font-bold mb-1">Learning Rate</h3>
+                <p class="text-white/75">
+                  The learning rate controls how much the model's parameters are adjusted in response to the estimated error each time the model weights are updated.
+                </p>
+              </div>
+
+              <div>
+                <h3 class="font-bold mb-1">Batch Size</h3>
+                <p class="text-white/75">
+                  The batch size determines the number of training samples that are processed together before the model's internal parameters are updated.
+                </p>
+              </div>
+
+              <div>
+                <h3 class="font-bold mb-1">Sequence Length</h3>
+                <p class="text-white/75">
+                  Sequence length typically refers to the number of data points or time steps in a sequence, such as in time series data or natural language processing, that are considered by the model at once.
+                </p>
+              </div>
+            </ExcisionWeb.Components.TooltipComponent.tooltip>
+          </legend>
           <.inputs_for :let={fp} field={@form[:training_parameters]}>
             <.input field={fp[:epochs]} type="number" label="# Epochs" />
             <.input field={fp[:learning_rate]} type="number" label="Learning Rate" />

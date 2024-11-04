@@ -2,7 +2,7 @@ defmodule ExcisionWeb.Components.TooltipComponent do
   use Phoenix.Component
   import ExcisionWeb.CoreComponents
 
-  attr :text, :string, required: true
+  attr :text, :string
   attr :class, :string, default: ""
 
   attr :icon_class, :string,
@@ -10,6 +10,8 @@ defmodule ExcisionWeb.Components.TooltipComponent do
 
   # Wider default
   attr :width, :string, default: "w-64"
+
+  slot :inner_block
 
   def tooltip(assigns) do
     assigns =
@@ -31,7 +33,10 @@ defmodule ExcisionWeb.Components.TooltipComponent do
         <.icon name="hero-question-mark-circle" class={@icon_class <> " " <> @class} />
       </div>
       <div class={@tooltip_classes}>
-        <%= @text %>
+        <%= if Map.get(assigns, :text) do %>
+          <p class="mb-2"><%= @text %></p>
+        <% end %>
+        <%= render_slot(@inner_block) %>
         <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 transform">
           <div class="
             border-8 border-transparent border-t-gray-900/95
