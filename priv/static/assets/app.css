@@ -1238,6 +1238,10 @@ select {
   flex: none;
 }
 
+.shrink-0 {
+  flex-shrink: 0;
+}
+
 .grow {
   flex-grow: 1;
 }
@@ -1392,6 +1396,10 @@ select {
 
 .text-balance {
   text-wrap: balance;
+}
+
+.break-all {
+  word-break: break-all;
 }
 
 .rounded {
@@ -1587,6 +1595,14 @@ select {
 
 .p-4 {
   padding: 1rem;
+}
+
+.p-1 {
+  padding: 0.25rem;
+}
+
+.p-1\.5 {
+  padding: 0.375rem;
 }
 
 .px-2 {

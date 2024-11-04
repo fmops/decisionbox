@@ -15,16 +15,20 @@ const CopyToClipboard = {
 
             // Hide copy elements, show success elements
             copyIcon.classList.add('hidden');
-            copyText.classList.add('hidden');
             checkIcon.classList.remove('hidden');
-            successText.classList.remove('hidden');
+            if (copyText && successText) {
+              copyText.classList.add('hidden');
+              successText.classList.remove('hidden');
+            }
 
             // Reset after 2 seconds
             setTimeout(() => {
               copyIcon.classList.remove('hidden');
-              copyText.classList.remove('hidden');
               checkIcon.classList.add('hidden');
-              successText.classList.add('hidden');
+              if (copyText && successText) {
+                copyText.classList.remove('hidden');
+                successText.classList.add('hidden');
+              }
             }, 2000);
           })
           .catch(err => {
