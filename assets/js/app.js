@@ -22,10 +22,15 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
+import CopyToClipboard from "./hooks/copy_to_clipboard"
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
-  params: {_csrf_token: csrfToken}
+  params: {_csrf_token: csrfToken},
+  hooks: {
+    CopyToClipboard
+  },
 })
 
 // Show progress bar on live navigation and form submits
@@ -41,12 +46,3 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
-
-
-// Copy to clipboard
-window.addEventListener("phx:copy", (event) => {
-let text = event.target.value; // Alternatively use an element or data tag!
-  navigator.clipboard.writeText(text).then(() => {
-    console.log("All done!"); // Or a nice tooltip or something.
-  })
-})
