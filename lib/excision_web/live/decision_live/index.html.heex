@@ -77,13 +77,9 @@
     </div>
   </:col>
   <:action :let={{id, decision}}>
-    <.link phx-click={JS.dispatch("phx:copy", to: "#permalink-#{id}") |> JS.push("share-clicked")}>
-      Share
-    </.link>
-    <input
-      type="hidden"
-      id={"permalink-#{id}"}
-      value={"#{ExcisionWeb.Endpoint.url()}/decision_sites/#{@decision_site.id}/decisions/#{decision.id}"}
+    <ExcisionWeb.Components.CopyButtonComponent.share_button
+      id={"share-button-#{id}"}
+      url={"#{ExcisionWeb.Endpoint.url()}/decision_sites/#{@decision_site.id}/decisions/#{decision.id}"}
     />
   </:action>
   <:action :let={{id, decision}}>
