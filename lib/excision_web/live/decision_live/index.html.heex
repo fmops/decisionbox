@@ -5,7 +5,6 @@
     Listing Decisions for Decision Site <%= @decision_site.name %>
   <% end %>
 
-  <%= inspect(@filters[:filter_label].value) %>
   <:actions>
     <.form for={@filters} phx-change="filters-updated">
       <.input
