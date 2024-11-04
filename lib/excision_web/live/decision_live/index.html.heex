@@ -5,7 +5,6 @@
     Listing Decisions for Decision Site <%= @decision_site.name %>
   <% end %>
 
-  <%= inspect(@filters[:filter_label].value) %>
   <:actions>
     <.form for={@filters} phx-change="filters-updated">
       <.input
@@ -21,13 +20,14 @@
 <div class="flex items-center">
   Labeling progress &nbsp;
   <div
-    class="flex w-40 h-4 bg-gray-200 rounded-full overflow-hidden dark:bg-neutral-700"
+    class="relative w-40 h-4 bg-gray-200 rounded-full overflow-hidden dark:bg-neutral-700"
     role="progressbar"
   >
     <div
-      class="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap dark:bg-blue-500 transition duration-500"
+      class="absolute inset-y-0 left-0 bg-blue-600 rounded-full dark:bg-blue-500 transition-all duration-500"
       style={"width: #{round((1 - @num_unlabeled_decisions / @num_decisions) * 100)}%"}
-    >
+    />
+    <div class="absolute inset-0 flex items-center justify-center">
       <%= @num_decisions - @num_unlabeled_decisions %> / <%= @num_decisions %>
     </div>
   </div>
