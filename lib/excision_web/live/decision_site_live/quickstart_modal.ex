@@ -14,8 +14,10 @@ defmodule ExcisionWeb.Live.DecisionSiteLive.QuickstartModal do
     </p>
 
     <div class="bg-gray-100 p-4 rounded-md mb-6">
-      <pre class="text-sm text-gray-800 whitespace-pre-wrap">
-    <code>import json
+      <ExcisionWeb.Components.CopyButtonComponent.copy_button target_id="quickstart-code-sample">
+        <pre class="text-sm text-gray-800 whitespace-pre-wrap">
+          <code id={"quickstart-code-sample"}>
+    import json
     import os
 
     import requests
@@ -52,8 +54,10 @@ defmodule ExcisionWeb.Live.DecisionSiteLive.QuickstartModal do
         decision = json.loads((response.json())['choices'][0]['message']['content'])['value']
         print(f"Decision: {decision}")
     else:
-        print(f"Error: {response.status_code}")</code>
+        print(f"Error: {response.status_code}")
+        </code>
         </pre>
+      </ExcisionWeb.Components.CopyButtonComponent.copy_button>
     </div>
 
     <h3 class="text-lg font-semibold mb-2 text-gray-700">2. Review the API Documentation</h3>

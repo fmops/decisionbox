@@ -52,7 +52,10 @@
 
 <.list>
   <:item title="Decision Site Invoke URL">
-    <%= "#{ExcisionWeb.Endpoint.url()}/api/decision_sites/#{@decision_site.id}/invoke" %>
+    <.inline_copy_button
+      text={"#{ExcisionWeb.Endpoint.url()}/api/decision_sites/#{@decision_site.id}/invoke"}
+      target_id={"invoke-url-#{@decision_site.id}"}
+    />
   </:item>
   <:item title="Choices"><%= inspect(@decision_site.choices |> Enum.map(& &1.name)) %></:item>
   <:item title="# Decisions"><%= @num_decisions %></:item>

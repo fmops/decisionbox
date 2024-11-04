@@ -3,6 +3,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
 
   alias Excision.Excisions
   import ExcisionWeb.Components, only: [pulsing_dot: 1]
+  import ExcisionWeb.Components.CopyButtonComponent
 
   @impl true
   def mount(_params, _session, socket) do
