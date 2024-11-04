@@ -9,7 +9,9 @@ defmodule ExcisionWeb.DecisionSiteLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage decision_site records in your database.</:subtitle>
+        <:subtitle>
+          In an LLM-based app, a "decision site" refers to a point in the application's logic where the LLM's output significantly influences the application's behavior or the user experience. It's where the LLM's capabilities are leveraged to make a choice, guide a process, or generate content that directly impacts what happens next.
+        </:subtitle>
       </.header>
 
       <.simple_form
