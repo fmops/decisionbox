@@ -9,7 +9,9 @@ defmodule ExcisionWeb.ClassifierLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage classifier records in your database.</:subtitle>
+        <:subtitle>
+          In machine learning, a classifier is an algorithm that automatically assigns data into different categories or classes. It's like a sorting machine that learns from examples to make predictions about new, unseen data.  A classifier might constrain output choices such as "yes" or "no" or have several options.
+        </:subtitle>
       </.header>
 
       <.simple_form
