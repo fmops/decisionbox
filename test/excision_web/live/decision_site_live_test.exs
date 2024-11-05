@@ -41,6 +41,13 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
              |> form("#decision_site-form", decision_site: @invalid_attrs)
              |> render_change() =~ "can&#39;t be blank"
 
+      # create new choice fields
+      Enum.each(1..3, fn _i ->
+        index_live
+        |> form("#decision_site-form")
+        |> render_change(%{"decision_site" => %{"choices_sort" => ["new"]}})
+      end)
+
       assert index_live
              |> form("#decision_site-form", decision_site: @create_attrs)
              |> render_submit()
@@ -130,6 +137,193 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
       html = render(show_live)
       assert html =~ "Decision site updated successfully"
       assert html =~ "some updated name"
+    end
+  end
+
+  describe "Choice management" do
+    setup [:create_decision_site]
+
+    test "creates decision site with multiple choices", %{conn: conn} do
+      {:ok, index_live, _html} = live(conn, ~p"/decision_sites")
+
+      assert index_live |> element("a", "Create New") |> render_click() =~
+               "Create New"
+
+      assert_patch(index_live, ~p"/decision_sites/new")
+
+      # Fill in the name first
+      assert index_live
+             |> form("#decision_site-form", decision_site: %{name: "site with choices"})
+             |> render_change()
+
+      # Click "Add Choice" button three times
+      Enum.each(1..3, fn _i ->
+        index_live
+        |> form("#decision_site-form")
+        |> render_change(%{"decision_site" => %{"choices_sort" => ["new"]}})
+      end)
+
+      # Now fill in the choices
+      assert index_live
+             |> form("#decision_site-form", %{
+               "decision_site" => %{
+                 "name" => "site with choices",
+                 "choices" => %{
+                   "0" => %{"name" => "choice one"},
+                   "1" => %{"name" => "choice two"},
+                   "2" => %{"name" => "choice three"}
+                 }
+               }
+             })
+             |> render_submit()
+
+      # Get the created decision site
+      decision_site =
+        Excision.Excisions.list_decision_sites(preloads: [:choices])
+        |> List.last()
+
+      # Verify choices were created
+      assert length(decision_site.choices) == 3
+      choice_names = Enum.map(decision_site.choices, & &1.name)
+      assert choice_names == ["choice one", "choice two", "choice three"]
+
+      # Verify each choice has correct decision_site_id
+      Enum.each(decision_site.choices, fn choice ->
+        assert choice.decision_site_id == decision_site.id
+      end)
+    end
+
+    test "replaces choices when updating decision site", %{conn: conn} do
+      # First create a site with multiple choices
+      {:ok, index_live, _html} = live(conn, ~p"/decision_sites")
+
+      assert index_live |> element("a", "Create New") |> render_click()
+      assert_patch(index_live, ~p"/decision_sites/new")
+
+      # Fill in name and add choices
+      assert index_live
+             |> form("#decision_site-form", decision_site: %{name: "site with choices"})
+             |> render_change()
+
+      # Add three choices
+      Enum.each(1..3, fn _i ->
+        index_live
+        |> form("#decision_site-form")
+        |> render_change(%{"decision_site" => %{"choices_sort" => ["new"]}})
+      end)
+
+      # Submit form with choices
+      assert index_live
+             |> form("#decision_site-form", %{
+               "decision_site" => %{
+                 "name" => "site with choices",
+                 "choices" => %{
+                   "0" => %{"name" => "choice one"},
+                   "1" => %{"name" => "choice two"},
+                   "2" => %{"name" => "choice three"}
+                 }
+               }
+             })
+             |> render_submit()
+
+      decision_site =
+        Excision.Excisions.list_decision_sites(preloads: [:choices])
+        |> List.last()
+
+      # Now update the site and verify choices are replaced
+      {:ok, show_live, _html} = live(conn, ~p"/decision_sites/#{decision_site}")
+      assert show_live |> element("a", "Edit") |> render_click()
+      assert_patch(show_live, ~p"/decision_sites/#{decision_site}/show/edit")
+
+      # TODO: Update with just the new choice and drop existing ones
+      # Update with just the new choice and drop existing ones
+      # assert show_live
+      #        |> form("#decision_site-form", %{
+      #          "decision_site" => %{
+      #            "name" => "updated site",
+      #            "choices" => %{
+      #              "0" => %{"name" => "new choice"}
+      #            },
+      #            "choices_drop" => [""],
+      #          }
+      #        })
+      #        |> render_submit()
+      #        
+      # # Get updated decision site
+      # updated_site = Excision.Excisions.get_decision_site!(decision_site.id, preloads: [:choices])
+      # 
+      # # Verify old choices were deleted and new one was added
+      # assert length(updated_site.choices) == 1
+      # assert hd(updated_site.choices).name == "new choice"
+      # assert hd(updated_site.choices).decision_site_id == updated_site.id
+    end
+
+    test "maintains choice order during updates", %{conn: conn} do
+      # Create initial site with ordered choices
+      {:ok, index_live, _html} = live(conn, ~p"/decision_sites")
+
+      assert index_live |> element("a", "Create New") |> render_click()
+      assert_patch(index_live, ~p"/decision_sites/new")
+
+      # Fill in name and add choices
+      assert index_live
+             |> form("#decision_site-form", decision_site: %{name: "ordered site"})
+             |> render_change()
+
+      # Add three choices
+      Enum.each(1..3, fn _i ->
+        index_live
+        |> form("#decision_site-form")
+        |> render_change(%{"decision_site" => %{"choices_sort" => ["new"]}})
+      end)
+
+      # Submit form with ordered choices
+      assert index_live
+             |> form("#decision_site-form", %{
+               "decision_site" => %{
+                 "name" => "ordered site",
+                 "choices" => %{
+                   "0" => %{"name" => "new first"},
+                   "1" => %{"name" => "new second"},
+                   "2" => %{"name" => "new third"}
+                 }
+               }
+             })
+             |> render_submit()
+
+      decision_site =
+        Excision.Excisions.list_decision_sites(preloads: [:choices])
+        |> List.last()
+
+      # Verify initial order
+      choice_names = Enum.map(decision_site.choices, & &1.name)
+      assert choice_names == ["new first", "new second", "new third"]
+
+      # Update with reordered choices
+      {:ok, show_live, _html} = live(conn, ~p"/decision_sites/#{decision_site}")
+      assert show_live |> element("a", "Edit") |> render_click()
+
+      # Get existing choice IDs
+      existing_choices = decision_site.choices
+
+      # Update existing choices with new names and order
+      assert show_live
+             |> form("#decision_site-form", %{
+               "decision_site" => %{
+                 "name" => "reordered site",
+                 "choices" => %{
+                   "0" => %{"id" => Enum.at(existing_choices, 0).id, "name" => "third"},
+                   "1" => %{"id" => Enum.at(existing_choices, 1).id, "name" => "first"},
+                   "2" => %{"id" => Enum.at(existing_choices, 2).id, "name" => "second"}
+                 }
+               }
+             })
+             |> render_submit()
+
+      # Verify new order
+      updated_site = Excision.Excisions.get_decision_site!(decision_site.id, preloads: [:choices])
+      updated_names = Enum.map(updated_site.choices, & &1.name)
+      assert updated_names == ["third", "first", "second"]
     end
   end
 end

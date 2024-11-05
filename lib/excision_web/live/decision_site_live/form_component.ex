@@ -27,6 +27,7 @@ defmodule ExcisionWeb.DecisionSiteLive.FormComponent do
           <.inputs_for :let={fp} field={@form[:choices]}>
             <div class="flex">
               <input type="hidden" name="decision_site[choices_sort][]" value={fp.index} />
+              <input type="hidden" name={fp[:decision_site_id].name} value={@form[:id].value} />
               <div class="grow">
                 <.input field={fp[:name]} type="text" placeholder="Choice name" />
               </div>
@@ -67,20 +68,11 @@ defmodule ExcisionWeb.DecisionSiteLive.FormComponent do
 
   @impl true
   def update(%{decision_site: decision_site} = assigns, socket) do
-    params = %{
-      name: "foo",
-      choices: [
-        %{name: "true"},
-        %{name: "false"}
-      ]
-    }
-
     {:ok,
      socket
      |> assign(assigns)
      |> assign_new(:form, fn ->
-       # to_form(Excisions.change_decision_site(decision_site))
-       to_form(Excisions.change_decision_site(decision_site, params))
+       to_form(Excisions.change_decision_site(decision_site))
      end)}
   end
 

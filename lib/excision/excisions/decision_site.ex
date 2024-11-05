@@ -5,7 +5,7 @@ defmodule Excision.Excisions.DecisionSite do
   schema "decision_sites" do
     field :name, :string
     belongs_to :default_classifier, Excision.Excisions.Classifier
-    has_many :choices, Excision.Excisions.Choice, on_replace: :mark_as_invalid
+    has_many :choices, Excision.Excisions.Choice, on_replace: :delete
     has_many :classifiers, Excision.Excisions.Classifier
     has_many :decisions, Excision.Excisions.Decision
 
