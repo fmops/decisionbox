@@ -22,7 +22,7 @@ defmodule ExcisionWeb.Router do
     scope "/", ExcisionWeb do
       get "/", PageController, :home
 
-      live_session :excision do
+      live_session :excision, on_mount: [{ExcisionWeb.SaveRequestUri, :save_request_uri}] do
         live "/decision_sites", DecisionSiteLive.Index, :index
         live "/decision_sites/new", DecisionSiteLive.Index, :new
         live "/decision_sites/:id/edit", DecisionSiteLive.Index, :edit

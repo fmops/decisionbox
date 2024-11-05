@@ -10,6 +10,7 @@
       <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
         v<%= Application.spec(:excision, :vsn) %>
       </p>
+      <.breadcrumbs current_path={@current_uri.path} />
     </div>
     <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
       <a href="/" class="hover:text-zinc-700">

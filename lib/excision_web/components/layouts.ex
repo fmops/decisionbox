@@ -9,6 +9,7 @@ defmodule ExcisionWeb.Layouts do
   `use ExcisionWeb, :live_view`.
   """
   use ExcisionWeb, :html
+  import ExcisionWeb.Components.BreadcrumbComponent
 
   embed_templates "layouts/*"
 end
