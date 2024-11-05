@@ -25,7 +25,7 @@
   >
     <div
       class="absolute inset-y-0 left-0 bg-blue-600 rounded-full dark:bg-blue-500 transition-all duration-500"
-      style={"width: #{round((1 - @num_unlabeled_decisions / @num_decisions) * 100)}%"}
+      style={"width: #{round((1 - @num_unlabeled_decisions / max(1, @num_decisions)) * 100)}%"}
     />
     <div class="absolute inset-0 flex items-center justify-center">
       <%= @num_decisions - @num_unlabeled_decisions %> / <%= @num_decisions %>
