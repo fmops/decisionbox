@@ -56,7 +56,11 @@ defmodule ExcisionWeb.DecisionSiteLive.FormComponent do
         <:actions>
           <.button
             phx-disable-with="Saving..."
-            data-confirm="Warning: changing choices can affect the integrity of previously labelled data and trained classifiers. Consider creating a new decision site in order to avoid this issue."
+            data-confirm={
+              if @action == :edit and Map.has_key?(@form.source.changes, :choices),
+                do:
+                  "Warning: changing choices can affect the integrity of previously labelled data and trained classifiers. Consider creating a new decision site in order to avoid this issue."
+            }
           >
             Save Decision site
           </.button>
