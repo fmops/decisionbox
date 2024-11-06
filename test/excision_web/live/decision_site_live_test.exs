@@ -41,6 +41,9 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
              |> form("#decision_site-form", decision_site: @invalid_attrs)
              |> render_change() =~ "can&#39;t be blank"
 
+      # no data-confirm on create decision sites
+      refute has_element?(index_live, "button[data-confirm]")
+
       # create new choice fields
       Enum.each(1..3, fn _i ->
         index_live
@@ -68,6 +71,9 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
                "Edit decision site: #{decision_site.name}"
 
       assert_patch(index_live, ~p"/decision_sites/#{decision_site}/edit")
+
+      # no data-confirm if choices untouched
+      refute has_element?(index_live, "button[data-confirm]")
 
       assert index_live
              |> form("#decision_site-form", decision_site: @invalid_attrs)
@@ -276,6 +282,9 @@ defmodule ExcisionWeb.DecisionSiteLiveTest do
         |> form("#decision_site-form")
         |> render_change(%{"decision_site" => %{"choices_sort" => ["new"]}})
       end)
+
+      # Assert data-confirm after choices are added
+      refute has_element?(index_live, "button[data-confirm]")
 
       # Submit form with ordered choices
       assert index_live
