@@ -214,6 +214,7 @@ defmodule ExcisionWeb.ClassifierController do
       end
 
     deserialized_body = resp_body |> elem(1) |> Jason.decode!()
+
     case resp_body do
       {:ok, _} ->
         # record the decision
@@ -233,7 +234,9 @@ defmodule ExcisionWeb.ClassifierController do
             end)
             |> then(& &1.id)
         })
-      {:error, _} -> nil
+
+      {:error, _} ->
+        nil
     end
 
     resp
