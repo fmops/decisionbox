@@ -4,6 +4,7 @@ defmodule ExcisionWeb.ClassifierController do
 
   alias Excision.Excisions
   alias Excision.Excisions.Classifier
+  alias Excision.Util
 
   action_fallback ExcisionWeb.FallbackController
 
@@ -84,8 +85,9 @@ defmodule ExcisionWeb.ClassifierController do
       # TODO: this is really slow, need GenServer (Agent?) to keep model in memory
       # TODO: read model name from classifier
       model_name = classifier.base_model_name
+      repository = Util.build_bumblebee_model_repository(model_name)
 
-      {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, model_name})
+      {:ok, tokenizer} = Bumblebee.load_tokenizer(repository)
       checkpoint_path = classifier.checkpoint_path
 
       {:ok, spec} =
@@ -95,7 +97,7 @@ defmodule ExcisionWeb.ClassifierController do
 
       num_labels = decision_site.choices |> Enum.count()
       spec = Bumblebee.configure(spec, num_labels: num_labels)
-      {:ok, model} = Bumblebee.load_model({:hf, model_name}, spec: spec)
+      {:ok, model} = Bumblebee.load_model(repository, spec: spec)
 
       params =
         [checkpoint_path, "parameters.nx"]
