@@ -81,6 +81,10 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 ### FAQ
 
+The development environment doesn't support cuda on mac
+
+You need at least 16 GB of RAM to train the model seeded in dev mode
+
 EXLA NIF fails to load with SELinux
 
 ```sh
