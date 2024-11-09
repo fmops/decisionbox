@@ -7,9 +7,9 @@
     let
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f {
-        pkgs = import nixpkgs { 
-          inherit system; 
-          overlays = [ self.overlays.default ]; 
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ self.overlays.default ];
           config.allowUnfree = true;
           config.cudaSupport = true;
         };
@@ -67,10 +67,6 @@
             nodejs_22
 
             sqlite
-
-            # cuda
-            cudaPackages.cudatoolkit
-            cudaPackages.cudnn
           ]
           ++
           # Linux only
@@ -78,19 +74,23 @@
             gigalixir
             inotify-tools
             libnotify
+            # cuda
+            cudaPackages.cudatoolkit
+            cudaPackages.cudnn
           ])
           ++
           # macOS only
           pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs; [
             terminal-notifier
+            darwin.apple_sdk.frameworks.Foundation
             darwin.apple_sdk.frameworks.CoreFoundation
             darwin.apple_sdk.frameworks.CoreServices
           ]);
 
-          shellHook = ''
+          shellHook = if pkgs.stdenv.isLinux then ''
             export CUDA_PATH=${pkgs.cudaPackages.cudatoolkit}
             export LD_LIBRARY_PATH=${pkgs.cudaPackages.cudatoolkit}/lib:${pkgs.cudaPackages.cudnn.lib}/lib:./systemlib
-          '';
+          '' else "";
         };
       });
     };
