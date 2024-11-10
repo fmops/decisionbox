@@ -1,1 +1,3 @@
 use flake
+
+export OPENAI_API_KEY=""

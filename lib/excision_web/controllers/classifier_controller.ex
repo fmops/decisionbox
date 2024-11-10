@@ -2,8 +2,11 @@ defmodule ExcisionWeb.ClassifierController do
   use ExcisionWeb, :controller
   use OpenApiSpex.ControllerSpecs
 
+  require Logger
+
   alias Excision.Excisions
   alias Excision.Excisions.Classifier
+  alias Excision.Util
 
   action_fallback ExcisionWeb.FallbackController
 
@@ -84,8 +87,9 @@ defmodule ExcisionWeb.ClassifierController do
       # TODO: this is really slow, need GenServer (Agent?) to keep model in memory
       # TODO: read model name from classifier
       model_name = classifier.base_model_name
+      repository = Util.build_bumblebee_model_repository(model_name)
 
-      {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, model_name})
+      {:ok, tokenizer} = Bumblebee.load_tokenizer(repository)
       checkpoint_path = classifier.checkpoint_path
 
       {:ok, spec} =
@@ -95,7 +99,7 @@ defmodule ExcisionWeb.ClassifierController do
 
       num_labels = decision_site.choices |> Enum.count()
       spec = Bumblebee.configure(spec, num_labels: num_labels)
-      {:ok, model} = Bumblebee.load_model({:hf, model_name}, spec: spec)
+      {:ok, model} = Bumblebee.load_model(repository, spec: spec)
 
       params =
         [checkpoint_path, "parameters.nx"]
@@ -192,34 +196,48 @@ defmodule ExcisionWeb.ClassifierController do
     resp_body =
       case Plug.Conn.get_resp_header(resp, "content-encoding") do
         ["gzip"] ->
-          :zlib.gunzip(resp.resp_body)
+          {:ok, :zlib.gunzip(resp.resp_body)}
 
         ["br"] ->
-          {:ok, data} = :brotli.decode(resp.resp_body)
-          data
+          :brotli.decode(resp.resp_body)
 
         _ ->
-          resp.resp_body
-      end
-      |> Jason.decode!()
+          if resp.status >= 400 do
+            Logger.error(
+              "Got failure response while proxying request for classifier #{classifier.name}: #{resp.status} #{resp.resp_body}"
+            )
 
-    # record the decision
-    Excision.Excisions.create_decision(%{
-      decision_site_id: decision_site.id,
-      classifier_id: classifier.id,
-      input: Jason.encode!(req_body["messages"]),
-      prediction_id:
-        decision_site.choices
-        |> Enum.find(fn c ->
-          c.name ==
-            resp_body["choices"]
-            |> hd()
-            |> then(& &1["message"]["content"])
-            |> then(&Jason.decode!/1)
-            |> then(& &1["value"])
-        end)
-        |> then(& &1.id)
-    })
+            {:error, resp.resp_body}
+          else
+            {:ok, resp.resp_body}
+          end
+      end
+
+    deserialized_body = resp_body |> elem(1) |> Jason.decode!()
+
+    case resp_body do
+      {:ok, _} ->
+        # record the decision
+        Excision.Excisions.create_decision(%{
+          decision_site_id: decision_site.id,
+          classifier_id: classifier.id,
+          input: Jason.encode!(req_body["messages"]),
+          prediction_id:
+            decision_site.choices
+            |> Enum.find(fn c ->
+              c.name ==
+                deserialized_body["choices"]
+                |> hd()
+                |> then(& &1["message"]["content"])
+                |> then(&Jason.decode!/1)
+                |> then(& &1["value"])
+            end)
+            |> then(& &1.id)
+        })
+
+      {:error, _} ->
+        nil
+    end
 
     resp
   end
