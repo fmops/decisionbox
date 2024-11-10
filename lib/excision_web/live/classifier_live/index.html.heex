@@ -1,5 +1,5 @@
 <.header>
-  Listing Classifiers for Decision Site <%= @decision_site.name %>
+  <%= @decision_site.name %> classifiers
   <:actions>
     <.link patch={~p"/decision_sites/#{@decision_site}/classifiers/new"}>
       <.button>New Classifier</.button>
@@ -18,6 +18,9 @@
 >
   <:col :let={{_id, classifier}} label="Name">
     <%= classifier.name %>
+    <%= if classifier.id == @decision_site.default_classifier_id do %>
+      *
+    <% end %>
     <%= if Excision.Excisions.is_default_passthrough_classifier?(classifier) do %>
       <ExcisionWeb.Components.TooltipComponent.passthrough_classifier_tooltip />
     <% end %>
@@ -25,21 +28,11 @@
   <:col :let={{_id, classifier}} label="Status">
     <%= Excision.Excisions.Classifier.status_to_display_status(classifier.status) %>
   </:col>
-  <:col :let={{_id, classifier}} label="Is Default?">
-    <%= classifier.id == @decision_site.default_classifier_id %>
-  </:col>
   <:action :let={{_id, classifier}}>
     <.link phx-click={
       JS.navigate(~p"/decision_sites/#{@decision_site}/classifiers/#{classifier}")
     }>
-      <%= case classifier.status do %>
-        <% x when x in [:waiting, :failed] and @enough_labels_to_train -> %>
-          Train
-        <% :trained when classifier.id != @decision_site.default_classifier_id -> %>
-          Promote
-        <% _ -> %>
-          Details
-      <% end %>
+      Details
     </.link>
   </:action>
   <:action :let={{id, classifier}}>

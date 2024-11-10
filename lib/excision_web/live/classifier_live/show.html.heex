@@ -1,6 +1,5 @@
 <.header>
-  Showing classifier <%= @classifier.id %> for decision site <%= @classifier.decision_site.name %>
-  <:subtitle>This is a classifier record from your database.</:subtitle>
+  <%= @classifier.decision_site.name %> / <%= @classifier.name %>
   <:actions>
     <.link
       patch={
@@ -8,7 +7,7 @@
       }
       phx-click={JS.push_focus()}
     >
-      <.button>Edit classifier</.button>
+      <.button>Edit</.button>
     </.link>
     <%= if Enum.member?([:waiting, :failed], @classifier.status) do %>
       <%= if @num_labels_for_site >= (1.0 / (1.0 - frac_train())) do %>
@@ -33,7 +32,9 @@
       <.button>Decisions</.button>
     </.link>
     <.link :if={@classifier.status == :trained} phx-click="promote">
-      <.button>Promote</.button>
+      <.button disabled={@classifier.decision_site.default_classifier_id == @classifier.id}>
+        Promote
+      </.button>
     </.link>
   </:actions>
 </.header>

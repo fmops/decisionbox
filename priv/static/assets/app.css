@@ -2011,6 +2011,15 @@ select {
 
 /* This file is for your main application CSS */
 
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hover\:visible:hover {
+  visibility: visible;
+}
+
 .hover\:cursor-pointer:hover {
   cursor: pointer;
 }
@@ -2082,6 +2091,10 @@ select {
   opacity: 0.4;
 }
 
+.hover\:opacity-100:hover {
+  opacity: 1;
+}
+
 .focus\:border-rose-400:focus {
   --tw-border-opacity: 1;
   border-color: rgb(251 113 133 / var(--tw-border-opacity));
@@ -2106,6 +2119,14 @@ select {
   visibility: visible;
 }
 
+.group\/tooltip:hover .group-hover\/tooltip\:visible {
+  visibility: visible;
+}
+
+.group\/passthrough-tooltip:hover .group-hover\/passthrough-tooltip\:visible {
+  visibility: visible;
+}
+
 .group:hover .group-hover\:bg-zinc-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(244 244 245 / var(--tw-bg-opacity));
@@ -2126,6 +2147,14 @@ select {
 
 .group:hover .group-hover\:opacity-70 {
   opacity: 0.7;
+}
+
+.group\/tooltip:hover .group-hover\/tooltip\:opacity-100 {
+  opacity: 1;
+}
+
+.group\/passthrough-tooltip:hover .group-hover\/passthrough-tooltip\:opacity-100 {
+  opacity: 1;
 }
 
 .phx-submit-loading.phx-submit-loading\:opacity-75 {
