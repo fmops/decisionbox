@@ -33,7 +33,9 @@
       <.button>Decisions</.button>
     </.link>
     <.link :if={@classifier.status == :trained} phx-click="promote">
-      <.button disabled={@classifier.decision_site.default_classifier_id == @classifier.id}>Promote</.button>
+      <.button disabled={@classifier.decision_site.default_classifier_id == @classifier.id}>
+        Promote
+      </.button>
     </.link>
   </:actions>
 </.header>
