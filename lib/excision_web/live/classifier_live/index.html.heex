@@ -18,15 +18,15 @@
 >
   <:col :let={{_id, classifier}} label="Name">
     <%= classifier.name %>
+    <%= if classifier.id == @decision_site.default_classifier_id do %>
+      *
+    <% end %>
     <%= if Excision.Excisions.is_default_passthrough_classifier?(classifier) do %>
       <ExcisionWeb.Components.TooltipComponent.passthrough_classifier_tooltip />
     <% end %>
   </:col>
   <:col :let={{_id, classifier}} label="Status">
     <%= Excision.Excisions.Classifier.status_to_display_status(classifier.status) %>
-  </:col>
-  <:col :let={{_id, classifier}} label="Is Default?">
-    <%= classifier.id == @decision_site.default_classifier_id %>
   </:col>
   <:action :let={{_id, classifier}}>
     <.link phx-click={
