@@ -32,14 +32,7 @@
     <.link phx-click={
       JS.navigate(~p"/decision_sites/#{@decision_site}/classifiers/#{classifier}")
     }>
-      <%= case classifier.status do %>
-        <% x when x in [:waiting, :failed] and @enough_labels_to_train -> %>
-          Train
-        <% :trained when classifier.id != @decision_site.default_classifier_id -> %>
-          Promote
-        <% _ -> %>
-          Details
-      <% end %>
+      Details
     </.link>
   </:action>
   <:action :let={{id, classifier}}>
