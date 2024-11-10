@@ -2011,6 +2011,11 @@ select {
 
 /* This file is for your main application CSS */
 
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .hover\:cursor-pointer:hover {
   cursor: pointer;
 }
