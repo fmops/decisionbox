@@ -1,6 +1,5 @@
 <.header>
-  Showing classifier <%= @classifier.id %> for decision site <%= @classifier.decision_site.name %>
-  <:subtitle>This is a classifier record from your database.</:subtitle>
+  <%= @classifier.decision_site.name %> / <%= @classifier.name %>
   <:actions>
     <.link
       patch={
