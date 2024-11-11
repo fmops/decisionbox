@@ -2,6 +2,8 @@ defmodule ExcisionWeb.Live.DecisionSiteLive.QuickstartModal do
   use Phoenix.Component
 
   def component(assigns) do
+    assigns = assign(assigns, :base_uri, compute_base_uri(assigns.current_uri))
+
     ~H"""
     <h2 class="text-2xl font-bold mb-4 text-gray-800">Your Decision Site is Ready!</h2>
     <p class="text-gray-600 mb-6">
@@ -22,7 +24,7 @@ defmodule ExcisionWeb.Live.DecisionSiteLive.QuickstartModal do
 
     import requests
 
-    url = '<%= ExcisionWeb.Endpoint.url() %>/api/decision_sites/<%= @decision_site.id %>/invoke'
+    url = '<%= @base_uri %>/api/decision_sites/<%= @decision_site.id %>/invoke'
     headers = {'Authorization': f'Bearer {os.environ.get("OPENAI_API_KEY")}'}
     data = {
       "messages": [
@@ -83,5 +85,10 @@ defmodule ExcisionWeb.Live.DecisionSiteLive.QuickstartModal do
       </a>
     </div>
     """
+  end
+
+  defp compute_base_uri(uri) do
+    %{scheme: scheme, host: host, port: port} = URI.parse(uri)
+    "#{scheme}://#{host}#{if port, do: ":#{port}", else: ""}"
   end
 end
