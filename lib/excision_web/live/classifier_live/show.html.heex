@@ -76,7 +76,7 @@
     ) %>
   </:item>
 
-  <:item :if={@classifier.status == :trained} title="Is Default?">
+  <:item :if={@classifier.status == :trained} title="Promoted?">
     <%= @classifier.decision_site.default_classifier_id == @classifier.id %>
   </:item>
   <:item :if={@classifier.status == :trained} title="# Decisions"><%= @num_decisions %></:item>
