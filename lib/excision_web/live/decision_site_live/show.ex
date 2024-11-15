@@ -16,7 +16,7 @@ defmodule ExcisionWeb.DecisionSiteLive.Show do
 
     decision_site =
       Excisions.get_decision_site!(id,
-        preloads: [:default_classifier, :decisions, :classifiers, :choices]
+        preloads: [:promoted_classifier, :decisions, :classifiers, :choices]
       )
 
     accuracy_plot =

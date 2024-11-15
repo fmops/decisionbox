@@ -32,7 +32,7 @@
       <.button>Decisions</.button>
     </.link>
     <.link :if={@classifier.status == :trained} phx-click="promote">
-      <.button disabled={@classifier.decision_site.default_classifier_id == @classifier.id}>
+      <.button disabled={@classifier.decision_site.promoted_classifier_id == @classifier.id}>
         Promote
       </.button>
     </.link>
@@ -76,8 +76,8 @@
     ) %>
   </:item>
 
-  <:item :if={@classifier.status == :trained} title="Is Default?">
-    <%= @classifier.decision_site.default_classifier_id == @classifier.id %>
+  <:item :if={@classifier.status == :trained} title="Promoted?">
+    <%= @classifier.decision_site.promoted_classifier_id == @classifier.id %>
   </:item>
   <:item :if={@classifier.status == :trained} title="# Decisions"><%= @num_decisions %></:item>
   <:item :if={@classifier.status == :trained} title="# Labels">

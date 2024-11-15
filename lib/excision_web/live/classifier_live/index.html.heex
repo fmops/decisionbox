@@ -18,7 +18,7 @@
 >
   <:col :let={{_id, classifier}} label="Name">
     <%= classifier.name %>
-    <%= if classifier.id == @decision_site.default_classifier_id do %>
+    <%= if classifier.id == @decision_site.promoted_classifier_id do %>
       *
     <% end %>
     <%= if Excision.Excisions.is_default_passthrough_classifier?(classifier) do %>
