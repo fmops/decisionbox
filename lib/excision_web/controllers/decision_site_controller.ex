@@ -71,8 +71,8 @@ defmodule ExcisionWeb.DecisionSiteController do
     description: "Invoke a decision site's default classifier to make a decision"
 
   def invoke(conn, %{"id" => id}) do
-    decision_site = Excisions.get_decision_site!(id, preloads: [:default_classifier, :choices])
+    decision_site = Excisions.get_decision_site!(id, preloads: [:promoted_classifier, :choices])
 
-    ExcisionWeb.ClassifierController.invoke(conn, %{"id" => decision_site.default_classifier.id})
+    ExcisionWeb.ClassifierController.invoke(conn, %{"id" => decision_site.promoted_classifier.id})
   end
 end
