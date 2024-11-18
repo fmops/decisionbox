@@ -1,6 +1,9 @@
 <.header>
   <%= @classifier.decision_site.name %> / <%= @classifier.name %>
   <:actions>
+    <.button phx-click="toggle-help">
+      <.icon name="hero-question-mark-circle" />
+    </.button>
     <.link
       patch={
         ~p"/decision_sites/#{@classifier.decision_site_id}/classifiers/#{@classifier}/show/edit"
@@ -132,4 +135,15 @@
     decision_site_id={@classifier.decision_site_id}
     patch={~p"/decision_sites/#{@classifier.decision_site_id}/classifiers/#{@classifier}"}
   />
+</.modal>
+
+<.modal
+  :if={@live_action == :help}
+  id="classifier-modal"
+  show
+  on_cancel={
+    JS.patch(~p"/decision_sites/#{@classifier.decision_site_id}/classifiers/#{@classifier}")
+  }
+>
+  <ExcisionWeb.Live.ClassifierLive.HelpModal.component handle_dismiss={JS.push("toggle-help")} />
 </.modal>

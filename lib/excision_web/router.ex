@@ -40,6 +40,7 @@ defmodule ExcisionWeb.Router do
           live "/classifiers/:id/edit", ClassifierLive.Index, :edit
 
           live "/classifiers/:id", ClassifierLive.Show, :show
+          live "/classifiers/:id/show/help", ClassifierLive.Show, :help
           live "/classifiers/:id/show/edit", ClassifierLive.Show, :edit
 
           live "/classifiers/:classifier_id/decisions", DecisionLive.Index, :index

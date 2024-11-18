@@ -87,6 +87,23 @@ defmodule ExcisionWeb.ClassifierLive.Show do
   end
 
   @impl true
+  def handle_event(
+        "toggle-help",
+        _params,
+        %{assigns: %{classifier: %{decision_site: decision_site} = classifier}} = socket
+      ) do
+    if socket.assigns.live_action == :help do
+      {:noreply,
+       push_patch(socket, to: ~p"/decision_sites/#{decision_site}/classifiers/#{classifier}")}
+    else
+      {:noreply,
+       push_patch(socket,
+         to: ~p"/decision_sites/#{decision_site}/classifiers/#{classifier}/show/help"
+       )}
+    end
+  end
+
+  @impl true
   def handle_info({:status_updated, status}, socket) do
     {:noreply,
      socket
@@ -203,5 +220,6 @@ defmodule ExcisionWeb.ClassifierLive.Show do
   end
 
   defp page_title(:show, _), do: "Show Classifier"
+  defp page_title(:help, _), do: "Show Classifier"
   defp page_title(:edit, classifier), do: "Edit Classifier: #{classifier.name}"
 end
