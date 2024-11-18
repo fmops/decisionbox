@@ -77,12 +77,12 @@ defmodule ExcisionWeb.Live.DecisionSiteLive.QuickstartModal do
     </p>
 
     <div class="text-center">
-      <a
+      <button
         class="bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700"
         phx-click={@handle_dismiss}
       >
         OK
-      </a>
+      </button>
     </div>
     """
   end
