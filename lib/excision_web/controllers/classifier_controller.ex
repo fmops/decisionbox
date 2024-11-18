@@ -186,7 +186,7 @@ defmodule ExcisionWeb.ClassifierController do
         preserve_host_header: false
       )
 
-    resp =
+    conn =
       conn
       # strip path, by default this is appended when proxying
       |> Map.put(:path_info, [])
@@ -194,29 +194,29 @@ defmodule ExcisionWeb.ClassifierController do
 
     # parse response and record decision
     resp_body =
-      case Plug.Conn.get_resp_header(resp, "content-encoding") do
-        ["gzip"] ->
-          {:ok, :zlib.gunzip(resp.resp_body)}
+      if conn.status >= 400 do
+        Logger.error(
+          "Got failure response while proxying request for classifier #{classifier.name}: #{conn.status} #{conn.resp_body}"
+        )
 
-        ["br"] ->
-          :brotli.decode(resp.resp_body)
+        {:error, conn.resp_body}
+      else
+        case Plug.Conn.get_resp_header(conn, "content-encoding") do
+          ["gzip"] ->
+            {:ok, :zlib.gunzip(conn.resp_body)}
 
-        _ ->
-          if resp.status >= 400 do
-            Logger.error(
-              "Got failure response while proxying request for classifier #{classifier.name}: #{resp.status} #{resp.resp_body}"
-            )
+          ["br"] ->
+            :brotli.decode(conn.resp_body)
 
-            {:error, resp.resp_body}
-          else
-            {:ok, resp.resp_body}
-          end
+          _ ->
+            {:ok, conn.resp_body}
+        end
       end
-
-    deserialized_body = resp_body |> elem(1) |> Jason.decode!()
 
     case resp_body do
       {:ok, _} ->
+        deserialized_body = resp_body |> elem(1) |> Jason.decode!()
+
         # record the decision
         Excision.Excisions.create_decision(%{
           decision_site_id: decision_site.id,
@@ -239,6 +239,6 @@ defmodule ExcisionWeb.ClassifierController do
         nil
     end
 
-    resp
+    conn
   end
 end
