@@ -124,6 +124,43 @@ defmodule ExcisionWeb.DecisionSiteControllerTest do
       assert %Excision.Excisions.Decision{} = decision
       assert Jason.decode!(decision.input) == Jason.decode!(Jason.encode!(messages))
     end
+
+    test "returns meaningful error when trailing slash is appended to path", %{
+      conn: conn,
+      decision_site: decision_site,
+      bypass: bypass
+    } do
+      Bypass.expect_once(bypass, "POST", "/v1/chat/completions/", fn conn ->
+        Plug.Conn.resp(
+          conn,
+          404,
+          """
+          {
+              "error": {
+                  "message": "Invalid URL (POST /v1/chat/completions/)",
+                  "type": "invalid_request_error",
+                  "param": null,
+                  "code": null
+              }
+          }
+          """
+        )
+      end)
+
+      conn =
+        conn
+        |> assign(
+          :raw_body,
+          Jason.encode!(%{
+            messages: [%{role: "user", content: "some message"}],
+            model: ""
+          })
+        )
+        |> Plug.Conn.put_req_header("authorization", "Bearer foo")
+        |> post(~p"/api/decision_sites/#{decision_site}/invoke/")
+
+      assert response(conn, 404)
+    end
   end
 
   defp create_decision_site(_) do
